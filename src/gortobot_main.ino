@@ -1,10 +1,10 @@
-/* Gortobot v2 */
+/* Gortobot v3 */
 
 // gortobot_main.ino handles program modes, includes, pin assignments,
 //  objects, global constants & variables, setup() & loop()
 
 // TODO:
-// nada!
+// tons!
 
 // Program Modes (config)
 static const boolean resetEEPROM = false; // sets runNum back to 0
