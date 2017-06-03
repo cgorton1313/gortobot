@@ -1,0 +1,4 @@
+i2c_eeprom_write_byte	KEYWORD2
+i2c_eeprom_write_page	KEYWORD2
+i2c_eeprom_read_byte	KEYWORD2
+i2c_eeprom_read_buffer	KEYWORD2
