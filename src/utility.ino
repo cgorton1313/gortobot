@@ -1,6 +1,5 @@
 // Utility holds miscellaneous functions
 
-#include <Arduino.h>
 
 static void clearEEPROM() {
         for (unsigned int i = 0; i < EEPROM.length(); i++) {

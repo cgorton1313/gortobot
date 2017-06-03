@@ -1,8 +1,6 @@
 // communication.ino handles creation of the log sentence,
 //  satellite/wifi TX and RX, etc.
 
-#include <Arduino.h>
-
 // MT message starts with message type, then
 //  1 (std)- mastPositionA(min-max),timeA(minutes),mastPositionB(min-max),timeB(minutes),loggingInterval(min),z (end)
 //  2 (test)- timePerTack (loggingInterval), z (end)
@@ -267,8 +265,8 @@ static void parseRxBuffer(String rxBufferAsString) {
                         orderedTackTimeA = thirdValue.toInt();
                         orderedSailPositionB = fourthValue.toInt();
                         orderedTackTimeB = fifthValue.toInt();
-                        unsigned int tempLoggingInterval = sixthValue.toInt();
-                        if (tempLoggingInterval > 0 && tempLoggingInterval <= 1440) { // 1440 mins = 1 day
+                        unsigned long tempLoggingInterval = sixthValue.toInt();
+                        if (tempLoggingInterval > 0 && tempLoggingInterval <= 86400) { // 86,400 secs = 1 day
                                 loggingInterval = tempLoggingInterval;
                         }
                         break;
@@ -282,8 +280,8 @@ static void parseRxBuffer(String rxBufferAsString) {
                         byte firstCommaIndex = rxBufferAsString.indexOf(',');
                         byte secondCommaIndex = rxBufferAsString.indexOf(',', firstCommaIndex + 1);
                         String secondValue = rxBufferAsString.substring(firstCommaIndex + 1, secondCommaIndex);
-                        unsigned int tempLoggingInterval = secondValue.toInt();
-                        if (tempLoggingInterval > 0 && tempLoggingInterval <= 1440) { // 1440 mins = 1 day
+                        unsigned long tempLoggingInterval = secondValue.toInt();
+                        if (tempLoggingInterval > 0 && tempLoggingInterval <= 86400) {
                                 loggingInterval = tempLoggingInterval;
                         }
                         break;
@@ -294,7 +292,7 @@ static void parseRxBuffer(String rxBufferAsString) {
                         byte secondCommaIndex = rxBufferAsString.indexOf(',', firstCommaIndex + 1);
                         String secondValue = rxBufferAsString.substring(firstCommaIndex + 1, secondCommaIndex);
                         orderedSailPosition = secondValue.toInt();
-                        loggingInterval = 1; // will wait 1 minute before asking again
+                        loggingInterval = 1; // will wait 1 second before asking again
                         break;
                 }
                 default: {

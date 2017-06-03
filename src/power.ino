@@ -1,6 +1,5 @@
 // power.ino handles solar, battery, power reporting, sleeping
 
-#include <Arduino.h>
 
 static void gortoNap(int seconds) {
         for (int i = 0; i < seconds; i++) {

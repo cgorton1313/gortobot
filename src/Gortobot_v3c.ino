@@ -2,11 +2,10 @@
 
 /* Gortobot v3b */
 
-// gortobot_main.ino handles program modes, includes, pin assignments,
+// Gortobot_v3c.ino handles program modes, includes, pin assignments,
 //  objects, global constants & variables, setup() & loop()
 
 // TODO:
-// change logging interval to seconds
 // change to neo gps
 
 // Program Modes (config)
@@ -58,7 +57,7 @@ static const int minSail = 0, maxSail = 360; // limits for sail
 static const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned int loggingInterval = 1;  // minutes b/w logging events, 1 day = 1440 mins which is max
+unsigned long loggingInterval = 1;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS

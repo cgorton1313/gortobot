@@ -1,7 +1,5 @@
 // sail.ino handles the sails (trimming, reporting, etc.)
 
-#include <Arduino.h>
-
 static void getSailPosition() {
         int sum = 0;
         const byte reps = 10;
@@ -21,10 +19,10 @@ static void getSailPosition() {
 
 unsigned long howLongWatchShouldBe() {
         if (txSuccess) {
-                return loggingInterval * (unsigned long)60; // in seconds, need the UL for large times
+                return loggingInterval; // in seconds, need the UL for large times
         }
         else {
-                return min(failureRetry, loggingInterval) * 60; // in seconds
+                return min(failureRetry, loggingInterval); // in seconds
         }
 }
 
@@ -165,10 +163,10 @@ static void setTestSailPosition(int thePosition) {
         trimSail(thePosition);
         unsigned long testTimer = 0;
         if (sailMode != 's') {
-                while (testTimer < (60 * loggingInterval)) { // so the duration can be set via RX
-                        gortoNap(6); // six seconds of napping
+                while (testTimer < loggingInterval) { // so the duration can be set via RX
+                        gortoNap(1); // one second of napping
                         delay(delayForSerial);
-                        testTimer = testTimer + 6;
+                        testTimer = testTimer + 1;
                         blinkMessage(2); // flash led
                         Serial.print(F("timer = "));
                         Serial.println(testTimer);
@@ -185,8 +183,8 @@ static void pretendSail() {
         delay(delayForSerial);
         unsigned long timer = 0; // used to track seconds during sail operation
         while (timer < thisWatch) {
-                gortoNap(6); // six seconds of napping
-                timer = timer + 6;
+                gortoNap(1); // one second of napping
+                timer = timer + 1;
                 blinkMessage(2); // flash led
                 delay(delayForSerial);
                 Serial.print(F("timer = "));

@@ -1,6 +1,5 @@
 // navigation.ino gets Gortobot's position, either real or fake
 
-#include <Arduino.h>
 
 static void getFix(char fixType) {
         switch (fixType) {
