@@ -14,7 +14,7 @@ static const boolean resetFRAM = false; // full wipe of FRAM data
 static const boolean checkingVoltage = false;
 static const boolean usingFram = false;
 static const boolean testingFram = false; // prints FRAM contents to serial
-static const boolean usingGPS = false;
+static const boolean usingGPS = true;
 static const boolean usingWifi = false;
 static const boolean usingSat = false;
 static const boolean usingSerialMonitorOrders = false;
@@ -24,15 +24,16 @@ static const boolean usingSail = false;
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include <Adafruit_FRAM_I2C.h> // for FRAM logging
 #include <SoftwareSerial.h>
-#include <TinyGPS++.h>
+#include <NMEAGPS.h>
 #include <IridiumSBD.h>
-#include <Narcoleptic.h> // sleep library, doesn't work with mega
+#include <Narcoleptic.h> // sleep library, doesn't work with mega, or does it?
 
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
 static const byte ledPin = 13; // brown, to external LED via 420 ohm resistor
 static const byte gpsRXpin = 15, gpsTXpin = 16; // 15 (aka A1) blue to the GPS TX, 16 (aka A2) yellow to the GPS RX
-static const byte gpsPowerPin = 2; // orange
+static const byte gpsPowerPin = 26;
+#define gpsPort Serial1
 static const byte batteryVoltagePin = A0; // green
 static const byte potPin = A3; // green
 static const byte motorIn1Pin = 3, motorIn2Pin = 4; // 3-yellow, 4-blue
@@ -42,8 +43,8 @@ static const byte wifiTXpin = 5, wifiRXpin = 6; // 5-yellow, don't really need 6
 
 // Constants
 static const byte delayForSerial = 5; // ms to delay so serial ouput is clean
-static const unsigned long consoleBaud = 115200, wifiBaud = 115200;
-static const unsigned int gpsBaud = 9600, satBaud = 19200;
+static const unsigned long consoleBaud = 115200, wifiBaud = 115200, gpsBaud = 38400;
+static const unsigned int satBaud = 19200;
 static const int satChargeTime = 30; // seconds to wait at start-up for super-capacitor
 static const int isbdTimeout = 600;  // seconds to try getting isbd success
 static const byte failureRetry = 10; // minutes to wait after sat failure
@@ -51,13 +52,13 @@ static const float minBatteryVoltage = 3.3; // system will wait for charging at 
 static const float batteryOkayVoltage = 3.4; // system will resume program at this voltage threshold
 static const int batteryWaitTime = 60; // seconds to wait between checking for batteryOkay
 static const unsigned int framLoggingInterval = 60; // in minutes
-static const byte messageVersion = 3; // 2 = long form, 3 = base62
+static const byte messageVersion = 2; // 2 = long form, 3 = base62
 static const char base62Chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 static const int minSail = 0, maxSail = 360; // limits for sail
 static const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 1;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 10;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
@@ -87,13 +88,15 @@ boolean framProblem = false; // if FRAM does begin or loops more the 16 times to
 boolean rxMessageInvalid = false;
 boolean trimRoutineExceededMax = false; // if it takes more than set number of pulses to trim the sail
 boolean sailNotMoving = false; // if it gets stuck moving sail 1 degree
+gps_fix fix;
+bool fixDone = false;
 
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
-SoftwareSerial gpsSS(gpsRXpin, gpsTXpin);
 SoftwareSerial satSS(satRXpin, satTXpin);
 SoftwareSerial wifiSS(wifiRXpin, wifiTXpin); // for at-home testing
-TinyGPSPlus tinyGPS;
+NMEAGPS gps;
+
 IridiumSBD isbd(satSS, satSleepPin);
 
 void setup() {

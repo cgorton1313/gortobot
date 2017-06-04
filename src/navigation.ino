@@ -7,9 +7,35 @@ static void getFix(char fixType) {
                 processVoltageData(); // make sure there's enough juice to do this
                 delay(2005); // to trigger staleFix because millis stop during sleep
                 gpsOn();
-                while (!fixAcquired || staleFix) { // should we time-out here?
-                        processGPSData();
-                }
+                fixDone = false;
+            	while (!fixDone)
+            	{
+            		while (gps.available(gpsPort))
+            		{
+            			fix = gps.read();
+            			if (fix.valid.location && fix.valid.date && fix.valid.time && (fix.satellites > 3) ) {
+            				Serial.print("Fix: ");
+            				Serial.print(fix.latitude(), 4);
+                            latitude = fix.latitude();
+            				Serial.print(", ");
+            				Serial.print(fix.longitude(), 4);
+                            longitude = fix.longitude();
+            				Serial.print(", ");
+            				NeoGPS::time_t & dt = fix.dateTime;
+            				Serial << dt;
+                            year = fix.dateTime.year;
+                            month = fix.dateTime.month;
+                            day = fix.dateTime.date;
+                            hour = fix.dateTime.hours;
+                            minute = fix.dateTime.minutes;
+                            second = fix.dateTime.seconds;
+            				Serial.print(", ");
+            				Serial.print(fix.satellites);
+            				Serial.println();
+            				fixDone = true;
+            			}
+            		}
+            	}
                 gpsOff();
                 break;
         case 'f':
@@ -19,37 +45,16 @@ static void getFix(char fixType) {
 }
 
 static void gpsOn() {
-        gpsSS.begin(gpsBaud);
+        gpsPort.begin(gpsBaud);
         digitalWrite(gpsPowerPin, HIGH);
         Serial.println(F("GPS on."));
-        staleFix = true;
-        fixAcquired = false;
 }
 
 static void gpsOff() {
-        gpsSS.end();
+        gpsPort.end();
         delay(delayForSerial);
         digitalWrite(gpsPowerPin, LOW);
         Serial.println(F("GPS off."));
-}
-
-static void processGPSData() {
-        while (gpsSS.available() > 0) {
-                tinyGPS.encode(gpsSS.read());
-        }
-        latitude = tinyGPS.location.lat();
-        longitude = tinyGPS.location.lng();
-        year = tinyGPS.date.year();
-        month = tinyGPS.date.month();
-        day = tinyGPS.date.day();
-        ddmmyy = tinyGPS.date.value(); // do we need this? check logData
-        hour = tinyGPS.time.hour();
-        minute = tinyGPS.time.minute();
-        second = tinyGPS.time.second();
-        hhmmss = tinyGPS.time.value() / 100; // gets rid of centiseconds, do we need this? check logData
-        satellites = tinyGPS.satellites.value();
-        fixAcquired = tinyGPS.location.isValid() && tinyGPS.date.isValid() && tinyGPS.time.isValid();
-        staleFix = fixAcquired && (tinyGPS.location.age() > 2000 || tinyGPS.date.age() > 2000);
 }
 
 static void fakeGPS() { // could remove random()'s and do without math.h if necessary
