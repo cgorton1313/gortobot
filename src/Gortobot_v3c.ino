@@ -97,7 +97,7 @@ Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 SoftwareSerial satSS(satRXpin, satTXpin);
 NMEAGPS gps;
 IridiumSBD isbd(satSS, satSleepPin);
-Wifi wifi(wifiEnablePin, logSentence);
+Wifi wifi(wifiEnablePin, wifiPort, logSentence);
 
 void setup() {
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
