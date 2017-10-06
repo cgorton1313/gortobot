@@ -1,24 +1,21 @@
-//#include <Arduino.h>
-
-/* Gortobot v3b */
+/* Gortobot v3c */
 
 // Gortobot_v3c.ino handles program modes, includes, pin assignments,
 //  objects, global constants & variables, setup() & loop()
 
 // TODO:
-// change to neo gps
 
 // Program Modes (config)
-static const boolean resetEEPROM = false; // sets runNum back to 0
-static const boolean resetFRAM = false; // full wipe of FRAM data
-static const boolean checkingVoltage = false;
-static const boolean usingFram = false;
-static const boolean testingFram = false; // prints FRAM contents to serial
-static const boolean usingGPS = true;
-static const boolean usingWifi = false;
-static const boolean usingSat = false;
-static const boolean usingSerialMonitorOrders = false;
-static const boolean usingSail = false;
+const boolean resetEEPROM = false; // sets runNum back to 0
+const boolean resetFRAM = false; // full wipe of FRAM data
+const boolean checkingVoltage = true;
+const boolean usingFram = false;
+const boolean testingFram = false; // prints FRAM contents to serial
+const boolean usingGPS = false;
+const boolean usingWifi = true;
+const boolean usingSat = false;
+const boolean usingSerialMonitorOrders = false;
+const boolean usingSail = false;
 
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
@@ -30,32 +27,33 @@ static const boolean usingSail = false;
 
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
-static const byte ledPin = 13; // brown, to external LED via 420 ohm resistor
-static const byte gpsRXpin = 15, gpsTXpin = 16; // 15 (aka A1) blue to the GPS TX, 16 (aka A2) yellow to the GPS RX
-static const byte gpsPowerPin = 26;
+const byte ledPin = 13; // brown, to external LED via 420 ohm resistor
+const byte gpsRXpin = 15, gpsTXpin = 16; // 15 (aka A1) blue to the GPS TX, 16 (aka A2) yellow to the GPS RX
+const byte gpsPowerPin = 26;
 #define gpsPort Serial1
-static const byte batteryVoltagePin = A0; // green
-static const byte potPin = A3; // green
-static const byte motorIn1Pin = 3, motorIn2Pin = 4; // 3-yellow, 4-blue
-static const byte chipSelect = 10; // temp while using only satellite. can't remember why
-static const byte satSleepPin = 7, satTXpin = 8, satRXpin = 9; // 7-green, 8-yellow, 9-brown
-static const byte wifiTXpin = 5, wifiRXpin = 6; // 5-yellow, don't really need 6
+const byte batteryVoltagePin = A0; // green
+const byte potPin = A3; // green
+const byte motorIn1Pin = 3, motorIn2Pin = 4; // 3-yellow, 4-blue
+const byte chipSelect = 10; // temp while using only satellite. can't remember why
+const byte satSleepPin = 7, satTXpin = 8, satRXpin = 9; // 7-green, 8-yellow, 9-brown
+#define wifiPort Serial2
+const byte wifiEnablePin = 4; // pin 3 on Mega Pro is "D4", (brown)
 
 // Constants
-static const byte delayForSerial = 5; // ms to delay so serial ouput is clean
-static const unsigned long consoleBaud = 115200, wifiBaud = 115200, gpsBaud = 38400;
-static const unsigned int satBaud = 19200;
-static const int satChargeTime = 30; // seconds to wait at start-up for super-capacitor
-static const int isbdTimeout = 600;  // seconds to try getting isbd success
-static const byte failureRetry = 10; // minutes to wait after sat failure
-static const float minBatteryVoltage = 3.3; // system will wait for charging at this low voltage threshold
-static const float batteryOkayVoltage = 3.4; // system will resume program at this voltage threshold
-static const int batteryWaitTime = 60; // seconds to wait between checking for batteryOkay
-static const unsigned int framLoggingInterval = 60; // in minutes
-static const byte messageVersion = 2; // 2 = long form, 3 = base62
-static const char base62Chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-static const int minSail = 0, maxSail = 360; // limits for sail
-static const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
+const byte delayForSerial = 5; // ms to delay so serial ouput is clean
+const unsigned long consoleBaud = 115200, wifiBaud = 115200, gpsBaud = 38400;
+const unsigned int satBaud = 19200;
+const int satChargeTime = 30; // seconds to wait at start-up for super-capacitor
+const int isbdTimeout = 600;  // seconds to try getting isbd success
+const byte failureRetry = 10; // minutes to wait after sat failure
+const float minBatteryVoltage = 3.3; // system will wait for charging at this low voltage threshold
+const float batteryOkayVoltage = 3.4; // system will resume program at this voltage threshold
+const int batteryWaitTime = 60; // seconds to wait between checking for batteryOkay
+const unsigned int framLoggingInterval = 60; // in minutes
+const byte messageVersion = 2; // 2 = long form, 3 = base62
+const char base62Chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const int minSail = 0, maxSail = 360; // limits for sail
+const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
 unsigned long loggingInterval = 10;  // seconds b/w logging events, 1 day = 86,400 secs which is max
@@ -94,7 +92,6 @@ bool fixDone = false;
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 SoftwareSerial satSS(satRXpin, satTXpin);
-SoftwareSerial wifiSS(wifiRXpin, wifiTXpin); // for at-home testing
 NMEAGPS gps;
 
 IridiumSBD isbd(satSS, satSleepPin);
@@ -102,6 +99,7 @@ IridiumSBD isbd(satSS, satSleepPin);
 void setup() {
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
         Serial.begin(consoleBaud);
+        wifiPort.begin(wifiBaud);
 
         // Pin Modes
         pinMode(ledPin, OUTPUT);
