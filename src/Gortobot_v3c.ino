@@ -26,6 +26,7 @@ const boolean usingSail = false;
 #include <NMEAGPS.h>
 #include <IridiumSBD.h>
 #include <Narcoleptic.h> // sleep library, doesn't work with mega, or does it?
+#include <wifi.cpp>
 
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
@@ -96,11 +97,12 @@ Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 SoftwareSerial satSS(satRXpin, satTXpin);
 NMEAGPS gps;
 IridiumSBD isbd(satSS, satSleepPin);
+Wifi wifi(wifiEnablePin, logSentence);
 
 void setup() {
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
         Serial.begin(consoleBaud);
-        wifiPort.begin(wifiBaud);
+        //wifiPort.begin(wifiBaud);
 
         // Pin Modes
         pinMode(ledPin, OUTPUT);
@@ -141,7 +143,7 @@ void loop() {
         }
         if (usingFram) useFram();
         logSentence = makeLogSentence();
-        if (usingWifi) useWifi();
+        if (usingWifi) wifi.useWifi();
         if (usingSat) {
                 useSat();
         }
