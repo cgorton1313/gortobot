@@ -4,6 +4,8 @@
 //  objects, global constants & variables, setup() & loop()
 
 // TODO:
+// config switches?
+// change isbd to use hardware serial
 
 // Program Modes (config)
 const boolean resetEEPROM = false; // sets runNum back to 0
@@ -93,7 +95,6 @@ bool fixDone = false;
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 SoftwareSerial satSS(satRXpin, satTXpin);
 NMEAGPS gps;
-
 IridiumSBD isbd(satSS, satSleepPin);
 
 void setup() {
