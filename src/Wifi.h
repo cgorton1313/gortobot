@@ -14,5 +14,5 @@ public:
     void wifiOff();
     bool wifiReady();
     bool wifiSend(String);
-    //bool wifiReceive();
+    bool wifiReceive();
 };

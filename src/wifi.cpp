@@ -23,7 +23,7 @@ void Wifi::useWifi() {
                         Serial.print(F("wifi sent "));
                         Serial.println(_logSentence);
                 }
-                //if(wifiReceive());
+                if(wifiReceive());
         } else {
                 Serial.println(F("Wifi NOT ready."));
         }
@@ -70,6 +70,6 @@ bool Wifi::wifiSend(String txString) {
         }
 }
 
-//bool Wifi::wifiReceive() {
-//    return true;
-//}
+bool Wifi::wifiReceive() {
+    return true;
+}
