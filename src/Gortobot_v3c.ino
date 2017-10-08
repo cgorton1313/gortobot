@@ -26,7 +26,7 @@ const boolean usingSail = false;
 #include <NMEAGPS.h>
 #include <IridiumSBD.h>
 #include <Narcoleptic.h> // sleep library, doesn't work with mega, or does it?
-#include <wifi.cpp>
+#include <Wifi.h>
 
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
