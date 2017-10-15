@@ -6,6 +6,7 @@
 // TODO:
 // config switches?
 // change isbd to use hardware serial
+// battery classes
 
 // Program Modes (config)
 const boolean resetEEPROM = false; // sets runNum back to 0
@@ -97,7 +98,7 @@ Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 SoftwareSerial satSS(satRXpin, satTXpin);
 NMEAGPS gps;
 IridiumSBD isbd(satSS, satSleepPin);
-Wifi wifi(wifiEnablePin, wifiPort, logSentence);
+Wifi wifi = Wifi(wifiEnablePin, wifiPort, logSentence);
 
 void setup() {
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open

@@ -1,11 +1,6 @@
 #include <Arduino.h>
 #include <Wifi.h>
 
-//private:
-//    String _logSentence;
-//    byte _wifiEnablePin;
-//    HardwareSerial* _wifiPort;
-
 Wifi::Wifi(byte pin, HardwareSerial &port, String sentence) {
     _logSentence = sentence;
     _wifiEnablePin = pin;
