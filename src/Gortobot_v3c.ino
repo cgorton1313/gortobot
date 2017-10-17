@@ -6,19 +6,21 @@
 // TODO:
 // config switches?
 // change isbd to use hardware serial
-// battery classes
+// battery classes, abstract, fake
+// gps classes, abstract, fake
 
 // Program Modes (config)
-const boolean resetEEPROM = false; // sets runNum back to 0
-const boolean resetFRAM = false; // full wipe of FRAM data
-const boolean checkingVoltage = true;
-const boolean usingFram = false;
-const boolean testingFram = false; // prints FRAM contents to serial
-const boolean usingGPS = false;
-const boolean usingWifi = true;
-const boolean usingSat = false;
-const boolean usingSerialMonitorOrders = false;
-const boolean usingSail = false;
+#include <config.h>
+const boolean resetEEPROM = RESETEEPROM; // sets runNum back to 0
+const boolean resetFRAM = RESETFRAM; // full wipe of FRAM data
+const boolean checkingVoltage = CHECKINGVOLTAGE;
+const boolean usingFram = USINGFRAM;
+const boolean testingFram = TESTINGFRAM; // prints FRAM contents to serial
+const boolean usingGPS = USINGGPS;
+const boolean usingWifi = USINGWIFI;
+const boolean usingSat = USINGSAT;
+const boolean usingSerialMonitorOrders = USINGSERIALMONITORORDERS;
+const boolean usingSail = USINGSAIL;
 
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
@@ -28,6 +30,7 @@ const boolean usingSail = false;
 #include <IridiumSBD.h>
 #include <Narcoleptic.h> // sleep library, doesn't work with mega, or does it?
 #include <Wifi.h>
+#include <Battery.h>
 
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
@@ -99,11 +102,11 @@ SoftwareSerial satSS(satRXpin, satTXpin);
 NMEAGPS gps;
 IridiumSBD isbd(satSS, satSleepPin);
 Wifi wifi = Wifi(wifiEnablePin, wifiPort, logSentence);
+Battery battery = Battery(minBatteryVoltage, batteryOkayVoltage, batteryWaitTime);
 
 void setup() {
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
         Serial.begin(consoleBaud);
-        //wifiPort.begin(wifiBaud);
 
         // Pin Modes
         pinMode(ledPin, OUTPUT);
