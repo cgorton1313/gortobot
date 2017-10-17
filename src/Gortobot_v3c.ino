@@ -10,7 +10,7 @@
 // gps classes, abstract, fake
 
 // Program Modes (config)
-#include <config.h>
+#include <configs/config.h>
 const boolean resetEEPROM = RESETEEPROM; // sets runNum back to 0
 const boolean resetFRAM = RESETFRAM; // full wipe of FRAM data
 const boolean checkingVoltage = CHECKINGVOLTAGE;
@@ -29,8 +29,8 @@ const boolean usingSail = USINGSAIL;
 #include <NMEAGPS.h>
 #include <IridiumSBD.h>
 #include <Narcoleptic.h> // sleep library, doesn't work with mega, or does it?
-#include <Wifi.h>
-#include <Battery.h>
+#include <communication/Wifi.h>
+#include <power/Battery.h>
 
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM

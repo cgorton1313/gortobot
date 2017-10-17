@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Battery.h>
+#include <power/Battery.h>
 
 Battery::Battery(float minVoltage, float retryVoltage, int waitTime) {
     _minVoltage = minVoltage;

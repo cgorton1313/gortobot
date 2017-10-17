@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Wifi.h>
+#include <communication/Wifi.h>
 
 Wifi::Wifi(byte pin, HardwareSerial &port, String sentence) {
     _logSentence = sentence;
