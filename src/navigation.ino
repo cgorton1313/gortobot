@@ -4,7 +4,7 @@
 static void getFix(char fixType) {
         switch (fixType) {
         case 'r':
-                processVoltageData(); // make sure there's enough juice to do this
+                //processVoltageData(); // make sure there's enough juice to do this
                 delay(2005); // to trigger staleFix because millis stop during sleep
                 gpsOn();
                 fixDone = false;
