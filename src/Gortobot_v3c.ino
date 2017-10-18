@@ -147,6 +147,7 @@ void loop() {
                 getFix('f'); // 'f' = 'fake'
         }
         if (usingFram) useFram();
+        batteryVoltage = battery.getVoltage();
         logSentence = makeLogSentence();
         if (usingWifi) wifi.useWifi();
         if (usingSat) {

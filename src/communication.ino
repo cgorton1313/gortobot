@@ -129,7 +129,6 @@ String makeLogSentence() {
                 logSentence += ",";
                 logSentence += String(longitude, 4);
                 logSentence += ",";
-                processVoltageData();
                 logSentence += String(batteryVoltage, 2);
                 logSentence += ",";
                 getSailPosition();
