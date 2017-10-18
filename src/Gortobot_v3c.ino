@@ -8,6 +8,7 @@
 // change isbd to use hardware serial
 // battery classes, abstract, fake
 // gps classes, abstract, fake
+// get rid of software serial
 
 // Program Modes (config)
 #include <configs/config.h>
@@ -25,7 +26,6 @@ const boolean usingSail = USINGSAIL;
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include <Adafruit_FRAM_I2C.h> // for FRAM logging
-#include <SoftwareSerial.h>
 #include <NMEAGPS.h>
 #include <IridiumSBD.h>
 #include <Narcoleptic.h> // sleep library, doesn't work with mega, or does it?
@@ -42,8 +42,9 @@ const byte batteryVoltagePin = A0; // green
 const byte potPin = A3; // green
 const byte motorIn1Pin = 3, motorIn2Pin = 4; // 3-yellow, 4-blue
 const byte chipSelect = 10; // temp while using only satellite. can't remember why
-const byte satSleepPin = 7, satTXpin = 8, satRXpin = 9; // 7-green, 8-yellow, 9-brown
+const byte satSleepPin = 7; // 7-green
 #define wifiPort Serial2
+#define isbdPort Serial3
 const byte wifiEnablePin = 4; // pin 3 on Mega Pro is "D4", (brown)
 
 // Constants
@@ -98,9 +99,8 @@ bool fixDone = false;
 
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
-SoftwareSerial satSS(satRXpin, satTXpin);
 NMEAGPS gps;
-IridiumSBD isbd(satSS, satSleepPin);
+IridiumSBD isbd(isbdPort, satSleepPin);
 Wifi wifi = Wifi(wifiEnablePin, wifiPort, logSentence);
 Battery battery = Battery(minBatteryVoltage, batteryOkayVoltage, batteryWaitTime);
 
