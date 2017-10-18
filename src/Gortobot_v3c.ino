@@ -8,7 +8,6 @@
 // change isbd to use hardware serial
 // battery classes, abstract, fake
 // gps classes, abstract, fake
-// get rid of software serial
 
 // Program Modes (config)
 #include <configs/config.h>
