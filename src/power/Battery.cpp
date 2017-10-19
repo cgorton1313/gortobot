@@ -26,7 +26,7 @@ float Battery::getVoltage() {
 }
 
 void Battery::okay() {
-    Serial.print(F("This voltage is "));
+    Serial.print(F("Voltage = "));
     Serial.println(this->getVoltage());
     // wait until okay
 }

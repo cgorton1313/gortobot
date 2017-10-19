@@ -34,7 +34,6 @@ const boolean usingSail = USINGSAIL;
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
 const byte ledPin = 13; // brown, to external LED via 420 ohm resistor
-const byte gpsRXpin = 15, gpsTXpin = 16; // 15 (aka A1) blue to the GPS TX, 16 (aka A2) yellow to the GPS RX
 const byte gpsPowerPin = 26;
 #define gpsPort Serial1
 const byte batteryVoltagePin = A0; // green
@@ -57,7 +56,7 @@ const float minBatteryVoltage = 3.3; // system will wait for charging at this lo
 const float batteryOkayVoltage = 3.4; // system will resume program at this voltage threshold
 const int batteryWaitTime = 60; // seconds to wait between checking for batteryOkay
 const unsigned int framLoggingInterval = 60; // in minutes
-const byte messageVersion = 2; // 2 = long form, 3 = base62
+const byte messageVersion = 3; // 2 = long form, 3 = base62
 const char base62Chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const int minSail = 0, maxSail = 360; // limits for sail
 const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max

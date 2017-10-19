@@ -3,7 +3,7 @@
 #define CHECKINGVOLTAGE true
 #define USINGFRAM false
 #define TESTINGFRAM false // prints FRAM contents to serial
-#define USINGGPS false
+#define USINGGPS true
 #define USINGWIFI true
 #define USINGSAT false
 #define USINGSERIALMONITORORDERS false
