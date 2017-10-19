@@ -12,6 +12,6 @@ private:
     bool wifiReceive();
 
 public:
-    Wifi(byte pin, HardwareSerial &port);
+    Wifi(byte pin, HardwareSerial &port, unsigned long baud);
     void useWifi(String sentence);
 };

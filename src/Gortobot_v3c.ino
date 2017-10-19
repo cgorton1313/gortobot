@@ -100,7 +100,7 @@ bool fixDone = false;
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 NMEAGPS gps;
 IridiumSBD isbd(isbdPort, satSleepPin);
-Wifi wifi = Wifi(wifiEnablePin, wifiPort);
+Wifi wifi = Wifi(wifiEnablePin, wifiPort, wifiBaud);
 Battery battery = Battery(batteryVoltagePin, minBatteryVoltage, batteryOkayVoltage, batteryWaitTime, checkingVoltage);
 
 void setup() {
