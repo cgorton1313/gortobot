@@ -63,7 +63,7 @@ const int minSail = 0, maxSail = 360; // limits for sail
 const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 2;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 8;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
@@ -100,7 +100,7 @@ bool fixDone = false;
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 NMEAGPS gps;
 IridiumSBD isbd(isbdPort, satSleepPin);
-Wifi wifi = Wifi(wifiEnablePin, wifiPort, logSentence);
+Wifi wifi = Wifi(wifiEnablePin, wifiPort);
 Battery battery = Battery(batteryVoltagePin, minBatteryVoltage, batteryOkayVoltage, batteryWaitTime, checkingVoltage);
 
 void setup() {
@@ -149,7 +149,7 @@ void loop() {
         if (usingFram) useFram();
         batteryVoltage = battery.getVoltage();
         logSentence = makeLogSentence();
-        if (usingWifi) wifi.useWifi();
+        if (usingWifi) wifi.useWifi(logSentence);
         if (usingSat) {
                 useSat();
         }

@@ -1,21 +1,21 @@
 #include <Arduino.h>
 #include <communication/Wifi.h>
 
-Wifi::Wifi(byte pin, HardwareSerial &port, String sentence) {
-    _logSentence = sentence;
+Wifi::Wifi(byte pin, HardwareSerial &port) {
     _wifiEnablePin = pin;
     port.begin(115200);
     _wifiPort = &port;
 }
 
-void Wifi::useWifi() {
+void Wifi::useWifi(String sentence) {
+        String _logSentence = sentence;
         wifiOn();
         if (wifiReady()) {
                 Serial.println(F("Wifi ready."));
                 if (!wifiSend(_logSentence)) {
                         Serial.println(F("wifiSend failed."));
                 } else {
-                        Serial.print(F("wifi sent "));
+                        Serial.print(F("wifiSend succeeded."));
                         Serial.println(_logSentence);
                 }
                 if(wifiReceive());

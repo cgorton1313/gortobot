@@ -158,7 +158,6 @@ String makeLogSentence() {
                 logSentence += ",";
                 logSentence += convertToBase62((long)round((180 + longitude) * 10000));
                 logSentence += ",";
-                processVoltageData();
                 logSentence += convertToBase62((int)round(batteryVoltage * 100));
                 logSentence += ",";
                 getSailPosition();

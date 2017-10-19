@@ -3,7 +3,6 @@
 class Wifi {
 
 private:
-    String _logSentence;
     byte _wifiEnablePin;
     HardwareSerial* _wifiPort;
     void wifiOn();
@@ -13,7 +12,6 @@ private:
     bool wifiReceive();
 
 public:
-    Wifi(byte pin, HardwareSerial &port, String sentence);
-    void useWifi();
-
+    Wifi(byte pin, HardwareSerial &port);
+    void useWifi(String sentence);
 };

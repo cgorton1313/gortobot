@@ -4,7 +4,7 @@
 #define USINGFRAM false
 #define TESTINGFRAM false // prints FRAM contents to serial
 #define USINGGPS false
-#define USINGWIFI false
+#define USINGWIFI true
 #define USINGSAT false
 #define USINGSERIALMONITORORDERS false
 #define USINGSAIL false
