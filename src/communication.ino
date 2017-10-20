@@ -138,7 +138,7 @@ String makeLogSentence() {
                 break;
         case 3: // base62 short form
                 // build a dateTime string, convert it to long, then to base62
-                tempDateTimeString += convertToBase62(year - 2000);
+                tempDateTimeString += convertToBase62(year % 100);
                 tempDateTimeString += convertToBase62(month);
                 tempDateTimeString += convertToBase62(day);
                 tempDateTimeString += convertToBase62(hour);
