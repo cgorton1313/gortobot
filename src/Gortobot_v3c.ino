@@ -63,7 +63,7 @@ const int minSail = 0, maxSail = 360; // limits for sail
 const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 8;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 300;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
@@ -109,7 +109,8 @@ void setup() {
 
         // Pin Modes
         pinMode(ledPin, OUTPUT);
-        pinMode(gpsPowerPin, OUTPUT);
+        pinMode(gpsPowerPin1, OUTPUT);
+        pinMode(gpsPowerPin2, OUTPUT);
         pinMode(batteryVoltagePin, INPUT); // not necessary but for clarity
         pinMode(satSleepPin, OUTPUT);
         pinMode(motorIn1Pin, OUTPUT);
@@ -151,6 +152,7 @@ void loop() {
         batteryVoltage = battery.getVoltage();
         logSentence = makeLogSentence();
         if (usingWifi) wifi.useWifi(logSentence);
+        txSuccess = true; // remove later
         if (usingSat) {
                 useSat();
         }
