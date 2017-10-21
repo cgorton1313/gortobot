@@ -34,7 +34,8 @@ const boolean usingSail = USINGSAIL;
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
 const byte ledPin = 13; // brown, to external LED via 420 ohm resistor
-const byte gpsPowerPin = 26;
+const byte gpsPowerPin1 = 26;
+const byte gpsPowerPin2 = 25;
 #define gpsPort Serial1
 const byte batteryVoltagePin = A0; // green
 const byte potPin = A3; // green
@@ -114,7 +115,8 @@ void setup() {
         pinMode(motorIn1Pin, OUTPUT);
         pinMode(motorIn2Pin, OUTPUT);
         analogWrite(ledPin, LOW); // turn off LED
-        digitalWrite(gpsPowerPin, LOW); // turn off GPS
+        digitalWrite(gpsPowerPin1, LOW); // turn off GPS
+        digitalWrite(gpsPowerPin2, LOW); // turn off GPS
         isbd.sleep(); // turn off ISBD
 
         if (resetEEPROM) {

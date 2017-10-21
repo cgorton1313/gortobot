@@ -46,14 +46,16 @@ static void getFix(char fixType) {
 
 static void gpsOn() {
         gpsPort.begin(gpsBaud);
-        digitalWrite(gpsPowerPin, HIGH);
+        digitalWrite(gpsPowerPin1, HIGH);
+        digitalWrite(gpsPowerPin2, HIGH);
         Serial.println(F("GPS on."));
 }
 
 static void gpsOff() {
         gpsPort.end();
         delay(delayForSerial);
-        digitalWrite(gpsPowerPin, LOW);
+        digitalWrite(gpsPowerPin1, LOW);
+        digitalWrite(gpsPowerPin2, LOW);
         Serial.println(F("GPS off."));
 }
 
