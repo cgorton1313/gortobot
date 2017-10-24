@@ -104,6 +104,10 @@ Wifi wifi = Wifi(wifiEnablePin, wifiPort, wifiBaud);
 Battery battery = Battery(batteryVoltagePin, minBatteryVoltage, batteryOkayVoltage, batteryWaitTime, checkingVoltage);
 
 void setup() {
+
+    analogReference(EXTERNAL);
+    analogRead(A0);
+    
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
         Serial.begin(consoleBaud);
 
