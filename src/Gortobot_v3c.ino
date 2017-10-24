@@ -27,7 +27,7 @@ const boolean usingSail = USINGSAIL;
 #include <Adafruit_FRAM_I2C.h> // for FRAM logging
 #include <NMEAGPS.h>
 #include <IridiumSBD.h>
-#include <Narcoleptic.h> // sleep library, doesn't work with mega, or does it?
+#include <Narcoleptic.h>
 #include <communication/Wifi.h>
 #include <power/Battery.h>
 
@@ -107,7 +107,7 @@ void setup() {
 
     analogReference(EXTERNAL);
     analogRead(A0);
-    
+
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
         Serial.begin(consoleBaud);
 

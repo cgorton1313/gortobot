@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <power/Battery.h>
+#include <Narcoleptic.h>
 
 Battery::Battery(byte pin, float minVoltage, float retryVoltage, int waitTime, bool checkingVoltage) {
     _pin = pin;
@@ -47,7 +48,9 @@ void Battery::okay() {
             Serial.print(F(". Waiting "));
             Serial.print(_waitTime);
             Serial.println(F(" seconds."));
-            gortoNap(_waitTime);
+            for (int i = 0; i < _waitTime; i++) {
+                    Narcoleptic.delay(1000);
+            }
             voltageNow = this->getVoltage();
             if (voltageNow > _retryVoltage) {
                     voltageCritical = false;
