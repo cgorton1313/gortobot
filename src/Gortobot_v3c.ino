@@ -8,9 +8,11 @@
 // change isbd to use hardware serial
 // battery classes, abstract, fake
 // gps classes, abstract, fake
+// underscore variables
+// uppercase and underscore constants
 
 // Program Modes (config)
-#include <configs/config.h>
+#include "configs/config.h"
 const boolean resetEEPROM = RESETEEPROM; // sets runNum back to 0
 const boolean resetFRAM = RESETFRAM; // full wipe of FRAM data
 const boolean checkingVoltage = CHECKINGVOLTAGE;
@@ -28,23 +30,22 @@ const boolean usingSail = USINGSAIL;
 #include <NMEAGPS.h>
 #include <IridiumSBD.h>
 #include <Narcoleptic.h>
-#include <communication/Wifi.h>
-#include <power/Battery.h>
+#include "communication/wifi.h"
+#include "power/battery.h"
 
 // Pin assignments
-// Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
-const byte led_pin = 13; // brown, to external LED via 420 ohm resistor
-const byte gps_power_pin_1 = 26;
-const byte gps_power_pin_2 = 25;
 #define gpsPort Serial1
-const byte battery_voltage_pin = A0; // green
-const byte pot_pin = A3; // green
-const byte motor_in_1_pin = 3, motor_in_2_pin = 4; // 3-yellow, 4-blue
-const byte chip_select = 10; // temp while using only satellite. can't remember why
-const byte sat_sleep_pin = 7; // 7-green
 #define wifiPort Serial2
 #define isbdPort Serial3
-const byte wifi_enable_pin = 4; // pin 3 on Mega Pro is "D4", (brown)
+const byte LED_PIN = 13; // brown, to external LED via 420 ohm resistor
+const byte GPS_POWER_PIN_1 = 26;
+const byte GPS_POWER_PIN_2 = 25;
+const byte BATTERY_VOLTAGE_PIN = A0; // green
+const byte POT_PIN = A3; // green
+const byte MOTOR_IN_1_PIN = 3, MOTOR_IN_2_PIN = 4; // 3-yellow, 4-blue
+const byte CHIP_SELECT = 10; // temp while using only satellite. can't remember why
+const byte SATELLITE_SLEEP_PIN = 7; // 7-green
+const byte WIFI_ENABLE_PIN = 4; // pin 3 on Mega Pro is "D4", (brown)
 
 // Constants
 const byte DELAY_FOR_SERIAL = 5; // ms to delay so serial ouput is clean
@@ -99,9 +100,9 @@ bool fixDone = false;
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 NMEAGPS gps;
-IridiumSBD isbd(isbdPort, sat_sleep_pin);
-Wifi wifi = Wifi(wifi_enable_pin, wifiPort, WIFI_BAUD);
-Battery battery = Battery(battery_voltage_pin, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, checkingVoltage);
+IridiumSBD isbd(isbdPort, SATELLITE_SLEEP_PIN);
+Wifi wifi = Wifi(WIFI_ENABLE_PIN, wifiPort, WIFI_BAUD);
+Battery battery = Battery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, checkingVoltage);
 
 void setup() {
 
@@ -112,16 +113,16 @@ void setup() {
         Serial.begin(CONSOLE_BAUD);
 
         // Pin Modes
-        pinMode(led_pin, OUTPUT);
-        pinMode(gps_power_pin_1, OUTPUT);
-        pinMode(gps_power_pin_2, OUTPUT);
-        pinMode(battery_voltage_pin, INPUT); // not necessary but for clarity
-        pinMode(sat_sleep_pin, OUTPUT);
-        pinMode(motor_in_1_pin, OUTPUT);
-        pinMode(motor_in_2_pin, OUTPUT);
-        analogWrite(led_pin, LOW); // turn off LED
-        digitalWrite(gps_power_pin_1, LOW); // turn off GPS
-        digitalWrite(gps_power_pin_2, LOW); // turn off GPS
+        pinMode(LED_PIN, OUTPUT);
+        pinMode(GPS_POWER_PIN_1, OUTPUT);
+        pinMode(GPS_POWER_PIN_2, OUTPUT);
+        pinMode(BATTERY_VOLTAGE_PIN, INPUT); // not necessary but for clarity
+        pinMode(SATELLITE_SLEEP_PIN, OUTPUT);
+        pinMode(MOTOR_IN_1_PIN, OUTPUT);
+        pinMode(MOTOR_IN_2_PIN, OUTPUT);
+        analogWrite(LED_PIN, LOW); // turn off LED
+        digitalWrite(GPS_POWER_PIN_1, LOW); // turn off GPS
+        digitalWrite(GPS_POWER_PIN_2, LOW); // turn off GPS
         isbd.sleep(); // turn off ISBD
 
         if (resetEEPROM) {

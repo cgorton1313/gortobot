@@ -266,19 +266,19 @@ static void blinkMessage(int condition) {
         switch (condition) {
         case 1: // continuous quick flash, stops program here
                 while (true) {
-                        digitalWrite(led_pin, (millis() / 100) % 2 == 1 ? HIGH : LOW); // rapid blink
+                        digitalWrite(LED_PIN, (millis() / 100) % 2 == 1 ? HIGH : LOW); // rapid blink
                 }
                 break;
         case 2: // single quick flash
-                digitalWrite(led_pin, HIGH);
+                digitalWrite(LED_PIN, HIGH);
                 delay(DELAY_FOR_SERIAL);
-                digitalWrite(led_pin, LOW);
+                digitalWrite(LED_PIN, LOW);
                 break;
         case 3: // continuous on 2, off half
                 while (true) {
-                        digitalWrite(led_pin, HIGH);
+                        digitalWrite(LED_PIN, HIGH);
                         delay(2000);
-                        digitalWrite(led_pin, LOW);
+                        digitalWrite(LED_PIN, LOW);
                         delay(500);
                 }
                 break;

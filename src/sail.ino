@@ -4,7 +4,7 @@ static void getSailPosition() {
         int sum = 0;
         const byte reps = 10;
         for (byte i = 0; i < reps; i++) {
-                sum = sum + analogRead(pot_pin);
+                sum = sum + analogRead(POT_PIN);
                 delay(1);
         }
         sailPosition = map(sum / reps, 1023, 15, MINIMUM_SAIL_ANGLE, MAXIMUM_SAIL_ANGLE);
@@ -119,8 +119,8 @@ static void trimSail(int orderedSailPosition) {
                 trimTimer = millis();  // capture the time now
                 while (((sailPosition - orderedSailPosition) != 0) && sailIsTrimming) {
                         // trim sail
-                        digitalWrite(motor_in_1_pin, sailPosition > orderedSailPosition);
-                        digitalWrite(motor_in_2_pin, sailPosition < orderedSailPosition);
+                        digitalWrite(MOTOR_IN_1_PIN, sailPosition > orderedSailPosition);
+                        digitalWrite(MOTOR_IN_2_PIN, sailPosition < orderedSailPosition);
                         if ((unsigned long)(millis() - trimTimer) >= 1000) { // 1 second has passed
                                 trimTimer = millis(); // reset second timer
                                 totalTrimSeconds = totalTrimSeconds + 1;
@@ -155,8 +155,8 @@ static void trimSail(int orderedSailPosition) {
 }
 
 static void stopMotors() {
-        digitalWrite(motor_in_1_pin, LOW);
-        digitalWrite(motor_in_2_pin, LOW);
+        digitalWrite(MOTOR_IN_1_PIN, LOW);
+        digitalWrite(MOTOR_IN_2_PIN, LOW);
 }
 
 static void setTestSailPosition(int thePosition) {

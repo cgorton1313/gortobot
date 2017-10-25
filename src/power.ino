@@ -43,7 +43,7 @@ static void getVolts() {
         const int samples = 10; // number of samples to take
         for (int i = 0; i < samples; i++) {
                 delay(5);
-                batteryVoltageInt = batteryVoltageInt + analogRead(battery_voltage_pin);
+                batteryVoltageInt = batteryVoltageInt + analogRead(BATTERY_VOLTAGE_PIN);
         }
         batteryVoltage = 5.08 * correction * (((float)batteryVoltageInt / samples) / 1023.0);
 }
