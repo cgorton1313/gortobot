@@ -2,23 +2,23 @@
 #include <power/Battery.h>
 #include <Narcoleptic.h>
 
-Battery::Battery(byte pin, float minVoltage, float retryVoltage, int waitTime, bool checkingVoltage) {
+Battery::Battery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {
     _pin = pin;
-    _minVoltage = minVoltage;
-    _retryVoltage = retryVoltage;
-    _waitTime = waitTime;
-    _checkingVoltage = checkingVoltage;
+    _min_voltage = min_voltage;
+    _retry_voltage = retry_voltage;
+    _wait_time = wait_time;
+    _checking_voltage = checking_voltage;
 }
 
 float Battery::GetVoltage() {
-    if (_checkingVoltage) {
-        int batteryVoltageInt = 0;
+    if (_checking_voltage) {
+        int battery_voltage_int = 0;
         const int samples = 10; // number of samples to take
         for (int i = 0; i < samples; i++) {
                 delay(5);
-                batteryVoltageInt = batteryVoltageInt + analogRead(_pin);
+                battery_voltage_int = battery_voltage_int + analogRead(_pin);
         }
-        return (4.096 * (((float)batteryVoltageInt / samples) / 1023.0));
+        return (4.096 * (((float)battery_voltage_int / samples) / 1023.0));
     }
     else {
         return 3.99;
@@ -26,36 +26,36 @@ float Battery::GetVoltage() {
 }
 
 void Battery::Okay() {
-    float voltageNow;
-    bool voltageCritical = false;
+    float voltage_now;
+    bool voltage_critical = false;
 
-    if (_checkingVoltage) {
-        voltageNow = this->GetVoltage();
+    if (_checking_voltage) {
+        voltage_now = this->GetVoltage();
         Serial.print(F("Voltage = "));
     }
     else {
-        voltageNow = 3.99;
+        voltage_now = 3.99;
         Serial.print(F("Fake voltage = "));
     }
-    Serial.println(voltageNow);
+    Serial.println(voltage_now);
 
-    if (voltageNow < _minVoltage) {
-            voltageCritical = true;
+    if (voltage_now < _min_voltage) {
+            voltage_critical = true;
     }
-    while (voltageCritical) {
+    while (voltage_critical) {
             Serial.print(F("Voltage critical! Voltage = "));
-            Serial.print(voltageNow);
+            Serial.print(voltage_now);
             Serial.print(F(". Waiting "));
-            Serial.print(_waitTime);
+            Serial.print(_wait_time);
             Serial.println(F(" seconds."));
-            for (int i = 0; i < _waitTime; i++) {
+            for (int i = 0; i < _wait_time; i++) {
                     Narcoleptic.delay(1000);
             }
-            voltageNow = this->GetVoltage();
-            if (voltageNow > _retryVoltage) {
-                    voltageCritical = false;
+            voltage_now = this->GetVoltage();
+            if (voltage_now > _retry_voltage) {
+                    voltage_critical = false;
             }
     }
     Serial.print(F("Voltage okay. Voltage = "));
-    Serial.println(voltageNow);
+    Serial.println(voltage_now);
 }

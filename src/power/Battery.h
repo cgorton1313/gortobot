@@ -5,13 +5,13 @@ class Battery {
 private:
     byte _pin;
     float _voltage;
-    float _minVoltage;
-    float _retryVoltage;
-    int _waitTime;
-    bool _checkingVoltage;
+    float _min_voltage;
+    float _retry_voltage;
+    int _wait_time;
+    bool _checking_voltage;
 
 public:
-    Battery(byte pin, float minVoltage, float retryVoltage, int waitTime, bool checkingVoltage);
+    Battery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage);
     float GetVoltage();
     void Okay();
 };

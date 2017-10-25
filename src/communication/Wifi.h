@@ -3,8 +3,8 @@
 class Wifi {
 
 private:
-    byte _wifiEnablePin;
-    HardwareSerial* _wifiPort;
+    byte _wifi_enable_pin;
+    HardwareSerial* _wifi_port;
     void WifiOn();
     void WifiOff();
     bool WifiReady();
