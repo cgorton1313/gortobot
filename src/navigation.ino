@@ -45,17 +45,17 @@ static void getFix(char fixType) {
 }
 
 static void gpsOn() {
-        gpsPort.begin(gpsBaud);
-        digitalWrite(gpsPowerPin1, HIGH);
-        digitalWrite(gpsPowerPin2, HIGH);
+        gpsPort.begin(GPS_BAUD);
+        digitalWrite(gps_power_pin_1, HIGH);
+        digitalWrite(gps_power_pin_2, HIGH);
         Serial.println(F("GPS on."));
 }
 
 static void gpsOff() {
         gpsPort.end();
-        delay(delayForSerial);
-        digitalWrite(gpsPowerPin1, LOW);
-        digitalWrite(gpsPowerPin2, LOW);
+        delay(DELAY_FOR_SERIAL);
+        digitalWrite(gps_power_pin_1, LOW);
+        digitalWrite(gps_power_pin_2, LOW);
         Serial.println(F("GPS off."));
 }
 

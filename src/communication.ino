@@ -18,13 +18,13 @@ static void  clearFRAM() {
 }
 
 static void useFram() {
-        if (timeSinceLastFramLog >= framLoggingInterval) {
+        if (timeSinceLastFramLog >= FRAM_LOGGING_INTERVAL) {
                 logToFram();
                 timeSinceLastFramLog = 0;
         }
         else {
                 Serial.print(F("Skipped FRAM logging. Time till next log = "));
-                Serial.print(framLoggingInterval - timeSinceLastFramLog);
+                Serial.print(FRAM_LOGGING_INTERVAL - timeSinceLastFramLog);
                 Serial.println(F(" minutes"));
                 timeSinceLastFramLog = timeSinceLastFramLog + loggingInterval;
         }
@@ -110,9 +110,9 @@ String makeLogSentence() {
         String base62dateTime;
         long dateTimeLong;
 
-        switch (messageVersion) {
+        switch (MESSAGE_VERSION) {
         case 2: // long form
-                logSentence += messageVersion;
+                logSentence += MESSAGE_VERSION;
                 logSentence += ",";
                 logSentence += runNum;
                 logSentence += ",";
@@ -146,7 +146,7 @@ String makeLogSentence() {
                 tempDateTimeString += convertToBase62(second);
 
                 // build the sentence
-                logSentence += messageVersion;
+                logSentence += MESSAGE_VERSION;
                 logSentence += ",";
                 logSentence += convertToBase62(runNum);
                 logSentence += ",";
@@ -266,19 +266,19 @@ static void blinkMessage(int condition) {
         switch (condition) {
         case 1: // continuous quick flash, stops program here
                 while (true) {
-                        digitalWrite(ledPin, (millis() / 100) % 2 == 1 ? HIGH : LOW); // rapid blink
+                        digitalWrite(led_pin, (millis() / 100) % 2 == 1 ? HIGH : LOW); // rapid blink
                 }
                 break;
         case 2: // single quick flash
-                digitalWrite(ledPin, HIGH);
-                delay(delayForSerial);
-                digitalWrite(ledPin, LOW);
+                digitalWrite(led_pin, HIGH);
+                delay(DELAY_FOR_SERIAL);
+                digitalWrite(led_pin, LOW);
                 break;
         case 3: // continuous on 2, off half
                 while (true) {
-                        digitalWrite(ledPin, HIGH);
+                        digitalWrite(led_pin, HIGH);
                         delay(2000);
-                        digitalWrite(ledPin, LOW);
+                        digitalWrite(led_pin, LOW);
                         delay(500);
                 }
                 break;

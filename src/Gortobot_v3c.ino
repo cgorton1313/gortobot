@@ -33,34 +33,34 @@ const boolean usingSail = USINGSAIL;
 
 // Pin assignments
 // Pro Mini: A4 = SDA (yellow), A5 = SCL (blue), used for FRAM
-const byte ledPin = 13; // brown, to external LED via 420 ohm resistor
-const byte gpsPowerPin1 = 26;
-const byte gpsPowerPin2 = 25;
+const byte led_pin = 13; // brown, to external LED via 420 ohm resistor
+const byte gps_power_pin_1 = 26;
+const byte gps_power_pin_2 = 25;
 #define gpsPort Serial1
-const byte batteryVoltagePin = A0; // green
-const byte potPin = A3; // green
-const byte motorIn1Pin = 3, motorIn2Pin = 4; // 3-yellow, 4-blue
-const byte chipSelect = 10; // temp while using only satellite. can't remember why
-const byte satSleepPin = 7; // 7-green
+const byte battery_voltage_pin = A0; // green
+const byte pot_pin = A3; // green
+const byte motor_in_1_pin = 3, motor_in_2_pin = 4; // 3-yellow, 4-blue
+const byte chip_select = 10; // temp while using only satellite. can't remember why
+const byte sat_sleep_pin = 7; // 7-green
 #define wifiPort Serial2
 #define isbdPort Serial3
-const byte wifiEnablePin = 4; // pin 3 on Mega Pro is "D4", (brown)
+const byte wifi_enable_pin = 4; // pin 3 on Mega Pro is "D4", (brown)
 
 // Constants
-const byte delayForSerial = 5; // ms to delay so serial ouput is clean
-const unsigned long consoleBaud = 115200, wifiBaud = 115200, gpsBaud = 38400;
-const unsigned int satBaud = 19200;
-const int satChargeTime = 30; // seconds to wait at start-up for super-capacitor
-const int isbdTimeout = 600;  // seconds to try getting isbd success
-const byte failureRetry = 10; // minutes to wait after sat failure
-const float minBatteryVoltage = 3.3; // system will wait for charging at this low voltage threshold
-const float batteryOkayVoltage = 3.4; // system will resume program at this voltage threshold
-const int batteryWaitTime = 60; // seconds to wait between checking for batteryOkay
-const unsigned int framLoggingInterval = 60; // in minutes
-const byte messageVersion = 3; // 2 = long form, 3 = base62
-const char base62Chars[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-const int minSail = 0, maxSail = 360; // limits for sail
-const int trimRoutineMaxSeconds = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
+const byte DELAY_FOR_SERIAL = 5; // ms to delay so serial ouput is clean
+const unsigned long CONSOLE_BAUD = 115200, WIFI_BAUD = 115200, GPS_BAUD = 38400;
+const unsigned int SAT_BAUD = 19200;
+const int SAT_CHARGE_TIME = 30; // seconds to wait at start-up for super-capacitor
+const int ISBD_TIMEOUT = 600;  // seconds to try getting isbd success
+const byte FAILURE_RETRY = 10; // minutes to wait after sat failure
+const float MINIMUM_BATTERY_VOLTAGE = 3.3; // system will wait for charging at this low voltage threshold
+const float BATTERY_OKAY_VOLTAGE = 3.4; // system will resume program at this voltage threshold
+const int BATTERY_WAIT_TIME = 60; // seconds to wait between checking for batteryOkay
+const unsigned int FRAM_LOGGING_INTERVAL = 60; // in minutes
+const byte MESSAGE_VERSION = 3; // 2 = long form, 3 = base62
+const char BASE_62_CHARACTERS[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
+const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
 unsigned long loggingInterval = 300;  // seconds b/w logging events, 1 day = 86,400 secs which is max
@@ -99,9 +99,9 @@ bool fixDone = false;
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 NMEAGPS gps;
-IridiumSBD isbd(isbdPort, satSleepPin);
-Wifi wifi = Wifi(wifiEnablePin, wifiPort, wifiBaud);
-Battery battery = Battery(batteryVoltagePin, minBatteryVoltage, batteryOkayVoltage, batteryWaitTime, checkingVoltage);
+IridiumSBD isbd(isbdPort, sat_sleep_pin);
+Wifi wifi = Wifi(wifi_enable_pin, wifiPort, WIFI_BAUD);
+Battery battery = Battery(battery_voltage_pin, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, checkingVoltage);
 
 void setup() {
 
@@ -109,19 +109,19 @@ void setup() {
     analogRead(A0);
 
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
-        Serial.begin(consoleBaud);
+        Serial.begin(CONSOLE_BAUD);
 
         // Pin Modes
-        pinMode(ledPin, OUTPUT);
-        pinMode(gpsPowerPin1, OUTPUT);
-        pinMode(gpsPowerPin2, OUTPUT);
-        pinMode(batteryVoltagePin, INPUT); // not necessary but for clarity
-        pinMode(satSleepPin, OUTPUT);
-        pinMode(motorIn1Pin, OUTPUT);
-        pinMode(motorIn2Pin, OUTPUT);
-        analogWrite(ledPin, LOW); // turn off LED
-        digitalWrite(gpsPowerPin1, LOW); // turn off GPS
-        digitalWrite(gpsPowerPin2, LOW); // turn off GPS
+        pinMode(led_pin, OUTPUT);
+        pinMode(gps_power_pin_1, OUTPUT);
+        pinMode(gps_power_pin_2, OUTPUT);
+        pinMode(battery_voltage_pin, INPUT); // not necessary but for clarity
+        pinMode(sat_sleep_pin, OUTPUT);
+        pinMode(motor_in_1_pin, OUTPUT);
+        pinMode(motor_in_2_pin, OUTPUT);
+        analogWrite(led_pin, LOW); // turn off LED
+        digitalWrite(gps_power_pin_1, LOW); // turn off GPS
+        digitalWrite(gps_power_pin_2, LOW); // turn off GPS
         isbd.sleep(); // turn off ISBD
 
         if (resetEEPROM) {

@@ -4,17 +4,17 @@ static void getSailPosition() {
         int sum = 0;
         const byte reps = 10;
         for (byte i = 0; i < reps; i++) {
-                sum = sum + analogRead(potPin);
+                sum = sum + analogRead(pot_pin);
                 delay(1);
         }
-        sailPosition = map(sum / reps, 1023, 15, minSail, maxSail);
+        sailPosition = map(sum / reps, 1023, 15, MINIMUM_SAIL_ANGLE, MAXIMUM_SAIL_ANGLE);
         Serial.print(F("Sail position = "));
         Serial.print(sailPosition);
         Serial.print(F(" ("));
         Serial.print(sum / reps);
         Serial.print(F(") | Ordered = "));
         Serial.println(orderedSailPosition);
-        delay(delayForSerial);
+        delay(DELAY_FOR_SERIAL);
 }
 
 unsigned long howLongWatchShouldBe() {
@@ -22,7 +22,7 @@ unsigned long howLongWatchShouldBe() {
                 return loggingInterval; // in seconds, need the UL for large times
         }
         else {
-                return min(failureRetry, loggingInterval); // in seconds
+                return min(FAILURE_RETRY, loggingInterval); // in seconds
         }
 }
 
@@ -46,7 +46,7 @@ static void realSail() {
         Serial.print(F("Sailing for "));
         Serial.print(thisWatch);
         Serial.println(F(" seconds."));
-        delay(delayForSerial);
+        delay(DELAY_FOR_SERIAL);
         unsigned long timer = 0; // used to track seconds during sail operation
         while (timer < thisWatch) {
                 if ((timer % 60) == 0) { // check trim every 60 seconds
@@ -69,15 +69,15 @@ static void realSail() {
                         currentTackTime++;
                         Serial.print(F("Current tack time = "));
                         Serial.println(currentTackTime);
-                        delay(delayForSerial);
+                        delay(DELAY_FOR_SERIAL);
                 }
                 gortoNap(6); // six seconds of napping
                 timer = timer + 6;
                 blinkMessage(2); // flash led
-                delay(delayForSerial);
+                delay(DELAY_FOR_SERIAL);
                 Serial.print(F("timer = "));
                 Serial.println(timer);
-                delay(delayForSerial);
+                delay(DELAY_FOR_SERIAL);
         }
 }
 
@@ -96,7 +96,7 @@ static void directSetSail() {
 }
 
 static boolean validOrders(int order) {
-        if ((order > maxSail) || (order < minSail)) {
+        if ((order > MAXIMUM_SAIL_ANGLE) || (order < MINIMUM_SAIL_ANGLE)) {
                 return false; // out-of-bouds
         }
         else {
@@ -119,12 +119,12 @@ static void trimSail(int orderedSailPosition) {
                 trimTimer = millis();  // capture the time now
                 while (((sailPosition - orderedSailPosition) != 0) && sailIsTrimming) {
                         // trim sail
-                        digitalWrite(motorIn1Pin, sailPosition > orderedSailPosition);
-                        digitalWrite(motorIn2Pin, sailPosition < orderedSailPosition);
+                        digitalWrite(motor_in_1_pin, sailPosition > orderedSailPosition);
+                        digitalWrite(motor_in_2_pin, sailPosition < orderedSailPosition);
                         if ((unsigned long)(millis() - trimTimer) >= 1000) { // 1 second has passed
                                 trimTimer = millis(); // reset second timer
                                 totalTrimSeconds = totalTrimSeconds + 1;
-                                if (totalTrimSeconds > trimRoutineMaxSeconds) {
+                                if (totalTrimSeconds > TRIM_ROUTINE_MAXIMUM_SECONDS) {
                                         sailIsTrimming = false;
                                         trimRoutineExceededMax = true;
                                         Serial.println(F("trimRoutineExceededMax"));
@@ -151,12 +151,12 @@ static void trimSail(int orderedSailPosition) {
         }
         Serial.print(F("totalTrimSeconds = "));
         Serial.println(totalTrimSeconds);
-        delay(delayForSerial);
+        delay(DELAY_FOR_SERIAL);
 }
 
 static void stopMotors() {
-        digitalWrite(motorIn1Pin, LOW);
-        digitalWrite(motorIn2Pin, LOW);
+        digitalWrite(motor_in_1_pin, LOW);
+        digitalWrite(motor_in_2_pin, LOW);
 }
 
 static void setTestSailPosition(int thePosition) {
@@ -165,30 +165,30 @@ static void setTestSailPosition(int thePosition) {
         if (sailMode != 's') {
                 while (testTimer < loggingInterval) { // so the duration can be set via RX
                         gortoNap(1); // one second of napping
-                        delay(delayForSerial);
+                        delay(DELAY_FOR_SERIAL);
                         testTimer = testTimer + 1;
                         blinkMessage(2); // flash led
                         Serial.print(F("timer = "));
                         Serial.println(testTimer);
-                        delay(delayForSerial);
+                        delay(DELAY_FOR_SERIAL);
                 }
         }
 }
 
 static void pretendSail() {
-        delay(delayForSerial);
+        delay(DELAY_FOR_SERIAL);
         Serial.print(F("Pretending to sail for "));
         Serial.print(thisWatch);
         Serial.println(F(" seconds."));
-        delay(delayForSerial);
+        delay(DELAY_FOR_SERIAL);
         unsigned long timer = 0; // used to track seconds during sail operation
         while (timer < thisWatch) {
                 gortoNap(1); // one second of napping
                 timer = timer + 1;
                 blinkMessage(2); // flash led
-                delay(delayForSerial);
+                delay(DELAY_FOR_SERIAL);
                 Serial.print(F("timer = "));
-                delay(delayForSerial);
+                delay(DELAY_FOR_SERIAL);
                 Serial.println(timer);
                 delay(10);
         }

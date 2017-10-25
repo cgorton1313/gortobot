@@ -44,9 +44,9 @@ static String convertToBase62(unsigned long input) {
         // when decoding the base 62 numbers, remember to look for 5 digits. if this is the case, add a "0"!
         String base62String;
         while ((input / 62) != 0) {
-                base62String = base62Chars[(input % 62)] + base62String;
+                base62String = BASE_62_CHARACTERS[(input % 62)] + base62String;
                 input = input / 62;
         }
-        base62String = base62Chars[input] + base62String;
+        base62String = BASE_62_CHARACTERS[input] + base62String;
         return base62String;
 }
