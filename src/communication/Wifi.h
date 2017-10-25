@@ -5,13 +5,13 @@ class Wifi {
 private:
     byte _wifiEnablePin;
     HardwareSerial* _wifiPort;
-    void wifiOn();
-    void wifiOff();
-    bool wifiReady();
-    bool wifiSend(String);
-    bool wifiReceive();
+    void WifiOn();
+    void WifiOff();
+    bool WifiReady();
+    bool WifiSend(String);
+    bool WifiReceive();
 
 public:
     Wifi(byte pin, HardwareSerial &port, unsigned long baud);
-    void useWifi(String sentence);
+    void UseWifi(String sentence);
 };

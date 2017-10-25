@@ -12,6 +12,6 @@ private:
 
 public:
     Battery(byte pin, float minVoltage, float retryVoltage, int waitTime, bool checkingVoltage);
-    float getVoltage();
-    void okay();
+    float GetVoltage();
+    void Okay();
 };

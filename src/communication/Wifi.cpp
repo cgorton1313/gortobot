@@ -7,35 +7,36 @@ Wifi::Wifi(byte pin, HardwareSerial &port, unsigned long baud) {
     _wifiPort = &port;
 }
 
-void Wifi::useWifi(String sentence) {
+void Wifi::UseWifi(String sentence) {
         String _logSentence = sentence;
-        wifiOn();
-        if (wifiReady()) {
+        WifiOn();
+        if (WifiReady()) {
                 Serial.println(F("Wifi ready."));
-                if (!wifiSend(_logSentence)) {
-                        Serial.println(F("wifiSend failed."));
-                } else {
+                if (!WifiSend(_logSentence)) {
+                        Serial.println(F("WifiSend failed."));
+                } else
+                {
                         Serial.print(F("wifiSend succeeded. Message sent: "));
                         Serial.println(_logSentence);
                 }
-                if(wifiReceive());
+                if (WifiReceive());
         } else {
                 Serial.println(F("Wifi NOT ready."));
         }
-        wifiOff();
+        WifiOff();
 }
 
-void Wifi::wifiOn() {
+void Wifi::WifiOn() {
         digitalWrite(_wifiEnablePin, HIGH);
         Serial.println(F("Wifi on."));
 }
 
-void Wifi::wifiOff() {
+void Wifi::WifiOff() {
         digitalWrite(_wifiEnablePin, LOW);
         Serial.println(F("Wifi off."));
 }
 
-bool Wifi::wifiReady() {
+bool Wifi::WifiReady() {
         unsigned long wifiTimer = millis(); // capture the time now
         while (true) {
                 if ((unsigned long)(millis() - wifiTimer) >= 10000) { // 1 minute has passed
@@ -43,14 +44,13 @@ bool Wifi::wifiReady() {
                 }
                 while (!_wifiPort->available()) ; // wait for the serial data
                 String sentence = _wifiPort->readString();
-                //Serial.println(sentence);
                 if (sentence.indexOf("zxzxzxz") >= 0) {
                         return true;
                 }
         }
 }
 
-bool Wifi::wifiSend(String txString) {
+bool Wifi::WifiSend(String txString) {
         _wifiPort->println(txString);
         unsigned long wifiTimer = millis(); // capture the time now
         while (true) {
@@ -65,6 +65,6 @@ bool Wifi::wifiSend(String txString) {
         }
 }
 
-bool Wifi::wifiReceive() {
+bool Wifi::WifiReceive() {
     return true;
 }

@@ -10,7 +10,7 @@ Battery::Battery(byte pin, float minVoltage, float retryVoltage, int waitTime, b
     _checkingVoltage = checkingVoltage;
 }
 
-float Battery::getVoltage() {
+float Battery::GetVoltage() {
     if (_checkingVoltage) {
         int batteryVoltageInt = 0;
         const int samples = 10; // number of samples to take
@@ -25,12 +25,12 @@ float Battery::getVoltage() {
     }
 }
 
-void Battery::okay() {
+void Battery::Okay() {
     float voltageNow;
     bool voltageCritical = false;
 
     if (_checkingVoltage) {
-        voltageNow = this->getVoltage();
+        voltageNow = this->GetVoltage();
         Serial.print(F("Voltage = "));
     }
     else {
@@ -51,12 +51,11 @@ void Battery::okay() {
             for (int i = 0; i < _waitTime; i++) {
                     Narcoleptic.delay(1000);
             }
-            voltageNow = this->getVoltage();
+            voltageNow = this->GetVoltage();
             if (voltageNow > _retryVoltage) {
                     voltageCritical = false;
             }
     }
     Serial.print(F("Voltage okay. Voltage = "));
     Serial.println(voltageNow);
-
 }

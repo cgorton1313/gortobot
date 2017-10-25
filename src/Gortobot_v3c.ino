@@ -145,17 +145,17 @@ void setup() {
 void loop() {
         loopCount++; // loop counter
         if (usingGPS) {
-                battery.okay();
+                battery.Okay();
                 getFix('r'); // 'r' = 'real'
         }
         else {
-                battery.okay();
+                battery.Okay();
                 getFix('f'); // 'f' = 'fake'
         }
         if (usingFram) useFram();
-        batteryVoltage = battery.getVoltage();
+        batteryVoltage = battery.GetVoltage();
         logSentence = makeLogSentence();
-        if (usingWifi) wifi.useWifi(logSentence);
+        if (usingWifi) wifi.UseWifi(logSentence);
         txSuccess = true; // remove later
         if (usingSat) {
                 useSat();
