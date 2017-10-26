@@ -1,17 +1,17 @@
 // sail.ino handles the sails (trimming, reporting, etc.)
 
 static void getSailPosition() {
+        const byte REPETITIONS = 10;
         int sum = 0;
-        const byte reps = 10;
-        for (byte i = 0; i < reps; i++) {
+        for (byte i = 0; i < REPETITIONS; i++) {
                 sum = sum + analogRead(POT_PIN);
                 delay(1);
         }
-        sailPosition = map(sum / reps, 1023, 15, MINIMUM_SAIL_ANGLE, MAXIMUM_SAIL_ANGLE);
+        sailPosition = map(sum / REPETITIONS, 1023, 15, MINIMUM_SAIL_ANGLE, MAXIMUM_SAIL_ANGLE);
         Serial.print(F("Sail position = "));
         Serial.print(sailPosition);
         Serial.print(F(" ("));
-        Serial.print(sum / reps);
+        Serial.print(sum / REPETITIONS);
         Serial.print(F(") | Ordered = "));
         Serial.println(orderedSailPosition);
         delay(DELAY_FOR_SERIAL);

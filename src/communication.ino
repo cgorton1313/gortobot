@@ -62,7 +62,7 @@ static void logToFram() { // this function is too big!
         int longitudeHundredths = abs((int)round(longitude * 100) % 100);
         fram.write8(pointer + 11, longitudeHundredths);
 
-        if (testingFram) printFram();
+        if (TESTING_FRAM) printFram();
 }
 
 unsigned int nextOpenFram() { // finds next fram memory position to use

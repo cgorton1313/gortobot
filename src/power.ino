@@ -9,7 +9,7 @@ static void gortoNap(int seconds) {
 }
 
 static void processVoltageData() {
-        if (!checkingVoltage) {
+        if (!CHECKING_VOLTAGE) {
                 Serial.println(F("Skipping voltage check. Faking voltage at 3.99."));
                 batteryVoltage = 3.99; // fake the battery voltage
         }

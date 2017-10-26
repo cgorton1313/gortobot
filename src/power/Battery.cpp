@@ -19,8 +19,7 @@ float Battery::GetVoltage() {
                         battery_voltage_int = battery_voltage_int + analogRead(_pin);
                 }
                 return (4.096 * (((float)battery_voltage_int / samples) / 1023.0));
-        }
-        else {
+        } else {
                 return 3.99;
         }
 }
@@ -32,8 +31,7 @@ void Battery::Okay() {
         if (_checking_voltage) {
                 voltage_now = this->GetVoltage();
                 Serial.print(F("Voltage = "));
-        }
-        else {
+        } else {
                 voltage_now = 3.99;
                 Serial.print(F("Fake voltage = "));
         }

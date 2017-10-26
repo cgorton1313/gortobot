@@ -14,8 +14,7 @@ void Wifi::UseWifi(String sentence) {
                 Serial.println(F("Wifi ready."));
                 if (!WifiSend(_log_sentence)) {
                         Serial.println(F("WifiSend failed."));
-                } else
-                {
+                } else {
                         Serial.print(F("wifiSend succeeded. Message sent: "));
                         Serial.println(_log_sentence);
                 }

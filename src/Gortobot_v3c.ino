@@ -4,7 +4,6 @@
 //  objects, global constants & variables, setup() & loop()
 
 // TODO:
-// config switches?
 // change isbd to use hardware serial
 // battery classes, abstract, fake
 // gps classes, abstract, fake
@@ -13,16 +12,6 @@
 
 // Program Modes (config)
 #include "configs/config.h"
-const boolean resetEEPROM = RESETEEPROM; // sets runNum back to 0
-const boolean resetFRAM = RESETFRAM; // full wipe of FRAM data
-const boolean checkingVoltage = CHECKINGVOLTAGE;
-const boolean usingFram = USINGFRAM;
-const boolean testingFram = TESTINGFRAM; // prints FRAM contents to serial
-const boolean usingGPS = USINGGPS;
-const boolean usingWifi = USINGWIFI;
-const boolean usingSat = USINGSAT;
-const boolean usingSerialMonitorOrders = USINGSERIALMONITORORDERS;
-const boolean usingSail = USINGSAIL;
 
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
@@ -102,12 +91,11 @@ Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 NMEAGPS gps;
 IridiumSBD isbd(isbdPort, SATELLITE_SLEEP_PIN);
 Wifi wifi = Wifi(WIFI_ENABLE_PIN, wifiPort, WIFI_BAUD);
-Battery battery = Battery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, checkingVoltage);
+Battery battery = Battery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
 
 void setup() {
-
-    analogReference(EXTERNAL);
-    analogRead(A0);
+        analogReference(EXTERNAL);
+        analogRead(A0);
 
         randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
         Serial.begin(CONSOLE_BAUD);
@@ -125,7 +113,7 @@ void setup() {
         digitalWrite(GPS_POWER_PIN_2, LOW); // turn off GPS
         isbd.sleep(); // turn off ISBD
 
-        if (resetEEPROM) {
+        if (RESET_EEPROM) {
                 Serial.println(F("Resetting EEPROM"));
                 clearEEPROM();
         }
@@ -133,45 +121,41 @@ void setup() {
         Serial.print(F("Starting runNum "));
         Serial.println(runNum);
 
-        if (resetFRAM) {
+        if (RESET_FRAM) {
                 Serial.println(F("Resetting FRAM"));
                 clearFRAM();
         }
 
-        if (usingSat) setUpSat();
+        if (USING_SAT) setUpSat();
 
         delay(4000); // for some forgotten reason
 }
 
 void loop() {
         loopCount++; // loop counter
-        if (usingGPS) {
+        if (USING_GPS) {
                 battery.Okay();
                 getFix('r'); // 'r' = 'real'
-        }
-        else {
+        } else {
                 battery.Okay();
                 getFix('f'); // 'f' = 'fake'
         }
-        if (usingFram) useFram();
+        if (USING_FRAM) useFram();
         batteryVoltage = battery.GetVoltage();
         logSentence = makeLogSentence();
-        if (usingWifi) wifi.UseWifi(logSentence);
+        if (USING_WIFI) wifi.UseWifi(logSentence);
         txSuccess = true; // remove later
-        if (usingSat) {
+        if (USING_SAT) {
                 useSat();
-        }
-        else if (usingSerialMonitorOrders) {
+        } else if (USING_SERIAL_MONITOR_ORDERS) {
                 getSerialMonitorOrders();
-        }
-        else {
+        } else {
                 getFakeOrders();
         }
         thisWatch = howLongWatchShouldBe(); // in seconds
-        if (usingSail) {
+        if (USING_SAIL) {
                 useSail();
-        }
-        else {
+        } else {
                 pretendSail();
         }
 }
