@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <power/Battery.h>
+#include "power/gb_battery.h"
 #include <Narcoleptic.h>
 
 Battery::Battery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {

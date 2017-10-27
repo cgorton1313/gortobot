@@ -4,7 +4,6 @@
 //  objects, global constants & variables, setup() & loop()
 
 // TODO:
-// change isbd to use hardware serial
 // battery classes, abstract, fake
 // gps classes, abstract, fake
 // underscore variables
@@ -18,8 +17,8 @@
 #include <NMEAGPS.h>
 #include <IridiumSBD.h>
 #include <Narcoleptic.h>
-#include "communication/wifi.h"
-#include "power/battery.h"
+#include "communication/gb_wifi.h"
+#include "power/gb_battery.h"
 
 // Pin assignments
 #define GPS_PORT Serial1
@@ -34,6 +33,7 @@ const byte MOTOR_IN_1_PIN = 3, MOTOR_IN_2_PIN = 4; // 3-yellow, 4-blue
 const byte CHIP_SELECT = 10; // temp while using only satellite. can't remember why
 const byte SATELLITE_SLEEP_PIN = 7; // 7-green
 const byte WIFI_ENABLE_PIN = 4; // pin 3 on Mega Pro is "D4", (brown)
+const byte RANDOM_SEED_PIN = A7;
 
 // Constants
 const byte DELAY_FOR_SERIAL = 5; // ms to delay so serial ouput is clean
@@ -96,7 +96,7 @@ void setup() {
         analogReference(EXTERNAL);
         analogRead(A0);
 
-        randomSeed(analogRead(A7)); // for faking data differently each run, A7 should be open
+        randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be open
         Serial.begin(CONSOLE_BAUD);
 
         // Pin Modes
