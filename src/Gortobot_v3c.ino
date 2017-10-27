@@ -8,7 +8,6 @@
 // battery classes, abstract, fake
 // gps classes, abstract, fake
 // underscore variables
-// uppercase and underscore constants
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -23,9 +22,9 @@
 #include "power/battery.h"
 
 // Pin assignments
-#define gpsPort Serial1
-#define wifiPort Serial2
-#define isbdPort Serial3
+#define GPS_PORT Serial1
+#define WIFI_PORT Serial2
+#define ISBD_PORT Serial3
 const byte LED_PIN = 13; // brown, to external LED via 420 ohm resistor
 const byte GPS_POWER_PIN_1 = 26;
 const byte GPS_POWER_PIN_2 = 25;
@@ -89,8 +88,8 @@ bool fixDone = false;
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 NMEAGPS gps;
-IridiumSBD isbd(isbdPort, SATELLITE_SLEEP_PIN);
-Wifi wifi = Wifi(WIFI_ENABLE_PIN, wifiPort, WIFI_BAUD);
+IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
+Wifi wifi = Wifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 Battery battery = Battery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
 
 void setup() {

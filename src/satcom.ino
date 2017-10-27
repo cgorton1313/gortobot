@@ -48,13 +48,13 @@ static void useSat() {
 
 static void satOff() {
         isbd.sleep();
-        isbdPort.end();
+        ISBD_PORT.end();
         blinkMessage(2); // makes sure led doesn't get left ON by mistake
         Serial.println(F("Sat off."));
 }
 
 static void satOn() {
         Serial.println(F("Sat on."));
-        isbdPort.begin(SAT_BAUD);
+        ISBD_PORT.begin(SAT_BAUD);
         isbd.begin();
 }

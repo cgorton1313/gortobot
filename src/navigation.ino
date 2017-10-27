@@ -10,7 +10,7 @@ static void getFix(char fixType) {
                 fixDone = false;
             	while (!fixDone)
             	{
-            		while (gps.available(gpsPort))
+            		while (gps.available(GPS_PORT))
             		{
             			fix = gps.read();
             			if (fix.valid.location && fix.valid.date && fix.valid.time && (fix.satellites > 3) ) {
@@ -45,14 +45,14 @@ static void getFix(char fixType) {
 }
 
 static void gpsOn() {
-        gpsPort.begin(GPS_BAUD);
+        GPS_PORT.begin(GPS_BAUD);
         digitalWrite(GPS_POWER_PIN_1, HIGH);
         digitalWrite(GPS_POWER_PIN_2, HIGH);
         Serial.println(F("GPS on."));
 }
 
 static void gpsOff() {
-        gpsPort.end();
+        GPS_PORT.end();
         delay(DELAY_FOR_SERIAL);
         digitalWrite(GPS_POWER_PIN_1, LOW);
         digitalWrite(GPS_POWER_PIN_2, LOW);
