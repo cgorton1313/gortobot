@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-class Wifi {
+class GbWifi {
 
 private:
     byte _wifi_enable_pin;
@@ -12,6 +12,6 @@ private:
     bool WifiReceive();
 
 public:
-    Wifi(byte pin, HardwareSerial &port, unsigned long baud);
+    GbWifi(byte pin, HardwareSerial &port, unsigned long baud);
     void UseWifi(String sentence);
 };

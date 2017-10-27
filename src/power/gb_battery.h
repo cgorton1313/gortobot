@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-class Battery {
+class GbBattery {
 
 private:
     byte _pin;
@@ -11,7 +11,7 @@ private:
     bool _checking_voltage;
 
 public:
-    Battery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage);
+    GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage);
     float GetVoltage();
     void Okay();
 };

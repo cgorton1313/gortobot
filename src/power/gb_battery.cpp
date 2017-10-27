@@ -2,7 +2,7 @@
 #include "power/gb_battery.h"
 #include <Narcoleptic.h>
 
-Battery::Battery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {
+GbBattery::GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {
         _pin = pin;
         _min_voltage = min_voltage;
         _retry_voltage = retry_voltage;
@@ -10,7 +10,7 @@ Battery::Battery(byte pin, float min_voltage, float retry_voltage, int wait_time
         _checking_voltage = checking_voltage;
 }
 
-float Battery::GetVoltage() {
+float GbBattery::GetVoltage() {
         if (_checking_voltage) {
                 int battery_voltage_int = 0;
                 const int samples = 10; // number of samples to take
@@ -24,7 +24,7 @@ float Battery::GetVoltage() {
         }
 }
 
-void Battery::Okay() {
+void GbBattery::Okay() {
         float voltage_now;
         bool voltage_critical = false;
 

@@ -1,13 +1,13 @@
 #include <Arduino.h>
 #include <communication/gb_wifi.h>
 
-Wifi::Wifi(byte pin, HardwareSerial &port, unsigned long baud) {
+GbWifi::GbWifi(byte pin, HardwareSerial &port, unsigned long baud) {
     _wifi_enable_pin = pin;
     port.begin(baud);
     _wifi_port = &port;
 }
 
-void Wifi::UseWifi(String sentence) {
+void GbWifi::UseWifi(String sentence) {
         String _log_sentence = sentence;
         WifiOn();
         if (WifiReady()) {
@@ -25,17 +25,17 @@ void Wifi::UseWifi(String sentence) {
         WifiOff();
 }
 
-void Wifi::WifiOn() {
+void GbWifi::WifiOn() {
         digitalWrite(_wifi_enable_pin, HIGH);
         Serial.println(F("Wifi on."));
 }
 
-void Wifi::WifiOff() {
+void GbWifi::WifiOff() {
         digitalWrite(_wifi_enable_pin, LOW);
         Serial.println(F("Wifi off."));
 }
 
-bool Wifi::WifiReady() {
+bool GbWifi::WifiReady() {
         unsigned long wifi_timer = millis(); // capture the time now
         while (true) {
                 if ((unsigned long)(millis() - wifi_timer) >= 10000) { // 1 minute has passed
@@ -49,7 +49,7 @@ bool Wifi::WifiReady() {
         }
 }
 
-bool Wifi::WifiSend(String tx_string) {
+bool GbWifi::WifiSend(String tx_string) {
         _wifi_port->println(tx_string);
         unsigned long wifi_timer = millis(); // capture the time now
         while (true) {
@@ -64,6 +64,6 @@ bool Wifi::WifiSend(String tx_string) {
         }
 }
 
-bool Wifi::WifiReceive() {
+bool GbWifi::WifiReceive() {
     return true;
 }
