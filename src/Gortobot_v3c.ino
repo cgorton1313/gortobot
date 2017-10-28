@@ -19,6 +19,7 @@
 #include <Narcoleptic.h>
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
+#include "navigation/gb_gps.h"
 
 // Pin assignments
 #define GPS_PORT Serial1
@@ -76,18 +77,19 @@ int orderedTackTimeB = 90;  // how long we want the sail to be in position B
 int sailPosition;  // the actual position of the sail
 boolean tackIsA = true;  // to keep track of which tack setting we should be on
 int currentTackTime = 0;  // keeps track of how long we've been on current tack in minutes
-char sailMode = 'r';  // 'r' = real, 't' = test, 's' = set direct. leave as 'r' so on wake up it doesn't go into test
+char sailMode = 'r';  // r = real, t =test, s = set direct. leave as 'r' so on wake up it doesn't go into test
 unsigned long thisWatch;
-boolean framProblem = false; // if FRAM does begin or loops more the 16 times to find an open memory adress
+boolean framProblem = false; // if FRAM doesn't begin or loops more the 16 times to find an open memory address
 boolean rxMessageInvalid = false;
 boolean trimRoutineExceededMax = false; // if it takes more than set number of pulses to trim the sail
 boolean sailNotMoving = false; // if it gets stuck moving sail 1 degree
-gps_fix fix;
-bool fixDone = false;
+//gps_fix fix;
+//bool fixDone = false;
 
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 NMEAGPS gps;
+GbGps gb_gps = GbGps(gps, GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
 IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
@@ -134,10 +136,10 @@ void loop() {
         loopCount++; // loop counter
         if (USING_GPS) {
                 battery.Okay();
-                getFix('r'); // 'r' = 'real'
+                gb_gps.GetFix('r'); // 'r' = 'real'
         } else {
                 battery.Okay();
-                getFix('f'); // 'f' = 'fake'
+                gb_gps.GetFix('f'); // 'f' = 'fake'
         }
         if (USING_FRAM) useFram();
         batteryVoltage = battery.GetVoltage();

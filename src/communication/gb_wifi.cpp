@@ -3,6 +3,7 @@
 
 GbWifi::GbWifi(byte pin, HardwareSerial &port, unsigned long baud) {
     _wifi_enable_pin = pin;
+    // try defining _gps_port first, then .begin it
     port.begin(baud);
     _wifi_port = &port;
 }

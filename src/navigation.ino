@@ -1,6 +1,6 @@
 // navigation.ino gets Gortobot's position, either real or fake
 
-
+/*
 static void getFix(char fixType) {
         switch (fixType) {
         case 'r':
@@ -72,3 +72,5 @@ static void fakeGPS() { // could remove random()'s and do without math.h if nece
         fixAcquired = true;
         staleFix = false;
 }
+
+*/
