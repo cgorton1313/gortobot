@@ -58,11 +58,6 @@ unsigned long loggingInterval = 3;  // seconds b/w logging events, 1 day = 86,40
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
-float latitude, longitude;
-unsigned int year;
-byte month, day, hour, minute, second;
-unsigned int ddmmyy, hhmmss;  // do we need these now that we use base62?
-byte satellites;
 float batteryVoltage;
 boolean batteryCritical = false;
 unsigned int timeSinceLastFramLog = 0;
@@ -78,7 +73,6 @@ int orderedTackTimeB = 90;  // how long we want the sail to be in position B
 int sailPosition;  // the actual position of the sail
 boolean tackIsA = true;  // to keep track of which tack setting we should be on
 int currentTackTime = 0;  // keeps track of how long we've been on current tack in minutes
-char sailMode = 'r';  // r = real, t =test, s = set direct. leave as 'r' so on wake up it doesn't go into test
 unsigned long thisWatch;
 boolean framProblem = false; // if FRAM doesn't begin or loops more the 16 times to find an open memory address
 boolean rxMessageInvalid = false;
@@ -140,9 +134,8 @@ void loop() {
                 battery.Okay();
                 fix = gb_gps.GetFix('f'); // 'f' = 'fake'
         }
-        if (USING_FRAM) useFram();
+        if (USING_FRAM) useFram(fix);
         batteryVoltage = battery.GetVoltage();
-        tempPopulateGlobalFixVariables();
         logSentence = makeLogSentence(fix);
         if (USING_WIFI) wifi.UseWifi(logSentence);
         txSuccess = true; // remove later
@@ -159,16 +152,4 @@ void loop() {
         } else {
                 pretendSail();
         }
-}
-
-void tempPopulateGlobalFixVariables() {
-    latitude = fix.latitude;
-    longitude = fix.longitude;
-    year = fix.year;
-    month = fix.month;
-    day = fix.day;
-    hour = fix.hour;
-    minute = fix.minute;
-    second = fix.second;
-    satellites = fix.satellites;
 }

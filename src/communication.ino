@@ -17,9 +17,9 @@ static void  clearFRAM() {
         }
 }
 
-static void useFram() {
+static void useFram(GbFix &_fix) {
         if (timeSinceLastFramLog >= FRAM_LOGGING_INTERVAL) {
-                logToFram();
+                logToFram(_fix);
                 timeSinceLastFramLog = 0;
         }
         else {
@@ -30,7 +30,7 @@ static void useFram() {
         }
 }
 
-static void logToFram() { // this function is too big!
+static void logToFram(GbFix &_fix) { // this function is too big!
         Serial.println(F("logToFram begin"));
         framProblem = false; // to reset value after a bad FRAM log
         if (!fram.begin()) { // you can stick the new i2c addr in here, e.g. begin(0x51);
@@ -42,24 +42,24 @@ static void logToFram() { // this function is too big!
         pointer = nextOpenFram();
 
         boolean latitudeHemisphere, longitudeHemispehere;
-        latitudeHemisphere = (latitude >= 0); // positive latitude is north = true = 1
-        longitudeHemispehere = (longitude < 0); // negative longitude is west = false = 0
+        latitudeHemisphere = (_fix.latitude >= 0); // positive latitude is north = true = 1
+        longitudeHemispehere = (_fix.longitude < 0); // negative longitude is west = false = 0
 
-        fram.write8(pointer, (year % 100));
-        fram.write8(pointer + 1, month);
-        fram.write8(pointer + 2, day);
-        fram.write8(pointer + 3, hour);
-        fram.write8(pointer + 4, minute);
-        fram.write8(pointer + 5, second);
+        fram.write8(pointer, (_fix.year % 100));
+        fram.write8(pointer + 1, _fix.month);
+        fram.write8(pointer + 2, _fix.day);
+        fram.write8(pointer + 3, _fix.hour);
+        fram.write8(pointer + 4, _fix.minute);
+        fram.write8(pointer + 5, _fix.second);
         fram.write8(pointer + 6, latitudeHemisphere); // 1 is north
-        int latitudeDegrees = (int)abs(round(latitude * 100) / 100.0);
+        int latitudeDegrees = (int)abs(round(_fix.latitude * 100) / 100.0);
         fram.write8(pointer + 7, latitudeDegrees);
-        int latitudeHundredths = abs((int)round(latitude * 100) % 100);
+        int latitudeHundredths = abs((int)round(_fix.latitude * 100) % 100);
         fram.write8(pointer + 8, latitudeHundredths);
         fram.write8(pointer + 9, longitudeHemispehere); // 0 is west
-        int longitudeDegrees = (int)abs(round(longitude * 100) / 100.0);
+        int longitudeDegrees = (int)abs(round(_fix.longitude * 100) / 100.0);
         fram.write8(pointer + 10, longitudeDegrees);
-        int longitudeHundredths = abs((int)round(longitude * 100) % 100);
+        int longitudeHundredths = abs((int)round(_fix.longitude * 100) % 100);
         fram.write8(pointer + 11, longitudeHundredths);
 
         if (TESTING_FRAM) printFram();
@@ -108,7 +108,6 @@ String makeLogSentence(GbFix &a_fix) {
         logSentence = "";
         String tempDateTimeString;
         String base62dateTime;
-        long dateTimeLong;
 
         switch (MESSAGE_VERSION) {
         case 2: // long form
