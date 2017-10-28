@@ -7,6 +7,7 @@
 // battery classes, abstract, fake
 // gps classes, abstract, fake
 // underscore variables
+// create struct for gb_fix
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -14,11 +15,11 @@
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include <Adafruit_FRAM_I2C.h> // for FRAM logging
-#include <NMEAGPS.h>
 #include <IridiumSBD.h>
 #include <Narcoleptic.h>
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
+#include "navigation/gb_fix.h"
 #include "navigation/gb_gps.h"
 
 // Pin assignments
@@ -83,13 +84,11 @@ boolean framProblem = false; // if FRAM doesn't begin or loops more the 16 times
 boolean rxMessageInvalid = false;
 boolean trimRoutineExceededMax = false; // if it takes more than set number of pulses to trim the sail
 boolean sailNotMoving = false; // if it gets stuck moving sail 1 degree
-//gps_fix fix;
-//bool fixDone = false;
+GbFix fix;
 
 // Objects
 Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
-NMEAGPS gps;
-GbGps gb_gps = GbGps(gps, GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
+GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
 IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);

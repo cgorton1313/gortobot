@@ -13,6 +13,6 @@ private:
     gps_fix _fix;
 
 public:
-    GbGps(NMEAGPS &the_gps, byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud);
+    GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud);
     void GetFix(char fix_type);
 };

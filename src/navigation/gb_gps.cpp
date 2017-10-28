@@ -2,13 +2,12 @@
 #include "navigation/gb_gps.h"
 #include <Narcoleptic.h>
 
-GbGps::GbGps(NMEAGPS &the_gps, byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud) {
+GbGps::GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud) {
         _gps_power_pin1 = power_pin1;
         _gps_power_pin2 = power_pin2;
         // try defining _gps_port first, then .begin it
         port.begin(baud);
         _gps_port = &port;
-        _gps = &the_gps;
 }
 
 void GbGps::GetFix(char fix_type) {
@@ -20,7 +19,6 @@ void GbGps::GetFix(char fix_type) {
                 fix_done = false;
                 while (!fix_done)
                 {
-                    //while (true)
                     while (_gps->available(Serial1)) // see if we can pass this in
                     {
                         _fix = _gps->read();
