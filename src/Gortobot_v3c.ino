@@ -19,7 +19,7 @@
 #include <Narcoleptic.h>
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
-#include "navigation/gb_fix.h"
+//#include "navigation/gb_fix.h" // can't include twice, but is there a better way?
 #include "navigation/gb_gps.h"
 
 // Pin assignments
@@ -135,10 +135,10 @@ void loop() {
         loopCount++; // loop counter
         if (USING_GPS) {
                 battery.Okay();
-                gb_gps.GetFix('r'); // 'r' = 'real'
+                fix = gb_gps.GetFix('r'); // 'r' = 'real'
         } else {
                 battery.Okay();
-                gb_gps.GetFix('f'); // 'f' = 'fake'
+                fix = gb_gps.GetFix('f'); // 'f' = 'fake'
         }
         if (USING_FRAM) useFram();
         batteryVoltage = battery.GetVoltage();

@@ -9,4 +9,5 @@ struct GbFix {
   byte hour;
   byte minute;
   byte second;
+  byte satellites;
 };

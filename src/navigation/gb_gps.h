@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <NMEAGPS.h>
+#include "gb_fix.h"
 
 class GbGps {
 
@@ -10,9 +11,9 @@ private:
     void GpsOn();
     void GpsOff();
     NMEAGPS* _gps;
-    gps_fix _fix;
+    gps_fix _fix; // this is a NeoGPS fix
 
 public:
     GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud);
-    void GetFix(char fix_type);
+    GbFix GetFix(char fix_type);
 };
