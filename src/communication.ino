@@ -104,7 +104,7 @@ static void printFram() {
         }
 }
 
-String makeLogSentence() {
+String makeLogSentence(GbFix &a_fix) {
         logSentence = "";
         String tempDateTimeString;
         String base62dateTime;
@@ -118,16 +118,16 @@ String makeLogSentence() {
                 logSentence += ",";
                 logSentence += loopCount;
                 logSentence += ",";
-                logSentence += String(year % 100);
-                logSentence += formattedDateNumber(month);
-                logSentence += formattedDateNumber(day);
-                logSentence += formattedDateNumber(hour);
-                logSentence += formattedDateNumber(minute);
-                logSentence += formattedDateNumber(second);
+                logSentence += String(a_fix.year % 100);
+                logSentence += formattedDateNumber(a_fix.month);
+                logSentence += formattedDateNumber(a_fix.day);
+                logSentence += formattedDateNumber(a_fix.hour);
+                logSentence += formattedDateNumber(a_fix.minute);
+                logSentence += formattedDateNumber(a_fix.second);
                 logSentence += ",";
-                logSentence += String(latitude, 4);
+                logSentence += String(a_fix.latitude, 4);
                 logSentence += ",";
-                logSentence += String(longitude, 4);
+                logSentence += String(a_fix.longitude, 4);
                 logSentence += ",";
                 logSentence += String(batteryVoltage, 2);
                 logSentence += ",";
@@ -138,12 +138,12 @@ String makeLogSentence() {
                 break;
         case 3: // base62 short form
                 // build a dateTime string, convert it to long, then to base62
-                tempDateTimeString += convertToBase62(year % 100);
-                tempDateTimeString += convertToBase62(month);
-                tempDateTimeString += convertToBase62(day);
-                tempDateTimeString += convertToBase62(hour);
-                tempDateTimeString += convertToBase62(minute);
-                tempDateTimeString += convertToBase62(second);
+                tempDateTimeString += convertToBase62(a_fix.year % 100);
+                tempDateTimeString += convertToBase62(a_fix.month);
+                tempDateTimeString += convertToBase62(a_fix.day);
+                tempDateTimeString += convertToBase62(a_fix.hour);
+                tempDateTimeString += convertToBase62(a_fix.minute);
+                tempDateTimeString += convertToBase62(a_fix.second);
 
                 // build the sentence
                 logSentence += MESSAGE_VERSION;
@@ -154,9 +154,9 @@ String makeLogSentence() {
                 logSentence += ",";
                 logSentence += tempDateTimeString;
                 logSentence += ",";
-                logSentence += convertToBase62((long)round((90 + latitude) * 10000));
+                logSentence += convertToBase62((long)round((90 + a_fix.latitude) * 10000));
                 logSentence += ",";
-                logSentence += convertToBase62((long)round((180 + longitude) * 10000));
+                logSentence += convertToBase62((long)round((180 + a_fix.longitude) * 10000));
                 logSentence += ",";
                 logSentence += convertToBase62((int)round(batteryVoltage * 100));
                 logSentence += ",";
