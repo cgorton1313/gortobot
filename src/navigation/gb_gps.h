@@ -10,10 +10,11 @@ private:
     HardwareSerial* _gps_port;
     void GpsOn();
     void GpsOff();
-    NMEAGPS* _gps;
-    gps_fix _fix; // this is a NeoGPS fix
+    //NMEAGPS _gps;
+    //gps_fix _fix; // this is a NeoGPS fix
 
 public:
+    //NMEAGPS _gps;
     GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud);
     GbFix GetFix(char fix_type);
 };

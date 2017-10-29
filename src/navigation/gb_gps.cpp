@@ -6,11 +6,13 @@ GbGps::GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned lo
         _gps_power_pin1 = power_pin1;
         _gps_power_pin2 = power_pin2;
         _gps_port = &port;
-        _gps_port->begin(baud);
+        port.begin(baud); // fix it later
 }
 
 GbFix GbGps::GetFix(char fix_type) {
         bool fix_done;
+        NMEAGPS nmea_gps;
+        gps_fix nmea_gps_fix;
         GbFix the_fix;
         switch (fix_type) {
         case 'r':
@@ -19,30 +21,31 @@ GbFix GbGps::GetFix(char fix_type) {
                 fix_done = false;
                 while (!fix_done)
                 {
-                    while (_gps->available(Serial1)) // see if we can pass this in
+                    while (nmea_gps.available(*_gps_port)) // see if we can pass this in
                     {
-                        _fix = _gps->read();
-                        if (_fix.valid.location && _fix.valid.date && _fix.valid.time && (_fix.satellites > 3) ) {
-                            Serial.print("Fix: ");
-                            Serial.print(_fix.latitude(), 4);
-                            the_fix.latitude = _fix.latitude();
-                            Serial.print(", ");
-                            Serial.print(_fix.longitude(), 4);
-                            the_fix.longitude = _fix.longitude();
-                            Serial.print(", ");
-                            NeoGPS::time_t & dt = _fix.dateTime;
-                            Serial << dt;
-                            the_fix.year = _fix.dateTime.year;
-                            the_fix.month = _fix.dateTime.month;
-                            the_fix.day = _fix.dateTime.date;
-                            the_fix.hour = _fix.dateTime.hours;
-                            the_fix.minute = _fix.dateTime.minutes;
-                            the_fix.second = _fix.dateTime.seconds;
-                            Serial.print(", ");
-                            Serial.print(_fix.satellites);
-                            Serial.println();
-                            fix_done = true;
-                        }
+                        nmea_gps_fix = nmea_gps.read();
+                        Serial.print("Fix: ");
+                        Serial.print(nmea_gps_fix.latitude(), 4);
+                        the_fix.latitude = nmea_gps_fix.latitude();
+                        Serial.print(", ");
+                        Serial.print(nmea_gps_fix.longitude(), 4);
+                        the_fix.longitude = nmea_gps_fix.longitude();
+                        Serial.print(", ");
+                        NeoGPS::time_t & dt = nmea_gps_fix.dateTime;
+                        Serial << dt;
+                        the_fix.year = nmea_gps_fix.dateTime.year;
+                        the_fix.month = nmea_gps_fix.dateTime.month;
+                        the_fix.day = nmea_gps_fix.dateTime.date;
+                        the_fix.hour = nmea_gps_fix.dateTime.hours;
+                        the_fix.minute = nmea_gps_fix.dateTime.minutes;
+                        the_fix.second = nmea_gps_fix.dateTime.seconds;
+                        Serial.print(", ");
+                        Serial.print(nmea_gps_fix.satellites);
+                        Serial.println();
+                    }
+                    if (nmea_gps_fix.valid.location && nmea_gps_fix.valid.date && nmea_gps_fix.valid.time && (nmea_gps_fix.satellites > 3) ) {
+                        Serial.println(F("Fix done."));
+                        fix_done = true;
                     }
                 }
                 GpsOff();
