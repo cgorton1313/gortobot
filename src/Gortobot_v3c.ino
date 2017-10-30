@@ -50,7 +50,7 @@ const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 600;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 2;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
@@ -85,7 +85,9 @@ GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATT
 
 void setup() {
         analogReference(EXTERNAL);
-        analogRead(A0);
+        for (byte i = 0; byte < 100; i++) { // clear the bits
+                analogRead(A0);
+        }
 
         randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be open
         Serial.begin(CONSOLE_BAUD);
