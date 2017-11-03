@@ -13,5 +13,5 @@ private:
 
 public:
     GbWifi(byte pin, HardwareSerial &port, unsigned long baud);
-    void UseWifi(String sentence);
+    bool UseWifi(String sentence);
 };

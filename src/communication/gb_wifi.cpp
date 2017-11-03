@@ -8,7 +8,8 @@ GbWifi::GbWifi(byte pin, HardwareSerial &port, unsigned long baud) {
     _wifi_port = &port;
 }
 
-void GbWifi::UseWifi(String sentence) {
+bool GbWifi::UseWifi(String sentence) {
+        bool send_receive_success = false;
         String _log_sentence = sentence;
         WifiOn();
         if (WifiReady()) {
@@ -18,12 +19,14 @@ void GbWifi::UseWifi(String sentence) {
                 } else {
                         Serial.print(F("wifiSend succeeded. Message sent: "));
                         Serial.println(_log_sentence);
+                        send_receive_success = true;
                 }
-                if (WifiReceive());
+                if (WifiReceive()); // need to refactor success criteria here
         } else {
                 Serial.println(F("Wifi NOT ready."));
         }
         WifiOff();
+        return send_receive_success;
 }
 
 void GbWifi::WifiOn() {
@@ -37,9 +40,9 @@ void GbWifi::WifiOff() {
 }
 
 bool GbWifi::WifiReady() {
-        unsigned long wifi_timer = millis(); // capture the time now
+        unsigned long wifi_connect_start_time = millis(); // capture the time now
         while (true) {
-                if ((unsigned long)(millis() - wifi_timer) >= 10000) { // 1 minute has passed
+                if ((unsigned long)(millis() - wifi_connect_start_time) >= 10000) {
                         return false;
                 }
                 while (!_wifi_port->available()) ; // wait for the serial data

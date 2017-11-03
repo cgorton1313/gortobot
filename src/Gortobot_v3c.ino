@@ -40,6 +40,7 @@ const unsigned int SAT_BAUD = 19200;
 const int SAT_CHARGE_TIME = 30; // seconds to wait at start-up for super-capacitor
 const int ISBD_TIMEOUT = 600;  // seconds to try getting isbd success
 const byte FAILURE_RETRY = 10; // minutes to wait after sat failure
+const byte WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
 const float MINIMUM_BATTERY_VOLTAGE = 3.3; // system will wait for charging at this low voltage threshold
 const float BATTERY_OKAY_VOLTAGE = 3.4; // system will resume program at this voltage threshold
 const int BATTERY_WAIT_TIME = 60; // seconds to wait between checking for batteryOkay
@@ -85,7 +86,7 @@ GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATT
 
 void setup() {
         analogReference(EXTERNAL);
-        for (byte i = 0; byte < 100; i++) { // clear the bits
+        for (byte i = 0; i < 100; i++) { // clear the bits
                 analogRead(A0);
         }
 
@@ -135,8 +136,19 @@ void loop() {
         if (USING_FRAM) useFram(fix);
         batteryVoltage = battery.GetVoltage();
         logSentence = makeLogSentence(fix);
-        if (USING_WIFI) wifi.UseWifi(logSentence);
-        txSuccess = true; // remove later
+
+        if (USING_WIFI) {
+                byte wifi_attempt = 1;
+                bool wifi_successful = false;
+                while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
+                        if (wifi.UseWifi(logSentence)) {
+                            wifi_successful = true;
+                            txSuccess = true;
+                        }
+                        wifi_attempt++;
+                }
+        }
+
         if (USING_SAT) {
                 useSat();
         } else if (USING_SERIAL_MONITOR_ORDERS) {
@@ -144,6 +156,7 @@ void loop() {
         } else {
                 getFakeOrders();
         }
+
         thisWatch = howLongWatchShouldBe(); // in seconds
         if (USING_SAIL) {
                 useSail();
