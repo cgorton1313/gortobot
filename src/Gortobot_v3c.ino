@@ -45,13 +45,13 @@ const float MINIMUM_BATTERY_VOLTAGE = 3.3; // system will wait for charging at t
 const float BATTERY_OKAY_VOLTAGE = 3.4; // system will resume program at this voltage threshold
 const int BATTERY_WAIT_TIME = 60; // seconds to wait between checking for batteryOkay
 const unsigned int FRAM_LOGGING_INTERVAL = 60; // in minutes
-const byte MESSAGE_VERSION = 2; // 2 = long form, 3 = base62
+const byte MESSAGE_VERSION = 3; // 2 = long form, 3 = base62
 const char BASE_62_CHARACTERS[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 2;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 300;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
@@ -140,6 +140,7 @@ void loop() {
         if (USING_WIFI) {
                 byte wifi_attempt = 1;
                 bool wifi_successful = false;
+                txSuccess = false;
                 while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
                         if (wifi.UseWifi(logSentence)) {
                             wifi_successful = true;
