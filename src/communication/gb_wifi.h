@@ -3,6 +3,7 @@
 class GbWifi {
 
 private:
+    const unsigned long _WIFI_TIMEOUT = 20000; // in milliseconds
     byte _wifi_enable_pin;
     HardwareSerial* _wifi_port;
     void WifiOn();
