@@ -10,7 +10,6 @@
 
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
-#include <Adafruit_FRAM_I2C.h> // for FRAM logging
 #include <IridiumSBD.h>
 #include <Narcoleptic.h>
 #include "communication/gb_wifi.h"
@@ -43,7 +42,6 @@ const byte WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
 const float MINIMUM_BATTERY_VOLTAGE = 3.3; // system will wait for charging at this low voltage threshold
 const float BATTERY_OKAY_VOLTAGE = 3.4; // system will resume program at this voltage threshold
 const int BATTERY_WAIT_TIME = 60; // seconds to wait between checking for batteryOkay
-const unsigned int FRAM_LOGGING_INTERVAL = 60; // in minutes
 const byte MESSAGE_VERSION = 3; // 2 = long form, 3 = base62
 const char BASE_62_CHARACTERS[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
@@ -57,7 +55,6 @@ boolean fixAcquired = false, staleFix = true;  // for GPS
 float batteryVoltage;
 boolean batteryCritical = false;
 unsigned int timeSinceLastFramLog = 0;
-const byte framElements = 12;  // number of elements captured in each FRAM log
 String logSentence = "";
 char txBuffer[50];
 boolean txSuccess;
@@ -70,14 +67,12 @@ int sailPosition;  // the actual position of the sail
 boolean tackIsA = true;  // to keep track of which tack setting we should be on
 int currentTackTime = 0;  // keeps track of how long we've been on current tack in minutes
 unsigned long thisWatch;
-boolean framProblem = false; // if FRAM doesn't begin or loops more the 16 times to find an open memory address
 boolean rxMessageInvalid = false;
 boolean trimRoutineExceededMax = false; // if it takes more than set number of pulses to trim the sail
 boolean sailNotMoving = false; // if it gets stuck moving sail 1 degree
 GbFix fix;
 
 // Objects
-Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C(); // onboard data logger
 GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
 IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
@@ -113,11 +108,6 @@ void setup() {
         Serial.print(F("Starting runNum "));
         Serial.println(runNum);
 
-        if (RESET_FRAM) {
-                Serial.println(F("Resetting FRAM"));
-                clearFRAM();
-        }
-
         if (USING_SAT) setUpSat();
 
         delay(4000); // for some forgotten reason
@@ -128,11 +118,11 @@ void loop() {
         if (USING_GPS) {
                 battery.Okay();
                 fix = gb_gps.GetFix('r'); // 'r' = 'real'
-        } else {
+        }
+        else {
                 battery.Okay();
                 fix = gb_gps.GetFix('f'); // 'f' = 'fake'
         }
-        if (USING_FRAM) useFram(fix);
         batteryVoltage = battery.GetVoltage();
         logSentence = makeLogSentence(fix);
 

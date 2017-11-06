@@ -5,105 +5,6 @@
 //  1 (std)- mastPositionA(min-max),timeA(minutes),mastPositionB(min-max),timeB(minutes),loggingInterval(min),z (end)
 //  2 (test)- timePerTack (loggingInterval), z (end)
 
-static void  clearFRAM() {
-        if (!fram.begin()) { // you can stick the new i2c addr in here, e.g. begin(0x51);
-                Serial.println(F("No I2C FRAM found ... check your connections."));
-        }
-        for (uint16_t i = 0; i < 32768; i++) {
-                fram.write8(i, 255);
-                if (i % 1000 == 0) {
-                        Serial.print(F("."));
-                }
-        }
-}
-
-static void useFram(GbFix &_fix) {
-        if (timeSinceLastFramLog >= FRAM_LOGGING_INTERVAL) {
-                logToFram(_fix);
-                timeSinceLastFramLog = 0;
-        }
-        else {
-                Serial.print(F("Skipped FRAM logging. Time till next log = "));
-                Serial.print(FRAM_LOGGING_INTERVAL - timeSinceLastFramLog);
-                Serial.println(F(" minutes"));
-                timeSinceLastFramLog = timeSinceLastFramLog + loggingInterval;
-        }
-}
-
-static void logToFram(GbFix &_fix) { // this function is too big!
-        Serial.println(F("logToFram begin"));
-        framProblem = false; // to reset value after a bad FRAM log
-        if (!fram.begin()) { // you can stick the new i2c addr in here, e.g. begin(0x51);
-                Serial.println(F("No I2C FRAM found ... check your connections"));
-                framProblem = true;
-        }
-
-        unsigned int pointer = 0;
-        pointer = nextOpenFram();
-
-        boolean latitudeHemisphere, longitudeHemispehere;
-        latitudeHemisphere = (_fix.latitude >= 0); // positive latitude is north = true = 1
-        longitudeHemispehere = (_fix.longitude < 0); // negative longitude is west = false = 0
-
-        fram.write8(pointer, (_fix.year % 100));
-        fram.write8(pointer + 1, _fix.month);
-        fram.write8(pointer + 2, _fix.day);
-        fram.write8(pointer + 3, _fix.hour);
-        fram.write8(pointer + 4, _fix.minute);
-        fram.write8(pointer + 5, _fix.second);
-        fram.write8(pointer + 6, latitudeHemisphere); // 1 is north
-        int latitudeDegrees = (int)abs(round(_fix.latitude * 100) / 100.0);
-        fram.write8(pointer + 7, latitudeDegrees);
-        int latitudeHundredths = abs((int)round(_fix.latitude * 100) % 100);
-        fram.write8(pointer + 8, latitudeHundredths);
-        fram.write8(pointer + 9, longitudeHemispehere); // 0 is west
-        int longitudeDegrees = (int)abs(round(_fix.longitude * 100) / 100.0);
-        fram.write8(pointer + 10, longitudeDegrees);
-        int longitudeHundredths = abs((int)round(_fix.longitude * 100) % 100);
-        fram.write8(pointer + 11, longitudeHundredths);
-
-        if (TESTING_FRAM) printFram();
-}
-
-unsigned int nextOpenFram() { // finds next fram memory position to use
-        unsigned int upperBound = 32768; // max of the FRAM memory
-        unsigned int lowerBound = 0;
-        byte loops = 0;
-        if (fram.read8(0) == 255) { // checks for blank fram
-                return 0;
-        }
-        else {
-                while (loops < 17) { // it should never take more than 16 loops to find an open address
-                        loops = loops + 1;
-                        if (loops > 16) {
-                                framProblem = true;
-                        }
-                        if (fram.read8((upperBound + lowerBound) / 2) == 255) {
-                                upperBound = (upperBound + lowerBound) / 2;
-                        }
-                        else {
-                                lowerBound = (upperBound + lowerBound) / 2;
-                        }
-                        if ((upperBound - lowerBound) == 1) {
-                                return upperBound;
-                        }
-                }
-        }
-}
-
-static void printFram() {
-        unsigned int pointer = 0;
-        while (fram.read8(pointer) != 255) {
-                Serial.print(fram.read8(pointer));
-                if ((pointer % framElements) == (framElements - 1)) {
-                        Serial.println();
-                } else {
-                        Serial.print(F(", "));
-                }
-                pointer++;
-        }
-}
-
 String makeLogSentence(GbFix &a_fix) {
         logSentence = "";
         String tempDateTimeString;
@@ -319,5 +220,5 @@ byte diagnosticMessage() {
         // 4- fram problem
         // 8- rxMessage not valid
         // add these up to determine which combo is being reported
-        return (trimRoutineExceededMax*pow(2,0) + sailNotMoving*pow(2,1) + framProblem*pow(2,2) + rxMessageInvalid*pow(2,3));
+        return (trimRoutineExceededMax*pow(2,0) + sailNotMoving*pow(2,1) + rxMessageInvalid*pow(2,3));
 }
