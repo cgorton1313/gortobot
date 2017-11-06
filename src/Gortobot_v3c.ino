@@ -4,11 +4,8 @@
 // battery classes, abstract, fake
 // gps classes, abstract, fake
 // get rid of warnings in build log
-<<<<<<< HEAD
 // merge back into master
-=======
 // vref maxes at 4.096, do something about this
->>>>>>> Event-driven_serials
 
 // Program Modes (config)
 #include "configs/config.h"
