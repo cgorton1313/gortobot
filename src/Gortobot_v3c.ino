@@ -4,6 +4,7 @@
 // battery classes, abstract, fake
 // gps classes, abstract, fake
 // get rid of warnings in build log
+// vref maxes at 4.096, do something about this
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -51,7 +52,7 @@ const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 10;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 600;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
