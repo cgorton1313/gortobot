@@ -3,8 +3,6 @@
 // TODO:
 // battery classes, abstract, fake
 // gps classes, abstract, fake
-// get rid of warnings in build log
-// merge back into master
 // vref maxes at 4.096, do something about this
 
 // Program Modes (config)
@@ -17,7 +15,6 @@
 #include <Narcoleptic.h>
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
-//#include "navigation/gb_fix.h" // can't include twice, but is there a better way?
 #include "navigation/gb_gps.h"
 
 // Pin assignments
