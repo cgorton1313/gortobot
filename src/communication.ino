@@ -287,7 +287,7 @@ static void blinkMessage(int condition) {
 static void getSerialMonitorOrders() {
         getSailPosition();
         Serial.println(F("Ready for orders:"));
-        while (!Serial.available());  // wait for the serial data
+        while (!Serial.available()) ; // wait for the serial data
 
         // get the order string, turn it into char[] b/c isbd returns that, turn back into string and split it at the commas
         String sentence = Serial.readString();
