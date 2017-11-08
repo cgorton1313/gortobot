@@ -115,19 +115,20 @@ void setup() {
 }
 
 void loop() {
-        loopCount++; // loop counter
+        loopCount++;
+
+        battery.Okay();
         if (USING_GPS) {
-                battery.Okay();
                 fix = gb_gps.GetFix('r'); // 'r' = 'real'
         }
         else {
-                battery.Okay();
                 fix = gb_gps.GetFix('f'); // 'f' = 'fake'
         }
 
-        batteryVoltage = battery.GetVoltage();
+        batteryVoltage = battery.GetVoltage(); // because makeLogSentence isn't classy yet
         logSentence = makeLogSentence(fix);
 
+        battery.Okay();
         if (USING_WIFI) {
                 byte wifi_attempt = 1;
                 bool wifi_successful = false;
@@ -141,18 +142,24 @@ void loop() {
                 }
         }
 
+        battery.Okay();
         if (USING_SAT) {
                 useSat();
-        } else if (USING_SERIAL_MONITOR_ORDERS) {
+        }
+        else if (USING_SERIAL_MONITOR_ORDERS) {
                 getSerialMonitorOrders();
-        } else {
+        }
+        else {
                 getFakeOrders();
         }
 
         thisWatch = howLongWatchShouldBe(); // in seconds
+
+        battery.Okay();
         if (USING_SAIL) {
                 useSail();
-        } else {
+        }
+        else {
                 pretendSail();
         }
 }
