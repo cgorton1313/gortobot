@@ -7,7 +7,6 @@
 
 String makeLogSentence(GbFix &a_fix) {
         logSentence = "";
-        String tempDateTimeString;
         String base62dateTime;
 
         switch (MESSAGE_VERSION) {
@@ -37,22 +36,18 @@ String makeLogSentence(GbFix &a_fix) {
                 logSentence += diagnosticMessage();
                 break;
         case 3: // base62 short form
-                // build a dateTime string, convert it to long, then to base62
-                tempDateTimeString += convertToBase62(a_fix.year % 100);
-                tempDateTimeString += convertToBase62(a_fix.month);
-                tempDateTimeString += convertToBase62(a_fix.day);
-                tempDateTimeString += convertToBase62(a_fix.hour);
-                tempDateTimeString += convertToBase62(a_fix.minute);
-                tempDateTimeString += convertToBase62(a_fix.second);
-
-                // build the sentence
                 logSentence += MESSAGE_VERSION;
                 logSentence += ",";
                 logSentence += convertToBase62(runNum);
                 logSentence += ",";
                 logSentence += convertToBase62(loopCount);
                 logSentence += ",";
-                logSentence += tempDateTimeString;
+                logSentence += convertToBase62(a_fix.year % 100);
+                logSentence += convertToBase62(a_fix.month);
+                logSentence += convertToBase62(a_fix.day);
+                logSentence += convertToBase62(a_fix.hour);
+                logSentence += convertToBase62(a_fix.minute);
+                logSentence += convertToBase62(a_fix.second);
                 logSentence += ",";
                 logSentence += convertToBase62((long)round((90 + a_fix.latitude) * 10000));
                 logSentence += ",";
@@ -83,7 +78,7 @@ String formattedDateNumber(byte number) {
 }
 
 
-static void parseRxBuffer(String rxBufferAsString) {
+void parseRxBuffer(String rxBufferAsString) {
         rxMessageInvalid = false;
         if (rxBufferAsString.indexOf("z") >= 0) { // we should parse it
                 switch ((rxBufferAsString.substring(0, rxBufferAsString.indexOf(','))).toInt()) { // get first value
@@ -162,7 +157,7 @@ static void parseRxBuffer(String rxBufferAsString) {
 }
 
 
-static void blinkMessage(int condition) {
+void blinkMessage(int condition) {
         switch (condition) {
         case 1: // continuous quick flash, stops program here
                 while (true) {
@@ -185,7 +180,7 @@ static void blinkMessage(int condition) {
         }
 }
 
-static void getSerialMonitorOrders() {
+void getSerialMonitorOrders() {
         getSailPosition();
         Serial.println(F("Ready for orders:"));
         while (!Serial.available()) ; // wait for the serial data
@@ -199,7 +194,7 @@ static void getSerialMonitorOrders() {
         parseRxBuffer(newString); // could we do String(rxBuffer) or toString?
 }
 
-static void getFakeOrders() {
+void getFakeOrders() {
         //  1 (std)- mastPositionA(min-max),timeA(minutes),mastPositionB(min-max),timeB(minutes),loggingInterval(min),z (end)
         if (sailMode == 't') {
                 String fakeOrderString = "3,";

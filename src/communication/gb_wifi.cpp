@@ -26,16 +26,6 @@ bool GbWifi::UseWifi(String sentence) {
         return send_receive_success;
 }
 
-void GbWifi::WifiOn() {
-        digitalWrite(_wifi_enable_pin, HIGH);
-        Serial.println(F("Wifi on."));
-}
-
-void GbWifi::WifiOff() {
-        digitalWrite(_wifi_enable_pin, LOW);
-        Serial.println(F("Wifi off."));
-}
-
 bool GbWifi::WifiReady() {
         Serial.println(F("Waiting for wifi ready..."));
         unsigned long wifi_connect_start_time = millis(); // capture the time now
@@ -84,4 +74,14 @@ bool GbWifi::WifiSend(String tx_string) {
 
 bool GbWifi::WifiReceive() {
         return true;
+}
+
+void GbWifi::WifiOn() {
+        digitalWrite(_wifi_enable_pin, HIGH);
+        Serial.println(F("Wifi on."));
+}
+
+void GbWifi::WifiOff() {
+        digitalWrite(_wifi_enable_pin, LOW);
+        Serial.println(F("Wifi off."));
 }

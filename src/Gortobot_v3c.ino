@@ -15,6 +15,7 @@
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
 #include "navigation/gb_gps.h"
+#include <ArduinoLog.h>
 
 // Pin assignments
 #define GPS_PORT Serial1
@@ -123,6 +124,7 @@ void loop() {
                 battery.Okay();
                 fix = gb_gps.GetFix('f'); // 'f' = 'fake'
         }
+
         batteryVoltage = battery.GetVoltage();
         logSentence = makeLogSentence(fix);
 
