@@ -12,6 +12,7 @@ GbBattery::GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_
 
 float GbBattery::GetVoltage() {
         if (_checking_voltage) {
+                delay(5000); // settle down
                 int battery_voltage_int = 0;
                 const int samples = 10; // number of samples to take
                 for (int i = 0; i < samples; i++) {
