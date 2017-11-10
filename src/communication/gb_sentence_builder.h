@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include <navigation/gb_fix.h>
 
+#ifndef gb_sentence_builder_h
+#define gb_sentence_builder_h
+
 class GbSentenceBuilder {
 
 private:
@@ -10,3 +13,5 @@ public:
     GbSentenceBuilder(byte message_version);
     String Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix);
 };
+
+#endif

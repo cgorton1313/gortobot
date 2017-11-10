@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#ifndef gb_wifi_h
+#define gb_wifi_h
+
 class GbWifi {
 
 private:
@@ -16,3 +19,5 @@ public:
     GbWifi(byte pin, HardwareSerial &port, unsigned long baud);
     bool UseWifi(String sentence);
 };
+
+#endif

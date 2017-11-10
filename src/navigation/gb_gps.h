@@ -2,6 +2,9 @@
 #include <NMEAGPS.h>
 #include "gb_fix.h"
 
+#ifndef gb_gps_h
+#define gb_gps_h
+
 class GbGps {
 
 private:
@@ -18,3 +21,5 @@ public:
     GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud);
     GbFix GetFix(char fix_type);
 };
+
+#endif

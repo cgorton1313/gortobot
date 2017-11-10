@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#ifndef gb_fix_h
+#define gb_fix_h
+
 struct GbFix {
   float latitude;
   float longitude;
@@ -11,3 +14,5 @@ struct GbFix {
   byte second;
   byte satellites;
 };
+
+#endif

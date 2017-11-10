@@ -15,7 +15,7 @@
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
 #include "navigation/gb_gps.h"
-//#include "communication/gb_sentence_builder.h"
+#include "communication/gb_sentence_builder.h"
 
 // Pin assignments
 #define GPS_PORT Serial1
