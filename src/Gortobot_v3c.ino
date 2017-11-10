@@ -4,6 +4,7 @@
 // battery classes, abstract, fake
 // gps classes, abstract, fake
 // vref maxes at 4.096, do something about this
+// get a beer
 
 // Program Modes (config)
 #include "configs/config.h"
