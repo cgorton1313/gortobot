@@ -8,10 +8,11 @@ class GbSentenceBuilder {
 
 private:
     byte _message_version;
+    String FormatDateNumber(byte number);
 
 public:
     GbSentenceBuilder(byte message_version);
-    String Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix);
+    String Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix, float battery_voltage);
 };
 
 #endif

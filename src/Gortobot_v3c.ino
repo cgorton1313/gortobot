@@ -78,11 +78,11 @@ GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
 IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
-//GbSentenceBuilder sentence_builder(MESSAGE_VERSION);
+GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 
 void setup() {
         analogReference(EXTERNAL);
-        for (byte i = 0; i < 100; i++) { // clear the bits
+        for (byte b = 0; b < 100; b++) { // clear the bits
                 analogRead(A0);
         }
 
@@ -128,8 +128,8 @@ void loop() {
         }
 
         batteryVoltage = battery.GetVoltage(); // because makeLogSentence isn't classy yet
-        //logSentence = sentence_builder.Sentence(runNum, loopCount);
-        logSentence = makeLogSentence(fix);
+        logSentence = sentence_builder.Sentence(runNum, loopCount, fix, batteryVoltage);
+        //logSentence = makeLogSentence(fix);
 
         battery.Okay();
         if (USING_WIFI) {
