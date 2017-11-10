@@ -15,7 +15,7 @@
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
 #include "navigation/gb_gps.h"
-#include "communication/gb_sentence_builder.h"
+//#include "communication/gb_sentence_builder.h"
 
 // Pin assignments
 #define GPS_PORT Serial1
@@ -78,7 +78,7 @@ GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
 IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
-GbSentenceBuilder sentence_builder(MESSAGE_VERSION);
+//GbSentenceBuilder sentence_builder(MESSAGE_VERSION);
 
 void setup() {
         analogReference(EXTERNAL);
@@ -128,7 +128,7 @@ void loop() {
         }
 
         batteryVoltage = battery.GetVoltage(); // because makeLogSentence isn't classy yet
-        logSentence = sentence_builder.Sentence(runNum, loopCount);
+        //logSentence = sentence_builder.Sentence(runNum, loopCount);
         logSentence = makeLogSentence(fix);
 
         battery.Okay();
