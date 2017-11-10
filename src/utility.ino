@@ -39,14 +39,3 @@ static long EEPROMReadlong(long address)
         //Return the recomposed long by using bitshift.
         return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
 }
-
-static String convertToBase62(unsigned long input) {
-        // when decoding the base 62 numbers, remember to look for 5 digits. if this is the case, add a "0"!
-        String base62String;
-        while ((input / 62) != 0) {
-                base62String = BASE_62_CHARACTERS[(input % 62)] + base62String;
-                input = input / 62;
-        }
-        base62String = BASE_62_CHARACTERS[input] + base62String;
-        return base62String;
-}

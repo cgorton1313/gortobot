@@ -44,7 +44,6 @@ const float MINIMUM_BATTERY_VOLTAGE = 3.3; // system will wait for charging at t
 const float BATTERY_OKAY_VOLTAGE = 3.4; // system will resume program at this voltage threshold
 const int BATTERY_WAIT_TIME = 60; // seconds to wait between checking for batteryOkay
 const byte MESSAGE_VERSION = 3; // 2 = long form, 3 = base62
-const char BASE_62_CHARACTERS[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
@@ -127,9 +126,8 @@ void loop() {
                 fix = gb_gps.GetFix('f'); // 'f' = 'fake'
         }
 
-        batteryVoltage = battery.GetVoltage(); // because makeLogSentence isn't classy yet
-        logSentence = sentence_builder.Sentence(runNum, loopCount, fix, batteryVoltage);
-        //logSentence = makeLogSentence(fix);
+        logSentence = sentence_builder.Sentence(runNum, loopCount, fix, battery.GetVoltage(),
+                                                getSailPosition(), diagnosticMessage());
 
         battery.Okay();
         if (USING_WIFI) {
@@ -137,7 +135,7 @@ void loop() {
                 bool wifi_successful = false;
                 while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
                         if (wifi.UseWifi(logSentence)) {
-                            wifi_successful = true;
+                                wifi_successful = true;
                         }
                         wifi_attempt++;
                 }
