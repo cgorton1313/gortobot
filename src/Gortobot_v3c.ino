@@ -4,7 +4,6 @@
 // battery classes, abstract, fake
 // gps classes, abstract, fake
 // vref maxes at 4.096, do something about this
-// get a beer
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -100,6 +99,7 @@ void setup() {
         analogWrite(LED_PIN, LOW); // turn off LED
         digitalWrite(GPS_POWER_PIN_1, LOW); // turn off GPS
         digitalWrite(GPS_POWER_PIN_2, LOW); // turn off GPS
+        digitalWrite(WIFI_ENABLE_PIN, LOW); // turn off wifi
 
         isbd.sleep(); // turn off ISBD
 
@@ -154,6 +154,7 @@ void loop() {
         }
 
         // check the txSuccess use here, can't remember if it's correct
+        txSuccess = true;
         thisWatch = howLongWatchShouldBe(); // in seconds
 
         battery.Okay();
