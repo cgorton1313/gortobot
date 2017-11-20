@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Vcc.h>
 
 class GbBattery {
 

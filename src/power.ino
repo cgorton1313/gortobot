@@ -3,7 +3,7 @@
 
 static void gortoNap(int seconds) {
         for (int i = 0; i < seconds; i++) {
-                Narcoleptic.delay(1000);
+                sleep.sleepDelay(1000);
                 delay(DELAY_FOR_SERIAL);
         }
 }

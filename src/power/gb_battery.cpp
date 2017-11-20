@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "power/gb_battery.h"
-#include <Narcoleptic.h>
+#include <Sleep_n0m1.h>
 
 GbBattery::GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {
         _pin = pin;
@@ -12,14 +12,16 @@ GbBattery::GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_
 
 float GbBattery::GetVoltage() {
         if (_checking_voltage) {
-                delay(5000); // settle down
+                delay(3000); // settle down
                 int battery_voltage_int = 0;
                 const int samples = 10; // number of samples to take
                 for (int i = 0; i < samples; i++) {
                         delay(5);
                         battery_voltage_int = battery_voltage_int + analogRead(_pin);
                 }
-                return (4.096 * (((float)battery_voltage_int / samples) / 1023.0));
+                Vcc vcc(1); // VccCorrection
+                Serial.println(vcc.Read_Volts());
+                return (vcc.Read_Volts() * (((float)battery_voltage_int / samples) / 1023.0)); // use 5V bus for external vref
         } else {
                 return 3.99;
         }
@@ -42,13 +44,15 @@ void GbBattery::Okay() {
                 voltage_critical = true;
         }
         while (voltage_critical) {
+                Sleep sleep;
+                sleep.pwrDownMode(); // best power saving mode for sleeping
                 Serial.print(F("Voltage critical! Voltage = "));
                 Serial.print(voltage_now);
                 Serial.print(F(". Waiting "));
                 Serial.print(_wait_time);
                 Serial.println(F(" seconds."));
                 for (int i = 0; i < _wait_time; i++) {
-                        Narcoleptic.delay(1000);
+                        sleep.sleepDelay(1000);
                 }
                 voltage_now = this->GetVoltage();
                 if (voltage_now > _retry_voltage) {

@@ -11,7 +11,7 @@
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include <IridiumSBD.h>
-#include <Narcoleptic.h>
+#include <Sleep_n0m1.h>
 #include "communication/gb_wifi.h"
 #include "power/gb_battery.h"
 #include "navigation/gb_gps.h"
@@ -48,7 +48,7 @@ const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 1200;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 600;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
@@ -78,13 +78,9 @@ IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
 GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
+Sleep sleep;
 
 void setup() {
-        analogReference(EXTERNAL);
-        for (byte b = 0; b < 100; b++) { // clear the bits
-                analogRead(A0);
-        }
-
         randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be open
         Serial.begin(CONSOLE_BAUD);
 
@@ -102,6 +98,8 @@ void setup() {
         digitalWrite(WIFI_ENABLE_PIN, LOW); // turn off wifi
 
         isbd.sleep(); // turn off ISBD
+
+        sleep.pwrDownMode(); // best power saving mode for sleeping
 
         if (RESET_EEPROM) {
                 Serial.println(F("Resetting EEPROM"));
