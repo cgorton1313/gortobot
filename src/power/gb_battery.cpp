@@ -12,7 +12,7 @@ GbBattery::GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_
 
 float GbBattery::GetVoltage() {
         if (_checking_voltage) {
-                delay(3000); // settle down
+                delay(2000); // settle down
                 int battery_voltage_int = 0;
                 const int samples = 10; // number of samples to take
                 for (int i = 0; i < samples; i++) {
@@ -20,8 +20,7 @@ float GbBattery::GetVoltage() {
                         battery_voltage_int = battery_voltage_int + analogRead(_pin);
                 }
                 Vcc vcc(1); // VccCorrection
-                Serial.println(vcc.Read_Volts());
-                return (vcc.Read_Volts() * (((float)battery_voltage_int / samples) / 1023.0)); // use 5V bus for external vref
+                return (vcc.Read_Volts() * (((float)battery_voltage_int / samples) / 1023.0));
         } else {
                 return 3.99;
         }
