@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "GB_sail.h"
+#include "gb_sail.h"
 #include "gb_fix.h"
 #include "gb_gps.h"
 #include "gb_battery.h"
@@ -8,14 +8,5 @@
 
 #ifndef GB_LIBRARY_H
 #define GB_LIBRARY_H
-
-class Demo
-{
-    public:
-        Demo();
-        int Do();
-
-    private:
-};
 
 #endif

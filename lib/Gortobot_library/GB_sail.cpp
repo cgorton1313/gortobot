@@ -1,4 +1,4 @@
-#include "GB_sail.h"
+#include "gb_sail.h"
 
 Sail::Sail(byte sensorPin, byte sensorEnablePin)
 {
