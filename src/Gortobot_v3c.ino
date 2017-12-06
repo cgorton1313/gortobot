@@ -12,10 +12,7 @@
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include <IridiumSBD.h>
 #include <Sleep_n0m1.h>
-#include "communication/gb_wifi.h"
-#include "power/gb_battery.h"
-#include "navigation/gb_gps.h"
-#include "communication/gb_sentence_builder.h"
+#include <GB_Library.h>
 
 // Pin assignments
 #define GPS_PORT Serial1

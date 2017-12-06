@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <communication/gb_wifi.h>
+#include "gb_wifi.h"
 
 GbWifi::GbWifi(byte pin, HardwareSerial &port, unsigned long baud) {
         _wifi_enable_pin = pin;

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <navigation/gb_fix.h>
+#include "gb_fix.h"
 
 #ifndef gb_sentence_builder_h
 #define gb_sentence_builder_h

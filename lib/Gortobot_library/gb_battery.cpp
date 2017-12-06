@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "power/gb_battery.h"
+#include "gb_battery.h"
 #include <Sleep_n0m1.h>
 
 GbBattery::GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "navigation/gb_gps.h"
+#include "gb_gps.h"
 
 GbGps::GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud) {
         _gps_power_pin1 = power_pin1;

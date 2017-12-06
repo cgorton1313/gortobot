@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <communication/gb_sentence_builder.h>
+#include "gb_sentence_builder.h"
 
 GbSentenceBuilder::GbSentenceBuilder(byte message_version) {
         _message_version = message_version;
