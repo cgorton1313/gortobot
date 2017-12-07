@@ -1,24 +1,5 @@
 // sail.ino handles the sails (trimming, reporting, etc.)
 
-int getSailPosition() {
-        int tempSailPosition;
-        const byte REPETITIONS = 10;
-        int sum = 0;
-        for (byte i = 0; i < REPETITIONS; i++) {
-                sum = sum + analogRead(POT_PIN);
-                delay(1);
-        }
-        tempSailPosition = map(sum / REPETITIONS, 1023, 15, MINIMUM_SAIL_ANGLE, MAXIMUM_SAIL_ANGLE);
-        Serial.print(F("Sail position = "));
-        Serial.print(tempSailPosition);
-        Serial.print(F(" ("));
-        Serial.print(sum / REPETITIONS);
-        Serial.print(F(") | Ordered = "));
-        Serial.println(orderedSailPosition);
-        delay(DELAY_FOR_SERIAL);
-        return tempSailPosition;
-}
-
 unsigned long howLongWatchShouldBe() {
         if (txSuccess) {
                 return loggingInterval; // in seconds, need the UL for large times
@@ -112,7 +93,7 @@ static void trimSail(int orderedSailPosition) {
         int totalTrimSeconds = 0;
         boolean sailIsTrimming = true;
         processVoltageData();
-        sailPosition = getSailPosition();
+        sailPosition = sail.GetPosition();
         int tempSailPosition = sailPosition;
         trimRoutineExceededMax = false;
         sailNotMoving = false;
@@ -131,7 +112,7 @@ static void trimSail(int orderedSailPosition) {
                                         trimRoutineExceededMax = true;
                                         Serial.println(F("trimRoutineExceededMax"));
                                 }
-                                sailPosition = getSailPosition();
+                                sailPosition = sail.GetPosition();
                                 if (sailPosition == tempSailPosition) {
                                         // sail hasn't moved in the last second
                                         trimSeconds = trimSeconds + 1;

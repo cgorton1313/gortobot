@@ -3,7 +3,6 @@
 // TODO:
 // battery classes, abstract, fake
 // gps classes, abstract, fake
-// vref maxes at 4.096, do something about this
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -22,7 +21,8 @@ const byte LED_PIN = 13; // brown, to external LED via 420 ohm resistor
 const byte GPS_POWER_PIN_1 = 26;
 const byte GPS_POWER_PIN_2 = 25;
 const byte BATTERY_VOLTAGE_PIN = A0; // green
-const byte POT_PIN = A3; // green
+const byte SAIL_POSITION_SENSOR_PIN = A5; // green
+const byte SAIL_POSITION_ENABLE_PIN = 50; // red
 const byte MOTOR_IN_1_PIN = 3, MOTOR_IN_2_PIN = 4; // 3-yellow, 4-blue
 const byte CHIP_SELECT = 10; // temp while using only satellite. can't remember why
 const byte SATELLITE_SLEEP_PIN = 7; // 7-green
@@ -76,6 +76,7 @@ GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
 GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 Sleep sleep;
+Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN);
 
 void setup() {
         randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be open
@@ -123,7 +124,7 @@ void loop() {
         }
 
         logSentence = sentence_builder.Sentence(runNum, loopCount, fix, battery.GetVoltage(),
-                                                getSailPosition(), diagnosticMessage());
+                                                sail.GetPosition(), diagnosticMessage());
 
         battery.Okay();
         if (USING_WIFI) {

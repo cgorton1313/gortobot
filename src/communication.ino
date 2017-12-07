@@ -108,7 +108,7 @@ void blinkMessage(int condition) {
 }
 
 void getSerialMonitorOrders() {
-        getSailPosition();
+        sail.GetPosition();
         Serial.println(F("Ready for orders:"));
         while (!Serial.available()) ; // wait for the serial data
 
