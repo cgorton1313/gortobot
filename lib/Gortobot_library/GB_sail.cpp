@@ -36,7 +36,7 @@ int Sail::GetPositionAnalogReading()
     int sum = 0;
     for (byte i = 0; i < REPETITIONS; i++) {
             sum = sum + analogRead(_sensorPin);
-            delay(10);
+            delay(1);
     }
     position = sum / REPETITIONS;
     return position;

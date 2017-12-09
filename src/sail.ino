@@ -92,7 +92,8 @@ static void trimSail(int orderedSailPosition) {
         int trimSeconds = 0;
         int totalTrimSeconds = 0;
         boolean sailIsTrimming = true;
-        processVoltageData();
+        //processVoltageData();
+        battery.Okay();
         sailPosition = sail.GetPosition();
         int tempSailPosition = sailPosition;
         trimRoutineExceededMax = false;
