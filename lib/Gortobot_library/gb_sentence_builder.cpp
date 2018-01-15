@@ -6,7 +6,7 @@ GbSentenceBuilder::GbSentenceBuilder(byte message_version) {
 }
 
 String GbSentenceBuilder::Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix,
-                                   float battery_voltage, int sail_position, byte diagnostic_message) {
+                                   float battery_voltage, float battery2_voltage, int sail_position, byte diagnostic_message) {
         String log_sentence = "";
         String base_62_date_time;
 
@@ -58,6 +58,32 @@ String GbSentenceBuilder::Sentence(unsigned int run_num, unsigned int loop_count
                 log_sentence += ConvertToBase62(sail_position);
                 log_sentence += ",";
                 log_sentence += ConvertToBase62(diagnostic_message);
+                break;
+        case 4: // long form, 2 batteries
+                log_sentence += _message_version;
+                log_sentence += ",";
+                log_sentence += run_num;
+                log_sentence += ",";
+                log_sentence += loop_count;
+                log_sentence += ",";
+                log_sentence += String(a_fix.year % 100);
+                log_sentence += FormatDateNumber(a_fix.month);
+                log_sentence += FormatDateNumber(a_fix.day);
+                log_sentence += FormatDateNumber(a_fix.hour);
+                log_sentence += FormatDateNumber(a_fix.minute);
+                log_sentence += FormatDateNumber(a_fix.second);
+                log_sentence += ",";
+                log_sentence += String(a_fix.latitude, 4);
+                log_sentence += ",";
+                log_sentence += String(a_fix.longitude, 4);
+                log_sentence += ",";
+                log_sentence += String(battery_voltage, 2);
+                log_sentence += ",";
+                log_sentence += String(battery2_voltage, 2);
+                log_sentence += ",";
+                log_sentence += sail_position;
+                log_sentence += ",";
+                log_sentence += diagnostic_message;
                 break;
         }
 

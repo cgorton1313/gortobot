@@ -1,6 +1,6 @@
 
 const bool RESET_EEPROM = false; // sets runNum back to 0
-const bool CHECKING_VOLTAGE = false;
+const bool CHECKING_VOLTAGE = true;
 const bool USING_GPS = false;
 const bool USING_WIFI = false;
 const bool USING_SAT = false;

@@ -14,7 +14,7 @@ private:
 public:
     GbSentenceBuilder(byte message_version);
     String Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix,
-        float battery_voltage, int sail_position, byte diagnostic_message);
+        float battery_voltage, float battery2_voltage, int sail_position, byte diagnostic_message);
 };
 
 #endif

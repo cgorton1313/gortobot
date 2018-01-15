@@ -47,7 +47,8 @@ static void realSail() {
                                 Serial.println(F("Sailing on tack B"));
                         }
                         if (validOrders(orderedSailPosition)) {
-                                trimSail(orderedSailPosition);
+                                //trimSail(orderedSailPosition);
+                                sail.Trim(orderedSailPosition);
                         }
                         currentTackTime++;
                         Serial.print(F("Current tack time = "));
@@ -93,7 +94,7 @@ static void trimSail(int orderedSailPosition) {
         int totalTrimSeconds = 0;
         boolean sailIsTrimming = true;
         //processVoltageData();
-        battery.Okay();
+        battery2.Okay();
         sailPosition = sail.GetPosition();
         int tempSailPosition = sailPosition;
         trimRoutineExceededMax = false;

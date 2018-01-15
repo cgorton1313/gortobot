@@ -2,7 +2,8 @@
 #include "gb_battery.h"
 #include <Sleep_n0m1.h>
 
-GbBattery::GbBattery(byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {
+GbBattery::GbBattery(byte battery_number, byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {
+        _battery_number = battery_number;
         _pin = pin;
         _min_voltage = min_voltage;
         _retry_voltage = retry_voltage;
@@ -32,7 +33,9 @@ void GbBattery::Okay() {
 
         if (_checking_voltage) {
                 voltage_now = this->GetVoltage();
-                Serial.print(F("Voltage = "));
+                Serial.print(F("Battery"));
+                Serial.print(_battery_number);
+                Serial.print(F(" voltage = "));
         } else {
                 voltage_now = 3.99;
                 Serial.print(F("Fake voltage = "));
@@ -45,7 +48,9 @@ void GbBattery::Okay() {
         while (voltage_critical) {
                 Sleep sleep;
                 sleep.pwrDownMode(); // best power saving mode for sleeping
-                Serial.print(F("Voltage critical! Voltage = "));
+                Serial.print(F("Battery"));
+                Serial.print(_battery_number);
+                Serial.print(F(" voltage critical! Voltage = "));
                 Serial.print(voltage_now);
                 Serial.print(F(". Waiting "));
                 Serial.print(_wait_time);
@@ -58,6 +63,8 @@ void GbBattery::Okay() {
                         voltage_critical = false;
                 }
         }
-        Serial.print(F("Voltage okay. Voltage = "));
+        Serial.print(F("Battery"));
+        Serial.print(_battery_number);
+        Serial.print(F(" voltage okay. Voltage = "));
         Serial.println(voltage_now);
 }

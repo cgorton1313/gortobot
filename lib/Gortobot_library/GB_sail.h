@@ -6,7 +6,8 @@
 class Sail
 {
     public:
-        Sail(byte sensorPin, byte sensorEnablePin);
+        Sail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
+                    byte motorIn1Pin, byte motorIn2Pin);
         void Trim(int angle);
         int GetPosition();
 
@@ -15,6 +16,9 @@ class Sail
         byte _sensorEnablePin;
         byte _mastGearSize;
         byte _sensorGearSize;
+        byte _motorPowerEnablePin;
+        byte _motorIn1Pin;
+        byte _motorIn2Pin;
         int GetPositionAnalogReading();
 };
 

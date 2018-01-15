@@ -21,9 +21,10 @@ const byte LED_PIN = 13; // brown, to external LED via 420 ohm resistor
 const byte GPS_POWER_PIN_1 = 26;
 const byte GPS_POWER_PIN_2 = 25;
 const byte BATTERY_VOLTAGE_PIN = A0; // green
+const byte BATTERY2_VOLTAGE_PIN = A2; // green
 const byte SAIL_POSITION_SENSOR_PIN = A5; // green
 const byte SAIL_POSITION_ENABLE_PIN = 50; // red
-const byte MOTOR_IN_1_PIN = 3, MOTOR_IN_2_PIN = 4; // 3-yellow, 4-blue
+const byte MOTOR_IN_1_PIN = 30, MOTOR_IN_2_PIN = 31; // on a jst
 const byte CHIP_SELECT = 10; // temp while using only satellite. can't remember why
 const byte SATELLITE_SLEEP_PIN = 7; // 7-green
 const byte WIFI_ENABLE_PIN = 4; // pin 3 on Mega Pro is "D4", (brown)
@@ -40,7 +41,7 @@ const byte WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
 const float MINIMUM_BATTERY_VOLTAGE = 3.3; // system will wait for charging at this low voltage threshold
 const float BATTERY_OKAY_VOLTAGE = 3.4; // system will resume program at this voltage threshold
 const int BATTERY_WAIT_TIME = 60; // seconds to wait between checking for batteryOkay
-const byte MESSAGE_VERSION = 2; // 2 = long form, 3 = base62
+const byte MESSAGE_VERSION = 4; // 2 = long form, 3 = base62, 4 = base62 and 2 batteries
 const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
@@ -73,10 +74,14 @@ GbFix fix;
 GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
 IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
-GbBattery battery = GbBattery(BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
+GbBattery battery1 = GbBattery(1, BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
+GbBattery battery2 = GbBattery(2, BATTERY2_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
 GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 Sleep sleep;
-Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN);
+
+// TODO: figure this out
+Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN, 12, 13, 14);
+//byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin, byte motorIn1Pin, byte motorIn2Pin
 
 void setup() {
         randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be open
@@ -87,6 +92,7 @@ void setup() {
         pinMode(GPS_POWER_PIN_1, OUTPUT);
         pinMode(GPS_POWER_PIN_2, OUTPUT);
         pinMode(BATTERY_VOLTAGE_PIN, INPUT); // not necessary but for clarity
+        pinMode(BATTERY2_VOLTAGE_PIN, INPUT); // not necessary but for clarity
         pinMode(SATELLITE_SLEEP_PIN, OUTPUT);
         pinMode(MOTOR_IN_1_PIN, OUTPUT);
         pinMode(MOTOR_IN_2_PIN, OUTPUT);
@@ -115,7 +121,12 @@ void setup() {
 void loop() {
         loopCount++;
 
-        battery.Okay();
+        //battery2.Okay();
+        Serial.print(F("Battery 1 voltage = "));
+        Serial.println(battery1.GetVoltage());
+        Serial.print(F("Battery 2 voltage = "));
+        Serial.println(battery2.GetVoltage());
+
         if (USING_GPS) {
                 fix = gb_gps.GetFix('r'); // 'r' = 'real'
         }
@@ -123,10 +134,10 @@ void loop() {
                 fix = gb_gps.GetFix('f'); // 'f' = 'fake'
         }
 
-        logSentence = sentence_builder.Sentence(runNum, loopCount, fix, battery.GetVoltage(),
-                                                sail.GetPosition(), diagnosticMessage());
+        logSentence = sentence_builder.Sentence(runNum, loopCount, fix, battery1.GetVoltage(),
+                                                battery2.GetVoltage(), sail.GetPosition(), diagnosticMessage());
 
-        battery.Okay();
+        battery2.Okay();
         if (USING_WIFI) {
                 byte wifi_attempt = 1;
                 bool wifi_successful = false;
@@ -138,7 +149,7 @@ void loop() {
                 }
         }
 
-        battery.Okay();
+        battery2.Okay();
         if (USING_SAT) {
                 useSat();
         }
@@ -153,9 +164,10 @@ void loop() {
         txSuccess = true;
         thisWatch = howLongWatchShouldBe(); // in seconds
 
-        battery.Okay();
+        battery2.Okay();
         if (USING_SAIL) {
-                useSail();
+                // TODO: make the main program handle tacking, all the sail does is trim
+                //useSail();
         }
         else {
                 pretendSail();
