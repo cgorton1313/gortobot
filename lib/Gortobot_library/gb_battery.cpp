@@ -27,7 +27,7 @@ float GbBattery::GetVoltage() {
         }
 }
 
-void GbBattery::Okay() {
+boolean GbBattery::Okay() {
         float voltage_now;
         bool voltage_critical = false;
 
@@ -42,29 +42,5 @@ void GbBattery::Okay() {
         }
         Serial.println(voltage_now);
 
-        if (voltage_now < _min_voltage) {
-                voltage_critical = true;
-        }
-        while (voltage_critical) {
-                Sleep sleep;
-                sleep.pwrDownMode(); // best power saving mode for sleeping
-                Serial.print(F("Battery"));
-                Serial.print(_battery_number);
-                Serial.print(F(" voltage critical! Voltage = "));
-                Serial.print(voltage_now);
-                Serial.print(F(". Waiting "));
-                Serial.print(_wait_time);
-                Serial.println(F(" seconds."));
-                for (int i = 0; i < _wait_time; i++) {
-                        sleep.sleepDelay(1000);
-                }
-                voltage_now = this->GetVoltage();
-                if (voltage_now > _retry_voltage) {
-                        voltage_critical = false;
-                }
-        }
-        Serial.print(F("Battery"));
-        Serial.print(_battery_number);
-        Serial.print(F(" voltage okay. Voltage = "));
-        Serial.println(voltage_now);
+        return (voltage_now > _min_voltage);
 }

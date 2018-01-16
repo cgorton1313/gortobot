@@ -15,5 +15,5 @@ private:
 public:
     GbBattery(byte battery_number, byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage);
     float GetVoltage();
-    void Okay();
+    boolean Okay();
 };

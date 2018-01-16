@@ -46,3 +46,19 @@ static void gortoNap(int seconds) {
                 delay(DELAY_FOR_SERIAL);
         }
 }
+
+static void waitForBatteries(int waitTime) {
+        while (!battery1.Okay() && !battery2.Okay()) {
+                Serial.print(F("Both batteries critical! Waiting "));
+                Serial.print(waitTime);
+                Serial.println(F(" seconds."));
+
+                Sleep sleep;
+                sleep.pwrDownMode(); // best power saving mode for sleeping
+
+                for (int i = 0; i < waitTime; i++) {
+                        sleep.sleepDelay(1000);
+                }
+                Serial.println(F("Wait time elapsed. Retrying."));
+        }
+}

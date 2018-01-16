@@ -1,8 +1,9 @@
 /* Gortobot v3c */
 
-// TODO:
-// battery classes, abstract, fake
-// gps classes, abstract, fake
+// TODO: battery classes, abstract, fake
+// TODO: gps classes, abstract, fake
+// TODO: figure out how to fail from one batt to the next
+// TODO: integrate IridiumSBD 2.0 and test
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -24,10 +25,12 @@ const byte BATTERY_VOLTAGE_PIN = A0; // green
 const byte BATTERY2_VOLTAGE_PIN = A2; // green
 const byte SAIL_POSITION_SENSOR_PIN = A5; // green
 const byte SAIL_POSITION_ENABLE_PIN = 50; // red
-const byte MOTOR_IN_1_PIN = 30, MOTOR_IN_2_PIN = 31; // on a jst
+// TODO: wire pin 32 up
+const byte MOTOR_POWER_ENABLE_PIN = 32;
+const byte MOTOR_IN_1_PIN = 30, MOTOR_IN_2_PIN = 31; // on a JST under the board
 const byte CHIP_SELECT = 10; // temp while using only satellite. can't remember why
 const byte SATELLITE_SLEEP_PIN = 7; // 7-green
-const byte WIFI_ENABLE_PIN = 4; // pin 3 on Mega Pro is "D4", (brown)
+const byte WIFI_ENABLE_PIN = 4; // brown
 const byte RANDOM_SEED_PIN = A7;
 
 // Constants
@@ -46,7 +49,7 @@ const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 2;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 60;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS
@@ -80,11 +83,11 @@ GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 Sleep sleep;
 
 // TODO: figure this out
-Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN, 12, 13, 14);
-//byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin, byte motorIn1Pin, byte motorIn2Pin
+Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
+          MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN);
 
 void setup() {
-        randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be open
+        randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be floating
         Serial.begin(CONSOLE_BAUD);
 
         // Pin Modes
@@ -96,6 +99,7 @@ void setup() {
         pinMode(SATELLITE_SLEEP_PIN, OUTPUT);
         pinMode(MOTOR_IN_1_PIN, OUTPUT);
         pinMode(MOTOR_IN_2_PIN, OUTPUT);
+        pinMode(WIFI_ENABLE_PIN, OUTPUT);
         analogWrite(LED_PIN, LOW); // turn off LED
         digitalWrite(GPS_POWER_PIN_1, LOW); // turn off GPS
         digitalWrite(GPS_POWER_PIN_2, LOW); // turn off GPS
@@ -109,24 +113,21 @@ void setup() {
                 Serial.println(F("Resetting EEPROM"));
                 clearEEPROM();
         }
+
         incrementRunNum();
         Serial.print(F("Starting runNum "));
         Serial.println(runNum);
 
         if (USING_SAT) setUpSat();
 
-        delay(4000); // for some forgotten reason
+        delay(2000); // for some forgotten reason
 }
 
 void loop() {
         loopCount++;
 
-        //battery2.Okay();
-        Serial.print(F("Battery 1 voltage = "));
-        Serial.println(battery1.GetVoltage());
-        Serial.print(F("Battery 2 voltage = "));
-        Serial.println(battery2.GetVoltage());
-
+        // TODO: test this
+        waitForBatteries(BATTERY_WAIT_TIME);
         if (USING_GPS) {
                 fix = gb_gps.GetFix('r'); // 'r' = 'real'
         }
@@ -137,7 +138,7 @@ void loop() {
         logSentence = sentence_builder.Sentence(runNum, loopCount, fix, battery1.GetVoltage(),
                                                 battery2.GetVoltage(), sail.GetPosition(), diagnosticMessage());
 
-        battery2.Okay();
+        waitForBatteries(BATTERY_WAIT_TIME);
         if (USING_WIFI) {
                 byte wifi_attempt = 1;
                 bool wifi_successful = false;
@@ -149,7 +150,7 @@ void loop() {
                 }
         }
 
-        battery2.Okay();
+        waitForBatteries(BATTERY_WAIT_TIME);
         if (USING_SAT) {
                 useSat();
         }
@@ -164,9 +165,10 @@ void loop() {
         txSuccess = true;
         thisWatch = howLongWatchShouldBe(); // in seconds
 
-        battery2.Okay();
+        waitForBatteries(BATTERY_WAIT_TIME);
         if (USING_SAIL) {
                 // TODO: make the main program handle tacking, all the sail does is trim
+                // and wait for batteries?
                 //useSail();
         }
         else {
