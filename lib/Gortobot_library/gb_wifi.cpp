@@ -23,6 +23,7 @@ bool GbWifi::UseWifi(String sentence) {
                 if (WifiReceive()) ; // need to refactor success criteria here
         }
         WifiOff();
+        delay(1000); // let wifi reset
         return send_receive_success;
 }
 

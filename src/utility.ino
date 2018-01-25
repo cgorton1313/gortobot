@@ -41,24 +41,26 @@ static long EEPROMReadlong(long address)
 }
 
 static void gortoNap(int seconds) {
+        delay(DELAY_FOR_SERIAL);
         for (int i = 0; i < seconds; i++) {
                 sleep.sleepDelay(1000);
-                delay(DELAY_FOR_SERIAL);
         }
 }
 
 static void waitForBatteries(int waitTime) {
-        while (!battery1.Okay() && !battery2.Okay()) {
+        boolean battery1Okay = battery1.Okay();
+        boolean battery2Okay = battery2.Okay();
+
+        while (!battery1Okay && !battery2Okay) {
                 Serial.print(F("Both batteries critical! Waiting "));
                 Serial.print(waitTime);
                 Serial.println(F(" seconds."));
 
-                Sleep sleep;
-                sleep.pwrDownMode(); // best power saving mode for sleeping
-
                 for (int i = 0; i < waitTime; i++) {
-                        sleep.sleepDelay(1000);
+                        gortoNap(1);
                 }
                 Serial.println(F("Wait time elapsed. Retrying."));
+                battery1Okay = battery1.Okay();
+                battery2Okay;battery2.Okay();
         }
 }

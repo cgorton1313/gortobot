@@ -1,4 +1,3 @@
-
 const bool RESET_EEPROM = false; // sets runNum back to 0
 const bool CHECKING_VOLTAGE = true;
 const bool USING_GPS = false;

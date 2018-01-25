@@ -29,7 +29,6 @@ static void realSail() {
         Serial.print(F("Sailing for "));
         Serial.print(thisWatch);
         Serial.println(F(" seconds."));
-        delay(DELAY_FOR_SERIAL);
         unsigned long timer = 0; // used to track seconds during sail operation
         while (timer < thisWatch) {
                 if ((timer % 60) == 0) { // check trim every 60 seconds
@@ -53,15 +52,12 @@ static void realSail() {
                         currentTackTime++;
                         Serial.print(F("Current tack time = "));
                         Serial.println(currentTackTime);
-                        delay(DELAY_FOR_SERIAL);
                 }
                 gortoNap(6); // six seconds of napping
                 timer = timer + 6;
                 blinkMessage(2); // flash led
-                delay(DELAY_FOR_SERIAL);
                 Serial.print(F("timer = "));
                 Serial.println(timer);
-                delay(DELAY_FOR_SERIAL);
         }
 }
 
@@ -136,7 +132,6 @@ static void trimSail(int orderedSailPosition) {
         }
         Serial.print(F("totalTrimSeconds = "));
         Serial.println(totalTrimSeconds);
-        delay(DELAY_FOR_SERIAL);
 }
 
 static void stopMotors() {
@@ -150,30 +145,24 @@ static void setTestSailPosition(int thePosition) {
         if (sailMode != 's') {
                 while (testTimer < loggingInterval) { // so the duration can be set via RX
                         gortoNap(1); // one second of napping
-                        delay(DELAY_FOR_SERIAL);
                         testTimer = testTimer + 1;
                         blinkMessage(2); // flash led
                         Serial.print(F("timer = "));
                         Serial.println(testTimer);
-                        delay(DELAY_FOR_SERIAL);
                 }
         }
 }
 
 static void pretendSail() {
-        delay(DELAY_FOR_SERIAL);
         Serial.print(F("Pretending to sail for "));
         Serial.print(thisWatch);
         Serial.println(F(" seconds."));
-        delay(DELAY_FOR_SERIAL);
         unsigned long timer = 0; // used to track seconds during sail operation
         while (timer < thisWatch) {
                 gortoNap(1); // one second of napping
                 timer = timer + 1;
                 blinkMessage(2); // flash led
-                delay(DELAY_FOR_SERIAL);
                 Serial.print(F("timer = "));
-                delay(DELAY_FOR_SERIAL);
                 Serial.println(timer);
                 delay(10);
         }

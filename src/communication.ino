@@ -93,7 +93,7 @@ void blinkMessage(int condition) {
                 break;
         case 2: // single quick flash
                 digitalWrite(LED_PIN, HIGH);
-                delay(DELAY_FOR_SERIAL);
+                delay(10);
                 digitalWrite(LED_PIN, LOW);
                 break;
         case 3: // continuous on 2, off half
