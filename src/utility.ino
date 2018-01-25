@@ -48,19 +48,23 @@ static void gortoNap(int seconds) {
 }
 
 static void waitForBatteries(int waitTime) {
-        boolean battery1Okay = battery1.Okay();
-        boolean battery2Okay = battery2.Okay();
+        char battery1Status = battery1.Status();
+        char battery2Status = battery2.Status();
+        boolean batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');
 
-        while (!battery1Okay && !battery2Okay) {
-                Serial.print(F("Both batteries critical! Waiting "));
-                Serial.print(waitTime);
-                Serial.println(F(" seconds."));
+        if (batteriesCritical) {
+            Serial.println(F("Both batteries critical!"));
+            while (battery1Status != 'g' && battery2Status != 'g') {
+                    Serial.print(F("Neither battery green. Waiting "));
+                    Serial.print(waitTime);
+                    Serial.println(F(" seconds."));
 
-                for (int i = 0; i < waitTime; i++) {
-                        gortoNap(1);
-                }
-                Serial.println(F("Wait time elapsed. Retrying."));
-                battery1Okay = battery1.Okay();
-                battery2Okay;battery2.Okay();
+                    for (int i = 0; i < waitTime; i++) {
+                            gortoNap(1);
+                    }
+                    Serial.println(F("Wait time elapsed. Retrying."));
+                    battery1Status = battery1.Status();
+                    battery2Status = battery2.Status();
+            }
         }
 }

@@ -27,9 +27,8 @@ float GbBattery::GetVoltage() {
         }
 }
 
-boolean GbBattery::Okay() {
+char GbBattery::Status() {
         float voltage_now;
-        bool voltage_critical = false;
 
         if (_checking_voltage) {
                 voltage_now = this->GetVoltage();
@@ -42,5 +41,13 @@ boolean GbBattery::Okay() {
         }
         Serial.println(voltage_now);
 
-        return (voltage_now > _min_voltage);
+        char status;
+        if (voltage_now < _min_voltage) {
+            status = 'r'; // red, bad
+        } else if (voltage_now > _retry_voltage){
+            status = 'g'; // green, good
+        } else {
+            status = 'y'; // yellow, wait a bit
+        }
+        return status;
 }

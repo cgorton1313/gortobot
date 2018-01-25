@@ -4,7 +4,7 @@
 // TODO: gps classes, abstract, fake
 // TODO: figure out how to fail from one batt to the next
 // TODO: integrate IridiumSBD 2.0 and test
-// TODO: config whether to send to serial (debug mode)
+// TODO: batteries need to wait till 3.4 to comer back on
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -35,7 +35,7 @@ const byte WIFI_ENABLE_PIN = 4; // brown
 const byte RANDOM_SEED_PIN = A7;
 
 // Constants
-const byte DELAY_FOR_SERIAL = 5; // ms to delay so serial ouput is clean
+const byte DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
 const unsigned long CONSOLE_BAUD = 115200, WIFI_BAUD = 115200, GPS_BAUD = 38400;
 const unsigned int SAT_BAUD = 19200;
 const int SAT_CHARGE_TIME = 30; // seconds to wait at start-up for super-capacitor
@@ -89,7 +89,9 @@ Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
 
 void setup() {
         randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be floating
-        Serial.begin(CONSOLE_BAUD);
+        if (DEBUG) {
+            Serial.begin(CONSOLE_BAUD);
+        }
 
         // Pin Modes
         pinMode(LED_PIN, OUTPUT);
@@ -173,6 +175,7 @@ void loop() {
                 //useSail();
         }
         else {
+                waitForBatteries(BATTERY_WAIT_TIME);
                 pretendSail();
         }
 }
