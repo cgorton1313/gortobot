@@ -26,7 +26,6 @@ const byte BATTERY_VOLTAGE_PIN = A0; // green
 const byte BATTERY2_VOLTAGE_PIN = A2; // green
 const byte SAIL_POSITION_SENSOR_PIN = A5; // green
 const byte SAIL_POSITION_ENABLE_PIN = 50; // red
-// TODO: wire pin 32 up
 const byte MOTOR_POWER_ENABLE_PIN = 32;
 const byte MOTOR_IN_1_PIN = 30, MOTOR_IN_2_PIN = 31; // on a JST under the board
 const byte CHIP_SELECT = 10; // temp while using only satellite. can't remember why
@@ -89,9 +88,8 @@ Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
 
 void setup() {
         randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be floating
-        if (DEBUG) {
-            Serial.begin(CONSOLE_BAUD);
-        }
+
+        Serial.begin(CONSOLE_BAUD);
 
         // Pin Modes
         pinMode(LED_PIN, OUTPUT);
@@ -103,10 +101,13 @@ void setup() {
         pinMode(MOTOR_IN_1_PIN, OUTPUT);
         pinMode(MOTOR_IN_2_PIN, OUTPUT);
         pinMode(WIFI_ENABLE_PIN, OUTPUT);
+
+        // Initial pin states
         analogWrite(LED_PIN, LOW); // turn off LED
         digitalWrite(GPS_POWER_PIN_1, LOW); // turn off GPS
         digitalWrite(GPS_POWER_PIN_2, LOW); // turn off GPS
         digitalWrite(WIFI_ENABLE_PIN, LOW); // turn off wifi
+        digitalWrite(MOTOR_POWER_ENABLE_PIN, HIGH); // turn off motor driver high is off
 
         isbd.sleep(); // turn off ISBD
 
@@ -129,7 +130,6 @@ void setup() {
 void loop() {
         loopCount++;
 
-        // TODO: test this
         if (USING_GPS) {
                 waitForBatteries(BATTERY_WAIT_TIME);
                 fix = gb_gps.GetFix('r'); // 'r' = 'real'
@@ -165,17 +165,18 @@ void loop() {
         }
 
         // check the txSuccess use here, can't remember if it's correct
-        txSuccess = true;
+        txSuccess = true; // should be determined by tx status
         thisWatch = howLongWatchShouldBe(); // in seconds
 
         if (USING_SAIL) {
+                sailMode = 'p';
                 waitForBatteries(BATTERY_WAIT_TIME);
                 // TODO: make the main program handle tacking, all the sail does is trim
                 // and wait for batteries?
-                //useSail();
+                useSail();
         }
         else {
-                waitForBatteries(BATTERY_WAIT_TIME);
+                waitForBatteries(BATTERY_WAIT_TIME); // why?
                 pretendSail();
         }
 }

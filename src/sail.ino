@@ -12,6 +12,7 @@ unsigned long howLongWatchShouldBe() {
 static void useSail() {
         switch (sailMode) {
         case 'r': // real sailing
+        Serial.println("Sail mode was r");
                 realSail();
                 break;
         case 't': // testing sail
@@ -21,6 +22,17 @@ static void useSail() {
         case 's': // direct sets
                 Serial.println(F("Entering direct set sail mode."));
                 directSetSail();
+                break;
+        case 'p': // pulse
+                Serial.println(F("Start the sail motor."));
+                digitalWrite(MOTOR_POWER_ENABLE_PIN, LOW);
+                digitalWrite(MOTOR_IN_1_PIN, HIGH);
+                digitalWrite(MOTOR_IN_2_PIN, LOW);
+                delay(2000);
+                Serial.println(F("Stop the sail motor."));
+                digitalWrite(MOTOR_POWER_ENABLE_PIN, HIGH);
+                digitalWrite(MOTOR_IN_1_PIN, LOW);
+                digitalWrite(MOTOR_IN_2_PIN, LOW);
                 break;
         }
 }
