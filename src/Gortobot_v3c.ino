@@ -4,7 +4,6 @@
 // TODO: gps classes, abstract, fake
 // TODO: figure out how to fail from one batt to the next
 // TODO: integrate IridiumSBD 2.0 and test
-// TODO: batteries need to wait till 3.4 to comer back on
 
 // Program Modes (config)
 #include "configs/config.h"
