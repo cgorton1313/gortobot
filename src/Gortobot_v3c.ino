@@ -15,8 +15,6 @@
 #include <Sleep_n0m1.h>
 #include <gb_library.h>
 
-#ifndef UNIT_TEST  // IMPORTANT LINE for unit testing!
-
 // Pin assignments
 #define GPS_PORT Serial1
 #define WIFI_PORT Serial2
@@ -87,8 +85,6 @@ Sleep sleep;
 // TODO: figure this out
 Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
           MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN);
-
-#include "communication.cpp"
 
 void setup() {
         randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each run, A7 should be floating
@@ -184,5 +180,3 @@ void loop() {
                 pretendSail();
         }
 }
-
-#endif    // IMPORTANT LINE for unit testing!
