@@ -4,6 +4,6 @@ const bool USING_GPS = false;
 const bool USING_WIFI = true;
 const bool USING_SAT = false;
 const bool USING_SERIAL_MONITOR_ORDERS = false;
-const bool USING_SAIL = true;
+const bool USING_SAIL = false;
 const bool DEBUG = true;
 char sailMode = 'p';

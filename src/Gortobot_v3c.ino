@@ -4,7 +4,6 @@
 // TODO: gps classes, abstract, fake
 // TODO: figure out how to fail from one batt to the next
 // TODO: integrate IridiumSBD 2.0 and test
-// TODO: batteries need to wait till 3.4 to comer back on
 
 // Program Modes (config)
 #include "configs/config.h"
@@ -23,7 +22,7 @@ const byte LED_PIN = 13; // brown, to external LED via 420 ohm resistor
 const byte GPS_POWER_PIN_1 = 26;
 const byte GPS_POWER_PIN_2 = 25;
 const byte BATTERY_VOLTAGE_PIN = A0; // green
-const byte BATTERY2_VOLTAGE_PIN = A2; // green
+const byte BATTERY2_VOLTAGE_PIN = A2; // yellow
 const byte SAIL_POSITION_SENSOR_PIN = A5; // green
 const byte SAIL_POSITION_ENABLE_PIN = 50; // red
 const byte MOTOR_POWER_ENABLE_PIN = 32;
@@ -41,15 +40,15 @@ const int SAT_CHARGE_TIME = 30; // seconds to wait at start-up for super-capacit
 const int ISBD_TIMEOUT = 600;  // seconds to try getting isbd success
 const byte FAILURE_RETRY = 600; // seconds to wait after tx failure
 const byte WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
-const float MINIMUM_BATTERY_VOLTAGE = 3.3; // system will wait for charging at this low voltage threshold
-const float BATTERY_OKAY_VOLTAGE = 3.4; // system will resume program at this voltage threshold
+const float MINIMUM_BATTERY_VOLTAGE = 3.4; // system will wait for charging at this low voltage threshold
+const float BATTERY_OKAY_VOLTAGE = 3.5; // system will resume program at this voltage threshold
 const int BATTERY_WAIT_TIME = 2; // seconds to wait between checking for batteryOkay
 const byte MESSAGE_VERSION = 4; // 2 = long form, 3 = base62, 4 = base62 and 2 batteries
 const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS = 900; // max number of trim seconds allowed to get to ordered position. testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval = 1;  // seconds b/w logging events, 1 day = 86,400 secs which is max
+unsigned long loggingInterval = 60;  // seconds b/w logging events, 1 day = 86,400 secs which is max
 unsigned int runNum;  // increments each time the device starts
 unsigned int loopCount = 0;  // increments at each loop
 boolean fixAcquired = false, staleFix = true;  // for GPS

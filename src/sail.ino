@@ -28,7 +28,7 @@ static void useSail() {
                 digitalWrite(MOTOR_POWER_ENABLE_PIN, LOW);
                 digitalWrite(MOTOR_IN_1_PIN, HIGH);
                 digitalWrite(MOTOR_IN_2_PIN, LOW);
-                delay(2000);
+                delay(10000);
                 Serial.println(F("Stop the sail motor."));
                 digitalWrite(MOTOR_POWER_ENABLE_PIN, HIGH);
                 digitalWrite(MOTOR_IN_1_PIN, LOW);
