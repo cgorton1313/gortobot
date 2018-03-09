@@ -1,6 +1,5 @@
 /* Gortobot v3c */
 
-
 // TODO: battery classes, abstract, fake
 // TODO: gps classes, abstract, fake
 // TODO: figure out how to fail from one batt to the next
