@@ -7,6 +7,7 @@
 
 // Program Modes (config)
 #include "configs/config.h"
+#include "utilities/gb_utility.h"
 
 // Includes
 #include <EEPROM.h> // for saving the runNum after each re-start
@@ -114,10 +115,10 @@ void setup() {
 
         if (RESET_EEPROM) {
                 Serial.println(F("Resetting EEPROM"));
-                clearEEPROM();
+                GbUtility::clearEEPROM();
         }
 
-        incrementRunNum();
+        runNum = GbUtility::incrementRunNum();
         Serial.print(F("Starting runNum "));
         Serial.println(runNum);
 
