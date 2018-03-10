@@ -3,13 +3,13 @@
 
 GbUtility::GbUtility() {}
 
-void GbUtility::clearEEPROM() {
+void GbUtility::ClearEEPROM() {
         for (unsigned int i = 0; i < EEPROM.length(); i++) {
                 EEPROM.write(i, 0);
         }
 }
 
-unsigned int GbUtility::incrementRunNum() {
+unsigned int GbUtility::IncrementRunNum() {
         unsigned int newRunNum;
         newRunNum = EEPROMReadlong(0) + 1;
         EEPROMWritelong(0, newRunNum);

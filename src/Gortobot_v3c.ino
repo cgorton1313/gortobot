@@ -5,6 +5,8 @@
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
 
+#include <Arduino.h>
+
 // Program Modes (config)
 #include "configs/config.h"
 #include "utilities/gb_utility.h"
@@ -114,10 +116,10 @@ void setup() {
 
         if (RESET_EEPROM) {
                 Serial.println(F("Resetting EEPROM"));
-                GbUtility::clearEEPROM();
+                GbUtility::ClearEEPROM();
         }
 
-        runNum = GbUtility::incrementRunNum();
+        runNum = GbUtility::IncrementRunNum();
         Serial.print(F("Starting runNum "));
         Serial.println(runNum);
 
