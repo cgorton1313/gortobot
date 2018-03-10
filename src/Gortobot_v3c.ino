@@ -137,8 +137,11 @@ void setup() {
   Serial.print(F("Starting runNum "));
   Serial.println(runNum);
 
-  if (USING_SAT)
-    setUpSat();
+  if (USING_SAT) {
+      // TODO: instantiate here?
+      gb_satcom.SetUpSat(SAT_CHARGE_TIME);
+      //setUpSat();
+  }
 
   delay(2000); // for some forgotten reason
 }

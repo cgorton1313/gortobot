@@ -1,4 +1,5 @@
 #include "gb_satcom.h"
+#include "utilities/gb_utility.h"
 #include <IridiumSBD.h>
 
 GbSatcom::GbSatcom(byte pin, HardwareSerial &port, unsigned int baud) {
@@ -6,6 +7,18 @@ GbSatcom::GbSatcom(byte pin, HardwareSerial &port, unsigned int baud) {
         port.begin(baud);
         _satcom_port = &port;
         IridiumSBD isbd(port, pin);
+}
+
+void GbSatcom::SetUpSat(int chargeTime) {
+        Serial.print(F("Charging super-capacitor. Waiting "));
+        Serial.print(chargeTime);
+        Serial.println(F(" seconds..."));
+        GbUtility::GortoNap(chargeTime); // allow capacitor to charge
+        // isbd.attachConsole(Serial); // lets me see what the sat modem is doing
+        // isbd.setPowerProfile(1); // low power profile
+        // isbd.adjustSendReceiveTimeout(ISBD_TIMEOUT);
+        // isbd.setMinimumSignalQuality(3); // default is 2, trying this for stability
+        // isbd.useMSSTMWorkaround(false); // I think I need this here, which is a good thing
 }
 
 bool GbSatcom::UseSatcom(String sentence) {

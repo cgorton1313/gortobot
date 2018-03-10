@@ -15,5 +15,6 @@ private:
 
 public:
     GbSatcom(byte pin, HardwareSerial &port, unsigned int baud);
+    void SetUpSat(int chargeTime);
     bool UseSatcom(String sentence);
 };
