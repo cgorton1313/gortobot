@@ -86,8 +86,7 @@ GbFix fix;
 
 // Objects
 GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
-GbSatcom gb_satcom = GbSatcom(SATELLITE_SLEEP_PIN, ISBD_PORT, SAT_BAUD)
-//IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
+GbSatcom gb_satcom = GbSatcom(SATELLITE_SLEEP_PIN, ISBD_PORT, SAT_BAUD);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery1 =
     GbBattery(1, BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,

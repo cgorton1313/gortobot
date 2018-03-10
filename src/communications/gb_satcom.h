@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <IridiumSBD.h>
 
 class GbSatcom {
 
@@ -7,7 +6,7 @@ private:
     // const unsigned long _WIFI_TIMEOUT = 20000; // in milliseconds
     byte _satcom_sleep_pin;
     HardwareSerial* _satcom_port;
-    IridiumSBD _isbd;
+    // IridiumSBD _isbd;
     // void WifiOn();
     // void WifiOff();
     // bool WifiReady();
