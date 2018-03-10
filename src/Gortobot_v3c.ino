@@ -2,15 +2,14 @@
 
 // TODO: battery classes, abstract, fake
 // TODO: gps classes, abstract, fake
-// TODO: figure out how to fail from one batt to the next
 // TODO: integrate IridiumSBD 2.0 and test
+// TODO: watchdog timer
 
 // Program Modes (config)
 #include "configs/config.h"
 #include "utilities/gb_utility.h"
 
 // Includes
-#include <EEPROM.h> // for saving the runNum after each re-start
 #include <IridiumSBD.h>
 #include <Sleep_n0m1.h>
 #include <gb_library.h>

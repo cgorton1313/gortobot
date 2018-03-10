@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "gb_gps.h"
 
 GbGps::GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud) {

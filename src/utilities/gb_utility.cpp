@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include "gb_utility.h"
 

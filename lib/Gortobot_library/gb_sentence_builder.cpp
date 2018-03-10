@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "gb_sentence_builder.h"
 
 GbSentenceBuilder::GbSentenceBuilder(byte message_version) {
