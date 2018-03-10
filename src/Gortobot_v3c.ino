@@ -9,11 +9,11 @@
 
 // Program Modes (config)
 #include "configs/config.h"
-#include "utilities/gb_utility.h"
 
 // Includes
-#include <IridiumSBD.h>
 #include <gb_library.h>
+#include "utilities/gb_utility.h"
+#include "communications/gb_satcom.h"
 
 // Pin assignments
 #define GPS_PORT Serial1
@@ -86,7 +86,8 @@ GbFix fix;
 
 // Objects
 GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
-IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
+GbSatcom gb_satcom = GbSatcom(SATELLITE_SLEEP_PIN, ISBD_PORT, SAT_BAUD)
+//IridiumSBD isbd(ISBD_PORT, SATELLITE_SLEEP_PIN);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery1 =
     GbBattery(1, BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
@@ -125,7 +126,8 @@ void setup() {
   digitalWrite(MOTOR_POWER_ENABLE_PIN,
                HIGH); // turn off motor driver high is off
 
-  isbd.sleep(); // turn off ISBD
+    // TODO: check this
+  //isbd.sleep(); // turn off ISBD
 
   if (RESET_EEPROM) {
     Serial.println(F("Resetting EEPROM"));
@@ -168,9 +170,10 @@ void loop() {
     }
   }
 
+// TODO: make like wifi with retries?
   if (USING_SAT) {
     waitForBatteries(BATTERY_WAIT_TIME);
-    useSat();
+    gb_satcom.UseSatcom(logSentence);
   } else if (USING_SERIAL_MONITOR_ORDERS) {
     getSerialMonitorOrders();
   } else {

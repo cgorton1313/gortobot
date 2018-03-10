@@ -4,6 +4,7 @@ GbSentenceBuilder::GbSentenceBuilder(byte message_version) {
         _message_version = message_version;
 }
 
+// TODO: use https://stackoverflow.com/questions/2462951/c-equivalent-of-stringbuffer-stringbuilder
 String GbSentenceBuilder::Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix,
                                    float battery_voltage, float battery2_voltage, int sail_position, byte diagnostic_message) {
         String log_sentence = "";
