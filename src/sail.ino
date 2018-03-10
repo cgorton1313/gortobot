@@ -65,7 +65,7 @@ static void realSail() {
                         Serial.print(F("Current tack time = "));
                         Serial.println(currentTackTime);
                 }
-                gortoNap(6); // six seconds of napping
+                GbUtility::GortoNap(6); // six seconds of napping
                 timer = timer + 6;
                 blinkMessage(2); // flash led
                 Serial.print(F("timer = "));
@@ -157,7 +157,7 @@ static void setTestSailPosition(int thePosition) {
         unsigned long testTimer = 0;
         if (sailMode != 's') {
                 while (testTimer < loggingInterval) { // so the duration can be set via RX
-                        gortoNap(1); // one second of napping
+                        GbUtility::GortoNap(1); // one second of napping
                         testTimer = testTimer + 1;
                         blinkMessage(2); // flash led
                         Serial.print(F("timer = "));
@@ -172,7 +172,7 @@ static void pretendSail() {
         Serial.println(F(" seconds."));
         unsigned long timer = 0; // used to track seconds during sail operation
         while (timer < thisWatch) {
-                gortoNap(1); // one second of napping
+                GbUtility::GortoNap(1); // one second of napping
                 timer = timer + 1;
                 blinkMessage(2); // flash led
                 Serial.print(F("timer = "));

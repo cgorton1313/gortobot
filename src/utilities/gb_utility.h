@@ -10,5 +10,6 @@ static void EEPROMWritelong(int address, long value);
 public:
 static void ClearEEPROM();
 static unsigned int IncrementRunNum();
+static void GortoNap(int seconds);
 
 };

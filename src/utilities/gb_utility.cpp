@@ -1,4 +1,5 @@
 #include <EEPROM.h> // for saving the runNum after each re-start
+#include <Sleep_n0m1.h>
 #include "gb_utility.h"
 
 GbUtility::GbUtility() {}
@@ -42,4 +43,14 @@ void GbUtility::EEPROMWritelong(int address, long value)
         EEPROM.write(address + 1, three);
         EEPROM.write(address + 2, two);
         EEPROM.write(address + 3, one);
+}
+
+void GbUtility::GortoNap(int seconds) {
+  Sleep sleep;
+  sleep.pwrDownMode(); // best power saving mode for sleeping
+  // TODO: replace with parameter
+  delay(5);
+  for (int i = 0; i < seconds; i++) {
+    sleep.sleepDelay(1000);
+  }
 }

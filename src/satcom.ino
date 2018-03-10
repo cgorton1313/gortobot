@@ -2,7 +2,7 @@ static void setUpSat() {
         Serial.print(F("Charging super-capacitor. Waiting "));
         Serial.print(SAT_CHARGE_TIME);
         Serial.println(F(" seconds..."));
-        gortoNap(SAT_CHARGE_TIME); // allow capacitor to charge
+        GbUtility::GortoNap(SAT_CHARGE_TIME); // allow capacitor to charge
         isbd.attachConsole(Serial); // lets me see what the sat modem is doing
         isbd.setPowerProfile(1); // low power profile
         isbd.adjustSendReceiveTimeout(ISBD_TIMEOUT);
