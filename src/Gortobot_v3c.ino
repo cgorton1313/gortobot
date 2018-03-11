@@ -4,6 +4,7 @@
 // TODO: gps classes, abstract, fake
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
+// TODO: write copious comments
 
 #include <Arduino.h>
 
@@ -11,9 +12,9 @@
 #include "configs/config.h"
 
 // Includes
-#include <gb_library.h>
-#include "utilities/gb_utility.h"
 #include "communications/gb_satcom.h"
+#include "utilities/gb_utility.h"
+#include <gb_library.h>
 
 // Pin assignments
 #define GPS_PORT Serial1
@@ -37,11 +38,11 @@ const byte RANDOM_SEED_PIN = A7;
 // Constants
 const byte DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
 const unsigned long CONSOLE_BAUD = 115200, WIFI_BAUD = 115200, GPS_BAUD = 38400;
-const unsigned int SAT_BAUD = 19200;
+const unsigned long SAT_BAUD = 19200;
 const int SAT_CHARGE_TIME =
     30;                       // seconds to wait at start-up for super-capacitor
 const int ISBD_TIMEOUT = 600; // seconds to try getting isbd success
-const byte FAILURE_RETRY = 600;    // seconds to wait after tx failure
+const int FAILURE_RETRY = 600;     // seconds to wait after tx failure
 const byte WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
 const float MINIMUM_BATTERY_VOLTAGE =
     3.4; // system will wait for charging at this low voltage threshold
@@ -66,7 +67,6 @@ float batteryVoltage;
 boolean batteryCritical = false;
 unsigned int timeSinceLastFramLog = 0;
 String logSentence = "";
-char txBuffer[50];
 boolean txSuccess;
 int orderedSailPosition;        // switches b/w A and B
 int orderedSailPositionA = 270; // where we want the sail to be for A
@@ -86,7 +86,7 @@ GbFix fix;
 
 // Objects
 GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
-GbSatcom gb_satcom = GbSatcom(SATELLITE_SLEEP_PIN, ISBD_PORT, SAT_BAUD);
+GbSatcom gb_satcom = GbSatcom(SATELLITE_SLEEP_PIN, SAT_BAUD);
 GbWifi wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_PORT, WIFI_BAUD);
 GbBattery battery1 =
     GbBattery(1, BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
@@ -125,8 +125,8 @@ void setup() {
   digitalWrite(MOTOR_POWER_ENABLE_PIN,
                HIGH); // turn off motor driver high is off
 
-    // TODO: check this
-  //isbd.sleep(); // turn off ISBD
+  // TODO: check this
+  // isbd.sleep(); // turn off ISBD
 
   if (RESET_EEPROM) {
     Serial.println(F("Resetting EEPROM"));
@@ -138,12 +138,10 @@ void setup() {
   Serial.println(runNum);
 
   if (USING_SAT) {
-      // TODO: instantiate here?
-      gb_satcom.SetUpSat(SAT_CHARGE_TIME);
-      //setUpSat();
+    gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
   }
 
-  delay(2000); // for some forgotten reason
+  delay(1000); // for some forgotten reason
 }
 
 void loop() {
@@ -172,18 +170,23 @@ void loop() {
     }
   }
 
-// TODO: make like wifi with retries?
+  String inboundMessage = "";
   if (USING_SAT) {
+    txSuccess = false;
     waitForBatteries(BATTERY_WAIT_TIME);
-    gb_satcom.UseSatcom(logSentence);
+    if (gb_satcom.UseSatcom(logSentence)) {
+      txSuccess = true;
+      inboundMessage = gb_satcom.GetInboundMessage();
+    }
   } else if (USING_SERIAL_MONITOR_ORDERS) {
     getSerialMonitorOrders();
   } else {
     getFakeOrders();
   }
 
-  // check the txSuccess use here, can't remember if it's correct
-  txSuccess = true;                   // should be determined by tx status
+// parse inboundMessage
+
+  // TODO: pass in txSuccess
   thisWatch = howLongWatchShouldBe(); // in seconds
 
   if (USING_SAIL) {

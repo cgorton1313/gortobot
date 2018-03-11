@@ -89,7 +89,6 @@ String GbSentenceBuilder::Sentence(unsigned int run_num, unsigned int loop_count
 
         Serial.print(F("log_sentence = "));
         Serial.println(log_sentence);
-        //log_sentence.toCharArray(txBuffer, log_sentence.length() + 1);
         return log_sentence;
 }
 

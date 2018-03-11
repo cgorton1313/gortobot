@@ -3,18 +3,17 @@
 class GbSatcom {
 
 private:
-    // const unsigned long _WIFI_TIMEOUT = 20000; // in milliseconds
-    byte _satcom_sleep_pin;
+    unsigned long _satcom_baud;
     HardwareSerial* _satcom_port;
-    // IridiumSBD _isbd;
-    // void WifiOn();
-    // void WifiOff();
-    // bool WifiReady();
+    String _inboundMessage;
+    void SatOn();
+    void SatOff();
     // bool WifiSend(String);
     // bool WifiReceive();
 
 public:
-    GbSatcom(byte pin, HardwareSerial &port, unsigned int baud);
-    void SetUpSat(int chargeTime);
+    GbSatcom(byte sleepPin, unsigned long baud);
+    void SetUpSat(int chargeTime, int timeOut);
     bool UseSatcom(String sentence);
+    String GetInboundMessage();
 };
