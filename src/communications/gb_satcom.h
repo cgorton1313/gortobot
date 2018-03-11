@@ -8,6 +8,7 @@ private:
     String _inboundMessage;
     void SatOn();
     void SatOff();
+    void ChargeSuperCapacitor(int chargeTime);
     // bool WifiSend(String);
     // bool WifiReceive();
 
