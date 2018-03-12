@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include <gb_battery.h>
 
+#ifndef gb_utility_h
+#define gb_utility_h
+
 class GbUtility {
 
 private:
@@ -15,3 +18,5 @@ static void GortoNap(int seconds);
 static void WaitForBatteries(int waitTime, GbBattery battery1, GbBattery battery2);
 
 };
+
+#endif

@@ -12,6 +12,7 @@
 #include "configs/config.h"
 
 // Includes
+#include "communications/gb_sailing_orders.h"
 #include "communications/gb_satcom.h"
 #include "utilities/gb_utility.h"
 #include <gb_library.h>
@@ -58,8 +59,9 @@ const int TRIM_ROUTINE_MAXIMUM_SECONDS =
          // testing shows 450 should be max
 
 // Global variables
-unsigned long loggingInterval =
-    60; // seconds b/w logging events, 1 day = 86,400 secs which is max
+// TODO: delete thios once useSail is gone to cpp
+unsigned long loggingInterval = 60; // seconds b/w logging events, 1 day =
+// 86,400 secs which is max
 unsigned int runNum;        // increments each time the device starts
 unsigned int loopCount = 0; // increments at each loop
 boolean fixAcquired = false, staleFix = true; // for GPS
@@ -68,12 +70,17 @@ boolean batteryCritical = false;
 unsigned int timeSinceLastFramLog = 0;
 String logSentence = "";
 boolean txSuccess;
-int orderedSailPosition;        // switches b/w A and B
+int orderedSailPosition; // switches b/w A and B
+
+// TODO: delete these once useSail is gone to cpp
 int orderedSailPositionA = 270; // where we want the sail to be for A
-int orderedTackTimeA = 90;      // how long we want the sail to be in position A
+int orderedTackTimeA = 90;      // how long we want the sail to be in
+position A
 int orderedSailPositionB = 270; // where we want the sail to be for B
-int orderedTackTimeB = 90;      // how long we want the sail to be in position B
-int sailPosition;               // the actual position of the sail
+int orderedTackTimeB = 90;      // how long we want the sail to be in
+position B
+
+int sailPosition;       // the actual position of the sail
 boolean tackIsA = true; // to keep track of which tack setting we should be on
 int currentTackTime =
     0; // keeps track of how long we've been on current tack in minutes
@@ -83,6 +90,11 @@ boolean trimRoutineExceededMax =
     false; // if it takes more than set number of pulses to trim the sail
 boolean sailNotMoving = false; // if it gets stuck moving sail 1 degree
 GbFix fix;
+GbSailingOrders sailingOrders = {.loggingInterval = 60,
+                                 .orderedSailPositionA = 270,
+                                 .orderedTackTimeA = 90,
+                                 .orderedSailPositionB = 270,
+                                 .orderedTackTimeB = 90};
 
 // Objects
 GbGps gb_gps = GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_PORT, GPS_BAUD);
@@ -171,8 +183,8 @@ void loop() {
   }
 
   String inboundMessage = "";
+  txSuccess = false;
   if (USING_SAT) {
-    txSuccess = false;
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
     if (gb_satcom.UseSatcom(logSentence)) {
       txSuccess = true;
@@ -180,11 +192,16 @@ void loop() {
     }
   } else if (USING_SERIAL_MONITOR_ORDERS) {
     getSerialMonitorOrders();
+    txSuccess = true;
   } else {
     getFakeOrders();
+    txSuccess = true;
   }
 
-// parse inboundMessage
+  // Parse inbound message
+  if (txSuccess) {
+    sailingOrders = GbMessageParser::ParseMessage(inboundMessage);
+  }
 
   // TODO: pass in txSuccess
   thisWatch = howLongWatchShouldBe(); // in seconds
@@ -192,9 +209,8 @@ void loop() {
   if (USING_SAIL) {
     sailMode = 'p';
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-    // TODO: make the main program handle tacking, all the sail does is trim
-    // and wait for batteries?
-    useSail();
+    // TODO: move useSail into cpp and pass it the sailing orders
+    //useSail();
   } else {
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2); // why?
     pretendSail();
