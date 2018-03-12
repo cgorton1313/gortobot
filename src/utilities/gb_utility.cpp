@@ -54,3 +54,25 @@ void GbUtility::GortoNap(int seconds) {
     sleep.sleepDelay(1000);
   }
 }
+
+void GbUtility::WaitForBatteries(int waitTime, GbBattery battery1, GbBattery battery2) {
+  char battery1Status = battery1.Status();
+  char battery2Status = battery2.Status();
+  boolean batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');
+
+  if (batteriesCritical) {
+    Serial.println(F("Both batteries critical!"));
+    while (battery1Status != 'g' && battery2Status != 'g') {
+      Serial.print(F("Neither battery green. Waiting "));
+      Serial.print(waitTime);
+      Serial.println(F(" seconds."));
+
+      for (int i = 0; i < waitTime; i++) {
+        GbUtility::GortoNap(1);
+      }
+      Serial.println(F("Wait time elapsed. Retrying."));
+      battery1Status = battery1.Status();
+      battery2Status = battery2.Status();
+    }
+  }
+}

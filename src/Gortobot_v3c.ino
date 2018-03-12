@@ -148,7 +148,7 @@ void loop() {
   loopCount++;
 
   if (USING_GPS) {
-    waitForBatteries(BATTERY_WAIT_TIME);
+    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
     fix = gb_gps.GetFix('r'); // 'r' = 'real'
   } else {
     fix = gb_gps.GetFix('f'); // 'f' = 'fake'
@@ -159,7 +159,7 @@ void loop() {
       sail.GetPosition(), diagnosticMessage());
 
   if (USING_WIFI) {
-    waitForBatteries(BATTERY_WAIT_TIME);
+    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
     byte wifi_attempt = 1;
     bool wifi_successful = false;
     while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
@@ -173,7 +173,7 @@ void loop() {
   String inboundMessage = "";
   if (USING_SAT) {
     txSuccess = false;
-    waitForBatteries(BATTERY_WAIT_TIME);
+    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
     if (gb_satcom.UseSatcom(logSentence)) {
       txSuccess = true;
       inboundMessage = gb_satcom.GetInboundMessage();
@@ -191,34 +191,12 @@ void loop() {
 
   if (USING_SAIL) {
     sailMode = 'p';
-    waitForBatteries(BATTERY_WAIT_TIME);
+    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
     // TODO: make the main program handle tacking, all the sail does is trim
     // and wait for batteries?
     useSail();
   } else {
-    waitForBatteries(BATTERY_WAIT_TIME); // why?
+    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2); // why?
     pretendSail();
-  }
-}
-
-static void waitForBatteries(int waitTime) {
-  char battery1Status = battery1.Status();
-  char battery2Status = battery2.Status();
-  boolean batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');
-
-  if (batteriesCritical) {
-    Serial.println(F("Both batteries critical!"));
-    while (battery1Status != 'g' && battery2Status != 'g') {
-      Serial.print(F("Neither battery green. Waiting "));
-      Serial.print(waitTime);
-      Serial.println(F(" seconds."));
-
-      for (int i = 0; i < waitTime; i++) {
-        GbUtility::GortoNap(1);
-      }
-      Serial.println(F("Wait time elapsed. Retrying."));
-      battery1Status = battery1.Status();
-      battery2Status = battery2.Status();
-    }
   }
 }
