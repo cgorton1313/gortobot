@@ -12,6 +12,7 @@
 #include "configs/config.h"
 
 // Includes
+#include "communications/gb_message_parser.h"
 #include "communications/gb_sailing_orders.h"
 #include "communications/gb_satcom.h"
 #include "utilities/gb_utility.h"
@@ -74,11 +75,9 @@ int orderedSailPosition; // switches b/w A and B
 
 // TODO: delete these once useSail is gone to cpp
 int orderedSailPositionA = 270; // where we want the sail to be for A
-int orderedTackTimeA = 90;      // how long we want the sail to be in
-position A
+int orderedTackTimeA = 90;      // how long we want the sail to be in position A
 int orderedSailPositionB = 270; // where we want the sail to be for B
-int orderedTackTimeB = 90;      // how long we want the sail to be in
-position B
+int orderedTackTimeB = 90;      // how long we want the sail to be in position B
 
 int sailPosition;       // the actual position of the sail
 boolean tackIsA = true; // to keep track of which tack setting we should be on
@@ -90,7 +89,8 @@ boolean trimRoutineExceededMax =
     false; // if it takes more than set number of pulses to trim the sail
 boolean sailNotMoving = false; // if it gets stuck moving sail 1 degree
 GbFix fix;
-GbSailingOrders sailingOrders = {.loggingInterval = 60,
+GbSailingOrders sailingOrders = {.sailMode = 'r',
+                                 .loggingInterval = 60,
                                  .orderedSailPositionA = 270,
                                  .orderedTackTimeA = 90,
                                  .orderedSailPositionB = 270,
@@ -189,6 +189,8 @@ void loop() {
     if (gb_satcom.UseSatcom(logSentence)) {
       txSuccess = true;
       inboundMessage = gb_satcom.GetInboundMessage();
+      Serial.print(F("Received mock inbound message of: "));
+      Serial.println(inboundMessage);
     }
   } else if (USING_SERIAL_MONITOR_ORDERS) {
     getSerialMonitorOrders();
@@ -207,10 +209,10 @@ void loop() {
   thisWatch = howLongWatchShouldBe(); // in seconds
 
   if (USING_SAIL) {
-    sailMode = 'p';
+    sailingOrders.sailMode = 'p';
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
     // TODO: move useSail into cpp and pass it the sailing orders
-    //useSail();
+    // useSail();
   } else {
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2); // why?
     pretendSail();

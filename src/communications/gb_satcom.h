@@ -9,12 +9,11 @@ private:
     void SatOn();
     void SatOff();
     void ChargeSuperCapacitor(int chargeTime);
-    // bool WifiSend(String);
-    // bool WifiReceive();
 
 public:
     GbSatcom(byte sleepPin, unsigned long baud);
     void SetUpSat(int chargeTime, int timeOut);
+    //bool UseMockSatcom(String txString);
     bool UseSatcom(String sentence);
     String GetInboundMessage();
 };
