@@ -6,16 +6,14 @@
 // TODO: watchdog timer
 // TODO: write copious comments
 
-#include <Arduino.h>
-
-// Program Modes (config)
-#include "configs/config.h"
-
 // Includes
 #include "communications/gb_message_parser.h"
 #include "communications/gb_sailing_orders.h"
 #include "communications/gb_satcom.h"
+#include "configs/config.h"
+#include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
+#include <Arduino.h>
 #include <gb_library.h>
 
 // Pin assignments
@@ -107,10 +105,9 @@ GbBattery battery2 =
     GbBattery(2, BATTERY2_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
               BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
 GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
-
-// TODO: figure this out
-Sail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
-          MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN);
+GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
+            MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN);
+GbWatchStander watchStander;
 
 void setup() {
   randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each
@@ -203,18 +200,12 @@ void loop() {
   // Parse inbound message
   if (txSuccess) {
     sailingOrders = GbMessageParser::ParseMessage(inboundMessage);
-  }
-
-  // TODO: pass in txSuccess
-  thisWatch = howLongWatchShouldBe(); // in seconds
-
-  if (USING_SAIL) {
-    sailingOrders.sailMode = 'p';
-    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-    // TODO: move useSail into cpp and pass it the sailing orders
-    // useSail();
+    thisWatch = loggingInterval;
   } else {
-    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2); // why?
-    pretendSail();
+    thisWatch = min(FAILURE_RETRY, loggingInterval);
   }
+
+  sailingOrders.sailMode = sailMode; // for now
+  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
+  watchStander.StandWatch(sail, sailingOrders);
 }
