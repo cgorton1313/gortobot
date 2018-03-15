@@ -17,23 +17,7 @@
 #include <gb_library.h>
 
 // Pin assignments
-#define GPS_PORT Serial1
-#define WIFI_PORT Serial2
-#define ISBD_PORT Serial3
-const byte LED_PIN = 13; // brown, to external LED via 420 ohm resistor
-const byte GPS_POWER_PIN_1 = 26;
-const byte GPS_POWER_PIN_2 = 25;
-const byte BATTERY_VOLTAGE_PIN = A0;      // green
-const byte BATTERY2_VOLTAGE_PIN = A2;     // yellow
-const byte SAIL_POSITION_SENSOR_PIN = A5; // green
-const byte SAIL_POSITION_ENABLE_PIN = 50; // red
-const byte MOTOR_POWER_ENABLE_PIN = 32;
-const byte MOTOR_IN_1_PIN = 30, MOTOR_IN_2_PIN = 31; // on a JST under the board
-const byte CHIP_SELECT =
-    10; // temp while using only satellite. can't remember why
-const byte SATELLITE_SLEEP_PIN = 7; // 7-green
-const byte WIFI_ENABLE_PIN = 4;     // brown
-const byte RANDOM_SEED_PIN = A7;
+#include "configs/pins.h"
 
 // Constants
 const byte DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
@@ -52,30 +36,23 @@ const int BATTERY_WAIT_TIME =
     2; // seconds to wait between checking for batteryOkay
 const byte MESSAGE_VERSION =
     4; // 2 = long form, 3 = base62, 4 = base62 and 2 batteries
-const int MINIMUM_SAIL_ANGLE = 0, MAXIMUM_SAIL_ANGLE = 360; // limits for sail
+const int MIN_SAIL_ANGLE = 0, MAX_SAIL_ANGLE = 360; // limits for sail
 const int TRIM_ROUTINE_MAXIMUM_SECONDS =
     900; // max number of trim seconds allowed to get to ordered position.
          // testing shows 450 should be max
 
 // Global variables
-// TODO: delete thios once useSail is gone to cpp
+// TODO: delete this once useSail is gone to cpp
 unsigned long loggingInterval = 60; // seconds b/w logging events, 1 day =
 // 86,400 secs which is max
 unsigned int runNum;        // increments each time the device starts
 unsigned int loopCount = 0; // increments at each loop
 boolean fixAcquired = false, staleFix = true; // for GPS
 float batteryVoltage;
-boolean batteryCritical = false;
+// boolean batteryCritical = false;
 unsigned int timeSinceLastFramLog = 0;
 String logSentence = "";
 boolean txSuccess;
-int orderedSailPosition; // switches b/w A and B
-
-// TODO: delete these once useSail is gone to cpp
-int orderedSailPositionA = 270; // where we want the sail to be for A
-int orderedTackTimeA = 90;      // how long we want the sail to be in position A
-int orderedSailPositionB = 270; // where we want the sail to be for B
-int orderedTackTimeB = 90;      // how long we want the sail to be in position B
 
 int sailPosition;       // the actual position of the sail
 boolean tackIsA = true; // to keep track of which tack setting we should be on
@@ -106,8 +83,9 @@ GbBattery battery2 =
               BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
 GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
-            MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN);
-GbWatchStander watchStander;
+            MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
+            MIN_SAIL_ANGLE, MAX_SAIL_ANGLE);
+GbWatchStander watchStander = GbWatchStander();
 
 void setup() {
   randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each
@@ -138,7 +116,6 @@ void setup() {
   // isbd.sleep(); // turn off ISBD
 
   if (RESET_EEPROM) {
-    Serial.println(F("Resetting EEPROM"));
     GbUtility::ClearEEPROM();
   }
 
@@ -205,6 +182,7 @@ void loop() {
     thisWatch = min(FAILURE_RETRY, loggingInterval);
   }
 
+  // Sail for one watch cycle
   sailingOrders.sailMode = sailMode; // for now
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
   watchStander.StandWatch(sail, sailingOrders);

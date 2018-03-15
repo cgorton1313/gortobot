@@ -1,12 +1,14 @@
 #include "gb_sail.h"
 
 GbSail::GbSail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
-               byte motorIn1Pin, byte motorIn2Pin) {
+               byte motorIn1Pin, byte motorIn2Pin, int min_sail_angle, int max_sail_angle) {
   _sensorEnablePin = sensorEnablePin;
   _sensorPin = sensorPin;
   _motorPowerEnablePin = motorPowerEnablePin;
   _motorIn1Pin = motorIn1Pin;
   _motorIn2Pin = motorIn2Pin;
+  _min_sail_angle = min_sail_angle;
+  _max_sail_angle = max_sail_angle;
   pinMode(_sensorPin, INPUT);
   pinMode(_sensorEnablePin, OUTPUT);
   pinMode(_motorPowerEnablePin, OUTPUT);
@@ -81,4 +83,12 @@ void GbSail::Stop() {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorIn1Pin, LOW);
   digitalWrite(_motorIn2Pin, LOW);
+}
+
+boolean GbSail::ValidOrders(int order) {
+  if ((order > _max_sail_angle) || (order < _min_sail_angle)) {
+    return false; // out-of-bouds
+  } else {
+    return true;
+  }
 }

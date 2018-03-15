@@ -1,21 +1,26 @@
 #include "gb_watch_stander.h"
 #include "utilities/gb_utility.h"
 
-GbWatchStander::GbWatchStander() {}
+GbWatchStander::GbWatchStander() {
+  // Start on tack A at time 0
+  _tackIsA = true;                    // am I on tack A?
+  _currentTackTime = 0;               // how minutes have I been on this tack?
+  _current_orderedSailPosition = 270; // TODO
+}
 
 void GbWatchStander::StandWatch(GbSail sail, GbSailingOrders sailingOrders) {
   switch (sailingOrders.sailMode) {
   case 'r': // real sailing
     Serial.println("Entering real sail mode.");
-    // TODO realSail();
+    RealSail(sail, sailingOrders);
     break;
   case 't': // testing sail
     Serial.println(F("Entering test sail mode."));
-    // TODO testSail();
+    TestSail(sail, sailingOrders);
     break;
-  case 's': // direct sets
+  case 's': // directly trims the sail
     Serial.println(F("Entering direct set sail mode."));
-    // TODO directSetSail();
+    sail.Trim(sailingOrders.orderedSailPositionA);
     break;
   case 'p': // pulse
     Serial.println(F("Entering pulsing sail mode."));
@@ -25,6 +30,47 @@ void GbWatchStander::StandWatch(GbSail sail, GbSailingOrders sailingOrders) {
     Serial.println(F("Entering fake sail mode."));
     FakeSail(sailingOrders.loggingInterval);
     break;
+  default: // do nothing
+    break;
+  }
+}
+
+void GbWatchStander::RealSail(GbSail sail, GbSailingOrders sailingOrders) {
+  Serial.print(F("Sailing for "));
+  Serial.print(sailingOrders.loggingInterval);
+  Serial.println(F(" seconds."));
+
+  unsigned long elapsedTime = 0; // used to track seconds during sail operation
+  while (elapsedTime < sailingOrders.loggingInterval) {
+
+    if ((elapsedTime % 60) == 0) { // check trim every 60 seconds
+      Serial.println(F("At :00 seconds now"));
+      if ((_tackIsA && _currentTackTime >= sailingOrders.orderedTackTimeA) ||
+          (!_tackIsA && _currentTackTime >= sailingOrders.orderedTackTimeB)) {
+        _tackIsA = !_tackIsA; // change tacks
+        _currentTackTime = 0;
+        Serial.println(F("Changing tacks"));
+      }
+      if (_tackIsA) {
+        _current_orderedSailPosition = sailingOrders.orderedSailPositionA;
+        Serial.println(F("Sailing on tack A"));
+      } else {
+        _current_orderedSailPosition = sailingOrders.orderedSailPositionB;
+        Serial.println(F("Sailing on tack B"));
+      }
+      if (sail.ValidOrders(1)) {
+        sail.Trim(_current_orderedSailPosition);
+      }
+      _currentTackTime++;
+      Serial.print(F("Current tack time = "));
+      Serial.println(_currentTackTime);
+    }
+
+    GbUtility::GortoNap(6); // six seconds of napping
+    elapsedTime += 6;
+    // blinkMessage(2); // flash led
+    Serial.print(F("timer = "));
+    Serial.println(elapsedTime);
   }
 }
 
@@ -49,5 +95,22 @@ void GbWatchStander::FakeSail(unsigned long watchDuration) {
     Serial.print(F("timer = "));
     Serial.println(timer);
     delay(10);
+  }
+}
+
+// Use TestSail to cycle thru sail positions per loggingInterval
+void GbWatchStander::TestSail(GbSail sail, GbSailingOrders sailingOrders) {
+  int testSailPositions[] = {0,   30,  60,  90,  120, 150, 180,
+                             210, 240, 270, 300, 330, 360};
+  for (byte i = 0; i < (sizeof(testSailPositions) / sizeof(int)); i++) {
+    sail.Trim(testSailPositions[i]);
+    unsigned long testTimer = 0;
+      while (testTimer < sailingOrders.loggingInterval) { // so the duration can be set via RX
+        GbUtility::GortoNap(1);                        // one second of napping
+        testTimer = testTimer + 1;
+        //blinkMessage(2); // flash led
+        Serial.print(F("timer = "));
+        Serial.println(testTimer);
+      }
   }
 }
