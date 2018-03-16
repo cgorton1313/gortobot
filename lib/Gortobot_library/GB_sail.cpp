@@ -1,7 +1,8 @@
 #include "gb_sail.h"
 
 GbSail::GbSail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
-               byte motorIn1Pin, byte motorIn2Pin, int min_sail_angle, int max_sail_angle) {
+               byte motorIn1Pin, byte motorIn2Pin, int min_sail_angle,
+               int max_sail_angle, int trimRoutineMaxSeconds) {
   _sensorEnablePin = sensorEnablePin;
   _sensorPin = sensorPin;
   _motorPowerEnablePin = motorPowerEnablePin;
@@ -9,6 +10,7 @@ GbSail::GbSail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
   _motorIn2Pin = motorIn2Pin;
   _min_sail_angle = min_sail_angle;
   _max_sail_angle = max_sail_angle;
+  _trimRoutineMaxSeconds = trimRoutineMaxSeconds;
   pinMode(_sensorPin, INPUT);
   pinMode(_sensorEnablePin, OUTPUT);
   pinMode(_motorPowerEnablePin, OUTPUT);
@@ -19,27 +21,65 @@ GbSail::GbSail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
   _sensorGearSize = 36;
 }
 
-void GbSail::Trim(int orderedSailPosition) {
-  int currentPosition = GetPosition();
-  if (abs(currentPosition - orderedSailPosition) >= 5) // sail is out of trim
-  {
-    Serial.println("Sail is OUT of trim");
-    digitalWrite(_motorPowerEnablePin, HIGH);
-    delay(500);
-    while (currentPosition != orderedSailPosition) {
-      digitalWrite(_motorIn1Pin, currentPosition > orderedSailPosition);
-      digitalWrite(_motorIn2Pin, currentPosition < orderedSailPosition);
-      currentPosition = GetPosition();
-      Serial.println(currentPosition);
-      delay(50);
+GbSail::GbTrimResult GbSail::Trim(int orderedSailPosition) {
+  unsigned long trimTimer;
+  int trimSeconds = 0;
+  int totalTrimSeconds = 0;
+  bool sailIsTrimming = true;
+
+  int sailPosition = GetSailPosition();
+  int tempSailPosition = sailPosition;
+  bool trimRoutineExceededMax = false;
+  bool sailNotMoving = false;
+
+  if ((abs(GetSailPosition() - orderedSailPosition)) > 4) { // sail out of trim
+    trimTimer = millis(); // capture the time now
+    while (((sailPosition - orderedSailPosition) != 0) && sailIsTrimming) {
+
+      // Start rotating sail
+      digitalWrite(_motorIn1Pin, sailPosition > orderedSailPosition);
+      digitalWrite(_motorIn2Pin, sailPosition < orderedSailPosition);
+
+      // Every second, check if we're done, if we timed out or sail stopped
+      // moving
+      if ((unsigned long)(millis() - trimTimer) >= 1000) {
+        trimTimer = millis(); // reset timer
+        totalTrimSeconds++;
+        if (totalTrimSeconds > _trimRoutineMaxSeconds) {
+          sailIsTrimming = false;
+          trimRoutineExceededMax = true;
+          Serial.println(F("trimRoutineExceededMax"));
+        }
+        sailPosition = this->GetSailPosition();
+        if (sailPosition == tempSailPosition) {
+          // sail hasn't moved in the last second
+          trimSeconds++;
+          if (trimSeconds > 10) { // sail hasn't moved in 10 seconds, bad!
+            sailIsTrimming = false;
+            sailNotMoving = true;
+            Serial.println(F("Sail not moving")); // what do we do? diags!
+          }
+        } else { // sail has moved
+          tempSailPosition = sailPosition;
+          trimSeconds = 0;
+          sailNotMoving = false;
+        }
+      }
     }
+    Stop(); // sail is either in position or stuck
   }
-  digitalWrite(_motorPowerEnablePin, LOW);
-  digitalWrite(_motorIn1Pin, LOW);
-  digitalWrite(_motorIn2Pin, LOW);
+  Serial.print(F("Done trimming. totalTrimSeconds = "));
+  Serial.println(totalTrimSeconds);
+
+  bool trimSuccess = (!sailNotMoving && !trimRoutineExceededMax);
+  GbTrimResult trimResult = {.success = trimSuccess,
+                             .sailNotMoving = sailNotMoving,
+                             .trimRoutineExceededMax = trimRoutineExceededMax};
+
+  return trimResult;
 }
 
-int GbSail::GetPosition() {
+int GbSail::GetSailPosition() {
   int positionAnalogReading = GetPositionAnalogReading();
   float gearRatio = float(_mastGearSize) / _sensorGearSize;
   const byte TURNS_IN_POT = 10;

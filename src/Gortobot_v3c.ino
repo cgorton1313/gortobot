@@ -48,21 +48,20 @@ unsigned long loggingInterval = 60; // seconds b/w logging events, 1 day =
 unsigned int runNum;        // increments each time the device starts
 unsigned int loopCount = 0; // increments at each loop
 boolean fixAcquired = false, staleFix = true; // for GPS
-float batteryVoltage;
+// float batteryVoltage;
 // boolean batteryCritical = false;
 unsigned int timeSinceLastFramLog = 0;
 String logSentence = "";
 boolean txSuccess;
 
-int sailPosition;       // the actual position of the sail
-boolean tackIsA = true; // to keep track of which tack setting we should be on
+//int sailPosition;       // the actual position of the sail
+//boolean tackIsA = true; // to keep track of which tack setting we should be on
 int currentTackTime =
     0; // keeps track of how long we've been on current tack in minutes
 unsigned long thisWatch;
 boolean rxMessageInvalid = false;
-boolean trimRoutineExceededMax =
-    false; // if it takes more than set number of pulses to trim the sail
-boolean sailNotMoving = false; // if it gets stuck moving sail 1 degree
+//boolean trimRoutineExceededMax = false;
+//boolean sailNotMoving = false;
 GbFix fix;
 GbSailingOrders sailingOrders = {.sailMode = 'r',
                                  .loggingInterval = 60,
@@ -84,7 +83,7 @@ GbBattery battery2 =
 GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
             MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
-            MIN_SAIL_ANGLE, MAX_SAIL_ANGLE);
+            MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, TRIM_ROUTINE_MAXIMUM_SECONDS);
 GbWatchStander watchStander = GbWatchStander();
 
 void setup() {
@@ -142,7 +141,7 @@ void loop() {
 
   logSentence = sentence_builder.Sentence(
       runNum, loopCount, fix, battery1.GetVoltage(), battery2.GetVoltage(),
-      sail.GetPosition(), diagnosticMessage());
+      sail.GetSailPosition(), diagnosticMessage());
 
   if (USING_WIFI) {
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);

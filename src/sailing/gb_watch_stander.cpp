@@ -41,9 +41,11 @@ void GbWatchStander::RealSail(GbSail sail, GbSailingOrders sailingOrders) {
   Serial.println(F(" seconds."));
 
   unsigned long elapsedTime = 0; // used to track seconds during sail operation
+  GbSail::GbTrimResult trimResult;
   while (elapsedTime < sailingOrders.loggingInterval) {
 
-    if ((elapsedTime % 60) == 0) { // check trim every 60 seconds
+    // Every minute, check sail trim angle and whether it is time to tack
+    if ((elapsedTime % 60) == 0) {
       Serial.println(F("At :00 seconds now"));
       if ((_tackIsA && _currentTackTime >= sailingOrders.orderedTackTimeA) ||
           (!_tackIsA && _currentTackTime >= sailingOrders.orderedTackTimeB)) {
@@ -51,6 +53,8 @@ void GbWatchStander::RealSail(GbSail sail, GbSailingOrders sailingOrders) {
         _currentTackTime = 0;
         Serial.println(F("Changing tacks"));
       }
+
+      // Set the current ordered sail angle per which tack we're on
       if (_tackIsA) {
         _current_orderedSailPosition = sailingOrders.orderedSailPositionA;
         Serial.println(F("Sailing on tack A"));
@@ -58,9 +62,12 @@ void GbWatchStander::RealSail(GbSail sail, GbSailingOrders sailingOrders) {
         _current_orderedSailPosition = sailingOrders.orderedSailPositionB;
         Serial.println(F("Sailing on tack B"));
       }
+
       if (sail.ValidOrders(1)) {
-        sail.Trim(_current_orderedSailPosition);
+        trimResult = sail.Trim(_current_orderedSailPosition);
+        // print trim result for debug
       }
+
       _currentTackTime++;
       Serial.print(F("Current tack time = "));
       Serial.println(_currentTackTime);
@@ -105,12 +112,13 @@ void GbWatchStander::TestSail(GbSail sail, GbSailingOrders sailingOrders) {
   for (byte i = 0; i < (sizeof(testSailPositions) / sizeof(int)); i++) {
     sail.Trim(testSailPositions[i]);
     unsigned long testTimer = 0;
-      while (testTimer < sailingOrders.loggingInterval) { // so the duration can be set via RX
-        GbUtility::GortoNap(1);                        // one second of napping
-        testTimer = testTimer + 1;
-        //blinkMessage(2); // flash led
-        Serial.print(F("timer = "));
-        Serial.println(testTimer);
-      }
+    while (testTimer <
+           sailingOrders.loggingInterval) { // so the duration can be set via RX
+      GbUtility::GortoNap(1);               // one second of napping
+      testTimer = testTimer + 1;
+      // blinkMessage(2); // flash led
+      Serial.print(F("timer = "));
+      Serial.println(testTimer);
+    }
   }
 }

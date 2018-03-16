@@ -32,7 +32,7 @@ void blinkMessage(int condition) {
 }
 
 void getSerialMonitorOrders() {
-  sail.GetPosition();
+  sail.GetSailPosition();
   Serial.println(F("Ready for orders:"));
   while (!Serial.available())
     ; // wait for the serial data
@@ -69,6 +69,6 @@ byte diagnosticMessage() {
   // 4- fram problem
   // 8- rxMessage not valid
   // add these up to determine which combo is being reported
-  return (trimRoutineExceededMax * pow(2, 0) + sailNotMoving * pow(2, 1) +
-          rxMessageInvalid * pow(2, 3));
+  // TODO get trim result //return (trimRoutineExceededMax * pow(2, 0) + sailNotMoving * pow(2, 1) +
+          //rxMessageInvalid * pow(2, 3));
 }

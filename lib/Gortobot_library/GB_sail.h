@@ -6,9 +6,15 @@
 class GbSail {
 public:
   GbSail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
-       byte motorIn1Pin, byte motorIn2Pin, int min_sail_angle, int max_sail_angle);
-  void Trim(int angle);
-  int GetPosition();
+         byte motorIn1Pin, byte motorIn2Pin, int min_sail_angle,
+         int max_sail_angle, int trimRoutineMaxSeconds);
+  struct GbTrimResult {
+    bool success;
+    bool sailNotMoving;
+    bool trimRoutineExceededMax;
+  };
+  GbTrimResult Trim(int angle);
+  int GetSailPosition();
   void TurnCW();
   void TurnCCW();
   void Stop();
@@ -24,6 +30,7 @@ private:
   byte _motorIn2Pin;
   int _min_sail_angle;
   int _max_sail_angle;
+  int _trimRoutineMaxSeconds;
   int GetPositionAnalogReading();
 };
 
