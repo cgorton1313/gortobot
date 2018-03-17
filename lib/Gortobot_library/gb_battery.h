@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include <Vcc.h>
 
+#ifndef gb_battery_h
+#define gb_battery_h
+
 class GbBattery {
 
 private:
@@ -17,3 +20,5 @@ public:
     float GetVoltage();
     char Status();
 };
+
+#endif

@@ -8,5 +8,4 @@
 
 #ifndef GB_LIBRARY_H
 #define GB_LIBRARY_H
-
 #endif

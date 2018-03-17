@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "gb_battery.h"
 #include <Sleep_n0m1.h>
 
