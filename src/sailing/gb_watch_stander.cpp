@@ -2,7 +2,7 @@
 #include "utilities/gb_utility.h"
 #include "communications/gb_blinker.h"
 
-GbWatchStander::GbWatchStander(byte ledPin) : _blinker(ledPin) {
+GbWatchStander::GbWatchStander(uint8_t ledPin) : _blinker(ledPin) {
   // Start on tack A at time 0
   _tackIsA = true;                    // am I on tack A?
   _currentTackTime = 0;               // how minutes have I been on this tack?
@@ -66,7 +66,7 @@ void GbWatchStander::RealSail(GbSail sail, GbSailingOrders sailingOrders) {
 
       if (sail.ValidOrders(1)) {
         trimResult = sail.Trim(_current_orderedSailPosition);
-        // print trim result for debug
+        // pruint16_t trim result for debug
       }
 
       _currentTackTime++;
@@ -108,9 +108,9 @@ void GbWatchStander::FakeSail(unsigned long watchDuration) {
 
 // Use TestSail to cycle thru sail positions per loggingInterval
 void GbWatchStander::TestSail(GbSail sail, GbSailingOrders sailingOrders) {
-  int testSailPositions[] = {0,   30,  60,  90,  120, 150, 180,
+  uint16_t testSailPositions[] = {0,   30,  60,  90,  120, 150, 180,
                              210, 240, 270, 300, 330, 360};
-  for (byte i = 0; i < (sizeof(testSailPositions) / sizeof(int)); i++) {
+  for (uint8_t i = 0; i < (sizeof(testSailPositions) / sizeof(int)); i++) {
     sail.Trim(testSailPositions[i]);
     unsigned long testTimer = 0;
     while (testTimer <

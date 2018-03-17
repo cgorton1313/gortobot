@@ -6,12 +6,12 @@
 class GbBlinker {
 
 private:
-  byte _ledPin;
+  uint8_t _ledPin;
 
 public:
-  GbBlinker(byte pin);
-  void SetLedPin(byte pin);
-  void Blink(int condition);
+  GbBlinker(uint8_t pin);
+  void SetLedPin(uint8_t pin);
+  void Blink(uint16_t condition);
 };
 
 #endif

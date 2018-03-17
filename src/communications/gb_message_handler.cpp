@@ -11,12 +11,12 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
     case 1: {                          // standard message = 1,120,20,60,20,30,z
       newSailingOrders.sailMode = 'r'; // real sail mode
       // find the commas, probably should move to char []?
-      byte firstCommaIndex = inboundMessage.indexOf(',');
-      byte secondCommaIndex = inboundMessage.indexOf(',', firstCommaIndex + 1);
-      byte thirdCommaIndex = inboundMessage.indexOf(',', secondCommaIndex + 1);
-      byte fourthCommaIndex = inboundMessage.indexOf(',', thirdCommaIndex + 1);
-      byte fifthCommaIndex = inboundMessage.indexOf(',', fourthCommaIndex + 1);
-      byte sixthCommaIndex = inboundMessage.indexOf(',', fifthCommaIndex + 1);
+      uint8_t firstCommaIndex = inboundMessage.indexOf(',');
+      uint8_t secondCommaIndex = inboundMessage.indexOf(',', firstCommaIndex + 1);
+      uint8_t thirdCommaIndex = inboundMessage.indexOf(',', secondCommaIndex + 1);
+      uint8_t fourthCommaIndex = inboundMessage.indexOf(',', thirdCommaIndex + 1);
+      uint8_t fifthCommaIndex = inboundMessage.indexOf(',', fourthCommaIndex + 1);
+      uint8_t sixthCommaIndex = inboundMessage.indexOf(',', fifthCommaIndex + 1);
       String firstValue = inboundMessage.substring(0, firstCommaIndex);
       String secondValue =
           inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
@@ -34,7 +34,7 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
       newSailingOrders.orderedTackTimeA = thirdValue.toInt();
       newSailingOrders.orderedSailPositionB = fourthValue.toInt();
       newSailingOrders.orderedTackTimeB = fifthValue.toInt();
-      unsigned long tempLoggingInterval = sixthValue.toInt();
+      uint32_t tempLoggingInterval = sixthValue.toInt();
       if (tempLoggingInterval > 0 &&
           tempLoggingInterval <= 86400) { // 86,400 secs = 1 day
         newSailingOrders.loggingInterval = tempLoggingInterval;
@@ -47,11 +47,11 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
       newSailingOrders.orderedTackTimeA = 1;
       newSailingOrders.orderedSailPositionB = 180;
       newSailingOrders.orderedTackTimeB = 1;
-      byte firstCommaIndex = inboundMessage.indexOf(',');
-      byte secondCommaIndex = inboundMessage.indexOf(',', firstCommaIndex + 1);
+      uint8_t firstCommaIndex = inboundMessage.indexOf(',');
+      uint8_t secondCommaIndex = inboundMessage.indexOf(',', firstCommaIndex + 1);
       String secondValue =
           inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
-      unsigned long tempLoggingInterval = secondValue.toInt();
+      uint32_t tempLoggingInterval = secondValue.toInt();
       if (tempLoggingInterval > 0 && tempLoggingInterval <= 86400) {
         newSailingOrders.loggingInterval = tempLoggingInterval;
       }
@@ -61,8 +61,8 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
     // supported
     // case 3: { // not to be used in real sailing
     //   sailMode = 's';
-    //   byte firstCommaIndex = inboundMessage.indexOf(',');
-    //   byte secondCommaIndex =
+    //   uint8_t firstCommaIndex = inboundMessage.indexOf(',');
+    //   uint8_t secondCommaIndex =
     //       inboundMessage.indexOf(',', firstCommaIndex + 1);
     //   String secondValue =
     //       inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
@@ -126,7 +126,7 @@ String GbMessageHandler::GetFakeMessage(GbSailingOrders sailingOrders) {
   return fakeOrderString;
 }
 
-byte GbMessageHandler::GetDiagnosticMessage() {
+uint8_t GbMessageHandler::GetDiagnosticMessage() {
   // 1- too many trim pulses and sail is moving
   // 2- sail not moving after trim pulses
   // 4- fram problem

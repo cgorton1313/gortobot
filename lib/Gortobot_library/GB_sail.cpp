@@ -1,8 +1,8 @@
 #include "gb_sail.h"
 
-GbSail::GbSail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
-               byte motorIn1Pin, byte motorIn2Pin, int min_sail_angle,
-               int max_sail_angle, int trimRoutineMaxSeconds) {
+GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin, uint8_t motorPowerEnablePin,
+               uint8_t motorIn1Pin, uint8_t motorIn2Pin, uint16_t min_sail_angle,
+               uint16_t max_sail_angle, uint16_t trimRoutineMaxSeconds) {
   _sensorEnablePin = sensorEnablePin;
   _sensorPin = sensorPin;
   _motorPowerEnablePin = motorPowerEnablePin;
@@ -21,14 +21,14 @@ GbSail::GbSail(byte sensorPin, byte sensorEnablePin, byte motorPowerEnablePin,
   _sensorGearSize = 36;
 }
 
-GbSail::GbTrimResult GbSail::Trim(int orderedSailPosition) {
+GbSail::GbTrimResult GbSail::Trim(uint16_t orderedSailPosition) {
   unsigned long trimTimer;
-  int trimSeconds = 0;
-  int totalTrimSeconds = 0;
+  uint16_t trimSeconds = 0;
+  uint16_t totalTrimSeconds = 0;
   bool sailIsTrimming = true;
 
-  int sailPosition = GetSailPosition();
-  int tempSailPosition = sailPosition;
+  uint16_t sailPosition = GetSailPosition();
+  uint16_t tempSailPosition = sailPosition;
   bool trimRoutineExceededMax = false;
   bool sailNotMoving = false;
 
@@ -79,26 +79,26 @@ GbSail::GbTrimResult GbSail::Trim(int orderedSailPosition) {
   return trimResult;
 }
 
-int GbSail::GetSailPosition() {
-  int positionAnalogReading = GetPositionAnalogReading();
+uint16_t GbSail::GetSailPosition() {
+  uint16_t positionAnalogReading = GetPositionAnalogReading();
   float gearRatio = float(_mastGearSize) / _sensorGearSize;
-  const byte TURNS_IN_POT = 10;
+  const uint8_t TURNS_IN_POT = 10;
   float readingRange = (float(gearRatio) / TURNS_IN_POT *
                         1023.0); // 1 mast turn = 1 * gearRatio pot turns
-  const int CENTER_READING = 512;
-  int minReading = int(CENTER_READING - (readingRange / 2.0));
-  int maxReading = int(CENTER_READING + (readingRange / 2.0));
-  int positionDegrees =
+  const uint16_t CENTER_READING = 512;
+  uint16_t minReading = int(CENTER_READING - (readingRange / 2.0));
+  uint16_t maxReading = int(CENTER_READING + (readingRange / 2.0));
+  uint16_t positionDegrees =
       map(positionAnalogReading, minReading, maxReading, 1, 359);
   return positionDegrees;
 }
 
-int GbSail::GetPositionAnalogReading() {
+uint16_t GbSail::GetPositionAnalogReading() {
   digitalWrite(_sensorEnablePin, HIGH);
-  int position;
-  const byte REPETITIONS = 10;
-  int sum = 0;
-  for (byte i = 0; i < REPETITIONS; i++) {
+  uint16_t position;
+  const uint8_t REPETITIONS = 10;
+  uint16_t sum = 0;
+  for (uint8_t i = 0; i < REPETITIONS; i++) {
     sum = sum + analogRead(_sensorPin);
     delay(1);
   }
@@ -125,7 +125,7 @@ void GbSail::Stop() {
   digitalWrite(_motorIn2Pin, LOW);
 }
 
-boolean GbSail::ValidOrders(int order) {
+boolean GbSail::ValidOrders(uint16_t order) {
   if ((order > _max_sail_angle) || (order < _min_sail_angle)) {
     return false; // out-of-bouds
   } else {

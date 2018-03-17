@@ -1,12 +1,12 @@
 #include "gb_sentence_builder.h"
 
-GbSentenceBuilder::GbSentenceBuilder(byte message_version) {
+GbSentenceBuilder::GbSentenceBuilder(uint8_t message_version) {
         _message_version = message_version;
 }
 
 // TODO: use https://stackoverflow.com/questions/2462951/c-equivalent-of-stringbuffer-stringbuilder
-String GbSentenceBuilder::Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix,
-                                   float battery_voltage, float battery2_voltage, int sail_position, byte diagnostic_message) {
+String GbSentenceBuilder::Sentence(uint16_t run_num, uint16_t loop_count, GbFix &a_fix,
+                                   float battery_voltage, float battery2_voltage, int sail_position, uint8_t diagnostic_message) {
         String log_sentence = "";
         String base_62_date_time;
 
@@ -92,7 +92,7 @@ String GbSentenceBuilder::Sentence(unsigned int run_num, unsigned int loop_count
         return log_sentence;
 }
 
-String GbSentenceBuilder::FormatDateNumber(byte number) {
+String GbSentenceBuilder::FormatDateNumber(uint8_t number) {
         String tempString;
         if (number < 10) {
                 tempString = "0";
@@ -101,7 +101,7 @@ String GbSentenceBuilder::FormatDateNumber(byte number) {
         return tempString;
 }
 
-String GbSentenceBuilder::ConvertToBase62(unsigned long input) {
+String GbSentenceBuilder::ConvertToBase62(uint32_t input) {
         // when decoding the base 62 numbers, remember to look for 5 digits. if this is the case, add a "0"!
         const char BASE_62_CHARACTERS[63] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         String base62String;

@@ -16,7 +16,7 @@ public:
 GbSailingOrders ParseMessage(String inboundMessage);
 String GetSerialMessage();
 String GetFakeMessage(GbSailingOrders sailingOrders);
-byte GetDiagnosticMessage();
+uint8_t GetDiagnosticMessage();
 
 };
 

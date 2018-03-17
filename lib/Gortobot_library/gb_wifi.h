@@ -7,7 +7,7 @@ class GbWifi {
 
 private:
     const unsigned long _WIFI_TIMEOUT = 20000; // in milliseconds
-    byte _wifi_enable_pin;
+    uint8_t _wifi_enable_pin;
     HardwareSerial* _wifi_port;
     void WifiOn();
     void WifiOff();
@@ -16,7 +16,7 @@ private:
     bool WifiReceive();
 
 public:
-    GbWifi(byte pin, HardwareSerial &port, unsigned long baud);
+    GbWifi(uint8_t, HardwareSerial &port, uint32_t baud);
     bool UseWifi(String sentence);
 };
 

@@ -9,9 +9,9 @@
 class GbWatchStander {
 
 private:
-  int _current_orderedSailPosition;
+  uint16_t _current_orderedSailPosition;
   bool _tackIsA;
-  int _currentTackTime;
+  uint16_t _currentTackTime;
   void RealSail(GbSail sail, GbSailingOrders sailingOrders);
   void PulseSail(GbSail sail);
   void FakeSail(unsigned long watchDuration);
@@ -19,7 +19,7 @@ private:
   GbBlinker _blinker;
 
 public:
-  GbWatchStander(byte ledPin);
+  GbWatchStander(uint8_t ledPin);
   void StandWatch(GbSail sail, GbSailingOrders sailingOrders);
 };
 

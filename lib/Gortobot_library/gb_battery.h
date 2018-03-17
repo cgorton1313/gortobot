@@ -7,16 +7,16 @@
 class GbBattery {
 
 private:
-    byte _battery_number;
-    byte _pin;
+    uint8_t _battery_number;
+    uint8_t _pin;
     float _voltage;
     float _min_voltage;
     float _retry_voltage;
-    int _wait_time;
+    uint16_t _wait_time;
     bool _checking_voltage;
 
 public:
-    GbBattery(byte battery_number, byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage);
+    GbBattery(uint8_t battery_number, uint8_t pin, float min_voltage, float retry_voltage, uint16_t wait_time, bool checking_voltage);
     float GetVoltage();
     char Status();
 };

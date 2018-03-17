@@ -1,12 +1,12 @@
 #include "gb_blinker.h"
 
-GbBlinker::GbBlinker(byte pin) { _ledPin = pin; }
+GbBlinker::GbBlinker(uint8_t pin) { _ledPin = pin; }
 
-void GbBlinker::SetLedPin(byte pin) {
+void GbBlinker::SetLedPin(uint8_t pin) {
     _ledPin = pin;
 }
 
-void GbBlinker::Blink(int condition) {
+void GbBlinker::Blink(uint16_t condition) {
   switch (condition) {
   case 1: // continuous quick flash, stops program here
     while (true) {

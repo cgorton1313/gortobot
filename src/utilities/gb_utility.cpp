@@ -6,32 +6,32 @@ GbUtility::GbUtility() {}
 
 void GbUtility::ClearEEPROM() {
   Serial.println(F("Resetting EEPROM"));
-  for (unsigned int i = 0; i < EEPROM.length(); i++) {
+  for (uint16_t i = 0; i < EEPROM.length(); i++) {
     EEPROM.write(i, 0);
   }
 }
 
-unsigned int GbUtility::IncrementRunNum() {
-  unsigned int newRunNum;
+uint16_t GbUtility::IncrementRunNum() {
+  uint16_t newRunNum;
   newRunNum = EEPROMReadlong(0) + 1;
   EEPROMWritelong(0, newRunNum);
   return newRunNum;
 }
 
-long GbUtility::EEPROMReadlong(long address) {
+int32_t GbUtility::EEPROMReadlong(int32_t address) {
   // Read the 4 bytes from the eeprom memory.
-  long four = EEPROM.read(address);
-  long three = EEPROM.read(address + 1);
-  long two = EEPROM.read(address + 2);
-  long one = EEPROM.read(address + 3);
+  int32_t four = EEPROM.read(address);
+  int32_t three = EEPROM.read(address + 1);
+  int32_t two = EEPROM.read(address + 2);
+  int32_t one = EEPROM.read(address + 3);
 
-  // Return the recomposed long by using bitshift.
+  // Return the recomposed int32_t by using bitshift.
   return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) +
          ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
 }
 
-void GbUtility::EEPROMWritelong(int address, long value) {
-  // Decomposition from a long to 4 bytes by using bitshift.
+void GbUtility::EEPROMWritelong(int16_t address, int32_t value) {
+  // Decomposition from a int32_t to 4 bytes by using bitshift.
   // One = Most significant -> Four = Least significant byte
   byte four = (value & 0xFF);
   byte three = ((value >> 8) & 0xFF);
@@ -45,17 +45,17 @@ void GbUtility::EEPROMWritelong(int address, long value) {
   EEPROM.write(address + 3, one);
 }
 
-void GbUtility::GortoNap(int seconds) {
+void GbUtility::GortoNap(uint16_t seconds) {
   Sleep sleep;
   sleep.pwrDownMode(); // best power saving mode for sleeping
   // TODO: replace with parameter
   delay(5);
-  for (int i = 0; i < seconds; i++) {
+  for (uint16_t i = 0; i < seconds; i++) {
     sleep.sleepDelay(1000);
   }
 }
 
-void GbUtility::WaitForBatteries(int waitTime, GbBattery battery1,
+void GbUtility::WaitForBatteries(uint16_t waitTime, GbBattery battery1,
                                  GbBattery battery2) {
   char battery1Status = battery1.Status();
   char battery2Status = battery2.Status();
@@ -68,7 +68,7 @@ void GbUtility::WaitForBatteries(int waitTime, GbBattery battery1,
       Serial.print(waitTime);
       Serial.println(F(" seconds."));
 
-      for (int i = 0; i < waitTime; i++) {
+      for (uint16_t i = 0; i < waitTime; i++) {
         GbUtility::GortoNap(1);
       }
       Serial.println(F("Wait time elapsed. Retrying."));

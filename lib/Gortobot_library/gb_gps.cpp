@@ -1,6 +1,6 @@
 #include "gb_gps.h"
 
-GbGps::GbGps(byte power_pin1, byte power_pin2, HardwareSerial &port, unsigned long baud) {
+GbGps::GbGps(uint8_t power_pin1, uint8_t power_pin2, HardwareSerial &port, uint32_t baud) {
         _gps_power_pin1 = power_pin1;
         _gps_power_pin2 = power_pin2;
         _gps_port = &port;

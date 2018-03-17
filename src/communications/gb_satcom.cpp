@@ -3,15 +3,15 @@
 #include <IridiumSBD.h>
 
 IridiumSBD *_isbd; // TODO: we maybe don't  need a destructor
-unsigned long _satcom_baud;
+uint32_t _satcom_baud;
 String _inboundMessage;
 
-GbSatcom::GbSatcom(byte sleepPin, unsigned long baud) {
+GbSatcom::GbSatcom(uint8_t sleepPin, uint32_t baud) {
   _satcom_baud = baud;
   _isbd = new IridiumSBD(Serial3, sleepPin);
 }
 
-void GbSatcom::SetUpSat(int chargeTime, int timeOut) {
+void GbSatcom::SetUpSat(uint16_t chargeTime, uint16_t timeOut) {
 
   ChargeSuperCapacitor(chargeTime);
 
@@ -59,7 +59,7 @@ bool GbSatcom::UseSatcom(String txString) {
     size_t rxBufferSize = sizeof(rxBuffer);
 
     // Try to send the message (always) and receive message (if present)
-    int error =
+    uint16_t error =
         _isbd->sendReceiveSBDText(txBuffer, (uint8_t *)rxBuffer, rxBufferSize);
     if (error != 0) {
       Serial.print(F("sendReceiveSBDText failed. Error: "));
@@ -101,7 +101,7 @@ void GbSatcom::SatOff() {
   Serial.println(F("Sat off."));
 }
 
-void GbSatcom::ChargeSuperCapacitor(int chargeTime) {
+void GbSatcom::ChargeSuperCapacitor(uint16_t chargeTime) {
   Serial.print(F("Charging super-capacitor. Waiting "));
   Serial.print(chargeTime);
   Serial.println(F(" seconds..."));
