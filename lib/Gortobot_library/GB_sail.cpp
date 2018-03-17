@@ -125,7 +125,7 @@ void GbSail::Stop() {
   digitalWrite(_motorIn2Pin, LOW);
 }
 
-boolean GbSail::ValidOrders(uint16_t order) {
+bool GbSail::ValidOrders(uint16_t order) {
   if ((order > _max_sail_angle) || (order < _min_sail_angle)) {
     return false; // out-of-bouds
   } else {

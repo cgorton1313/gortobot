@@ -18,7 +18,7 @@ public:
   void TurnCW();
   void TurnCCW();
   void Stop();
-  boolean ValidOrders(uint16_t order);
+  bool ValidOrders(uint16_t order);
 
 private:
   uint8_t _sensorPin;
