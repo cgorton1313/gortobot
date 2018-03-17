@@ -1,7 +1,8 @@
 #include "gb_watch_stander.h"
 #include "utilities/gb_utility.h"
+#include "communications/gb_blinker.h"
 
-GbWatchStander::GbWatchStander() {
+GbWatchStander::GbWatchStander(byte ledPin) : _blinker(ledPin) {
   // Start on tack A at time 0
   _tackIsA = true;                    // am I on tack A?
   _currentTackTime = 0;               // how minutes have I been on this tack?
@@ -26,7 +27,7 @@ void GbWatchStander::StandWatch(GbSail sail, GbSailingOrders sailingOrders) {
     Serial.println(F("Entering pulsing sail mode."));
     PulseSail(sail);
     break;
-  case 'f': // pulse
+  case 'f': // fake
     Serial.println(F("Entering fake sail mode."));
     FakeSail(sailingOrders.loggingInterval);
     break;

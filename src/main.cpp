@@ -5,19 +5,20 @@
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
 // TODO: write copious comments
+// TODO: combine message listener, parser, sentence builder, etc.
 
 // Includes
-#include "communications/gb_message_parser.h"
+#include <Arduino.h>
+#include "communications/gb_blinker.h"
+#include "communications/gb_message_handler.h"
 #include "communications/gb_sailing_orders.h"
 #include "communications/gb_satcom.h"
 #include "configs/config.h"
+#include "configs/pins.h"
 #include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
 #include <Arduino.h>
 #include <gb_library.h>
-
-// Pin assignments
-#include "configs/pins.h"
 
 // Constants
 const byte DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
@@ -54,14 +55,15 @@ unsigned int timeSinceLastFramLog = 0;
 String logSentence = "";
 boolean txSuccess;
 
-//int sailPosition;       // the actual position of the sail
-//boolean tackIsA = true; // to keep track of which tack setting we should be on
+// int sailPosition;       // the actual position of the sail
+// boolean tackIsA = true; // to keep track of which tack setting we should be
+// on
 int currentTackTime =
     0; // keeps track of how long we've been on current tack in minutes
 unsigned long thisWatch;
 boolean rxMessageInvalid = false;
-//boolean trimRoutineExceededMax = false;
-//boolean sailNotMoving = false;
+// boolean trimRoutineExceededMax = false;
+// boolean sailNotMoving = false;
 GbFix fix;
 GbSailingOrders sailingOrders = {.sailMode = 'r',
                                  .loggingInterval = 60,
@@ -84,7 +86,8 @@ GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
             MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
             MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, TRIM_ROUTINE_MAXIMUM_SECONDS);
-GbWatchStander watchStander = GbWatchStander();
+GbWatchStander watchStander = GbWatchStander(LED_PIN);
+GbMessageHandler messageHandler = GbMessageHandler();
 
 void setup() {
   randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each
@@ -141,7 +144,7 @@ void loop() {
 
   logSentence = sentence_builder.Sentence(
       runNum, loopCount, fix, battery1.GetVoltage(), battery2.GetVoltage(),
-      sail.GetSailPosition(), diagnosticMessage());
+      sail.GetSailPosition(), messageHandler.GetDiagnosticMessage());
 
   if (USING_WIFI) {
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
@@ -166,16 +169,16 @@ void loop() {
       Serial.println(inboundMessage);
     }
   } else if (USING_SERIAL_MONITOR_ORDERS) {
-    getSerialMonitorOrders();
+    inboundMessage = messageHandler.GetSerialMessage();
     txSuccess = true;
   } else {
-    getFakeOrders();
+    inboundMessage = messageHandler.GetFakeMessage(sailingOrders);
     txSuccess = true;
   }
 
   // Parse inbound message
   if (txSuccess) {
-    sailingOrders = GbMessageParser::ParseMessage(inboundMessage);
+    sailingOrders = messageHandler.ParseMessage(inboundMessage);
     thisWatch = loggingInterval;
   } else {
     thisWatch = min(FAILURE_RETRY, loggingInterval);

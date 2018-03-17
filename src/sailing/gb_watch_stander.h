@@ -1,4 +1,5 @@
 #include "communications/gb_sailing_orders.h"
+#include "communications/gb_blinker.h"
 #include <Arduino.h>
 #include <gb_sail.h>
 
@@ -15,9 +16,10 @@ private:
   void PulseSail(GbSail sail);
   void FakeSail(unsigned long watchDuration);
   void TestSail(GbSail sail, GbSailingOrders sailingOrders);
+  GbBlinker _blinker;
 
 public:
-  GbWatchStander();
+  GbWatchStander(byte ledPin);
   void StandWatch(GbSail sail, GbSailingOrders sailingOrders);
 };
 
