@@ -7,8 +7,8 @@
 //  (end)
 //  2 (test)- timePerTack (loggingInterval), z (end)
 
-#ifndef gb_message_handler_h
-#define gb_message_handler_h
+#ifndef GB_MESSAGE_HANDLER_H
+#define GB_MESSAGE_HANDLER_H
 
 class GbMessageHandler {
 

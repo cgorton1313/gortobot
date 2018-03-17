@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#ifndef GB_MESSAGE_HANDLER_H
-#define GB_MESSAGE_HANDLER_H
+#ifndef GB_BLINKER_H
+#define GB_BLINKER_H
 
 class GbBlinker {
 

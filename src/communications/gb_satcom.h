@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#ifndef GB_SATCOM_H
+#define GB_SATCOM_H
+
 class GbSatcom {
 
 private:
@@ -17,3 +20,5 @@ public:
     bool UseSatcom(String sentence);
     String GetInboundMessage();
 };
+
+#endif

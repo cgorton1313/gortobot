@@ -1,7 +1,7 @@
-#include <Arduino.h>
+#include <stdint.h>
 
-#ifndef gb_sailing_orders_h
-#define gb_sailing_orders_h
+#ifndef GB_SAILING_ORDERS_H
+#define GB_SAILING_ORDERS_H
 
 struct GbSailingOrders {
     // TODO enum these

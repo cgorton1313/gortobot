@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "gb_fix.h"
 
-#ifndef gb_sentence_builder_h
-#define gb_sentence_builder_h
+#ifndef GB_SENTENCE_BUILDER_H
+#define GB_SENTENCE_BUILDER_H
 
 class GbSentenceBuilder {
 

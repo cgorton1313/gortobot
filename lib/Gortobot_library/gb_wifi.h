@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#ifndef gb_wifi_h
-#define gb_wifi_h
+#ifndef GB_WIFI_H
+#define GB_WIFI_H
 
 class GbWifi {
 

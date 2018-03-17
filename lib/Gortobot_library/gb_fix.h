@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
-#ifndef gb_fix_h
-#define gb_fix_h
+#ifndef GB_FIX_H
+#define GB_FIX_H
 
 struct GbFix {
   float latitude;

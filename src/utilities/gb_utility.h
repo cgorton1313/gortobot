@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <gb_battery.h>
 
-#ifndef gb_utility_h
-#define gb_utility_h
+#ifndef GB_UTILITY_H
+#define GB_UTILITY_H
 
 class GbUtility {
 

@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <Vcc.h>
 
-#ifndef gb_battery_h
-#define gb_battery_h
+#ifndef GB_BATTERY_H
+#define GB_BATTERY_H
 
 class GbBattery {
 

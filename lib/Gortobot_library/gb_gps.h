@@ -2,8 +2,8 @@
 #include <NMEAGPS.h>
 #include "gb_fix.h"
 
-#ifndef gb_gps_h
-#define gb_gps_h
+#ifndef GB_GPS_H
+#define GB_GPS_H
 
 class GbGps {
 
