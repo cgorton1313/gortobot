@@ -1,4 +1,6 @@
 /* Gortobot v3c */
+#include "Arduino.h"
+#ifndef UNIT_TEST
 
 // TODO: battery classes, abstract, fake
 // TODO: gps classes, abstract, fake
@@ -23,10 +25,11 @@ const uint8_t DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
 const uint32_t CONSOLE_BAUD = 115200, WIFI_BAUD = 115200, GPS_BAUD = 38400;
 const uint32_t SAT_BAUD = 19200;
 const uint16_t SAT_CHARGE_TIME =
-    30;                       // seconds to wait at start-up for super-capacitor
-const uint16_t ISBD_TIMEOUT = 600; // seconds to try getting isbd success
-const uint16_t FAILURE_RETRY = 600;     // seconds to wait after tx failure
-const uint8_t WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
+    30; // seconds to wait at start-up for super-capacitor
+const uint16_t ISBD_TIMEOUT = 600;  // seconds to try getting isbd success
+const uint16_t FAILURE_RETRY = 600; // seconds to wait after tx failure
+const uint8_t WIFI_ATTEMPT_LIMIT =
+    3; // number of times to try connecting to wifi
 const float MINIMUM_BATTERY_VOLTAGE =
     3.4; // system will wait for charging at this low voltage threshold
 const float BATTERY_OKAY_VOLTAGE =
@@ -180,3 +183,5 @@ void loop() {
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
   watchStander.StandWatch(sail, sailingOrders);
 }
+
+#endif
