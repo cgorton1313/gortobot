@@ -19,6 +19,7 @@
 #include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
 #include <gb_library.h>
+#include "../lib/FakeIt/single_header/standalone/fakeit.hpp"
 
 // Constants
 const uint8_t DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
