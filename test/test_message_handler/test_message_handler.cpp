@@ -4,23 +4,39 @@
 
 #ifdef UNIT_TEST
 
-// void setUp(void) {
-// // set stuff up here
-// }
+void test_BuildOutboundMessage(void) {
+  GbMessageHandler messageHandler = GbMessageHandler(2);
+  GbFix fix = {.latitude = 0.0,
+               .longitude = 0.0,
+               .year = 1972,
+               .month = 1,
+               .day = 1,
+               .hour = 1,
+               .minute = 1,
+               .second = 1,
+               .satellites = 1};
 
-// void tearDown(void) {
-// // clean stuff up here
-// }
+  String logSentence = messageHandler.BuildOutboundMessage(1, 1, fix, 3.99, 3.99, 180, 0);
+  String expected = "2,1,1,720101010101,0.0000,0.0000,3.99,180,0";
+  bool success;
+  if (logSentence == expected) {
+    success = true;
+  }
 
-void test_message_handler(void) {
-  GbMessageHandler messageHandler = GbMessageHandler();
+  TEST_ASSERT_TRUE(success);
+}
+
+void test_GetDiagnosticMessage(void) {
+  GbMessageHandler messageHandler = GbMessageHandler(2);
   TEST_ASSERT_EQUAL(2, messageHandler.GetDiagnosticMessage());
 }
 
 void setup() {
-  UNITY_BEGIN(); // IMPORTANT LINE!
+  delay(1000); // for proper printing
+  UNITY_BEGIN();
 
-  RUN_TEST(test_message_handler);
+  RUN_TEST(test_BuildOutboundMessage);
+  RUN_TEST(test_GetDiagnosticMessage);
 
   UNITY_END();
 

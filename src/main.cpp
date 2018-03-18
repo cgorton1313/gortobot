@@ -76,12 +76,11 @@ GbBattery battery1 =
 GbBattery battery2 =
     GbBattery(2, BATTERY2_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
               BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
-GbSentenceBuilder sentence_builder = GbSentenceBuilder(MESSAGE_VERSION);
 GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
             MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
             MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, TRIM_ROUTINE_MAXIMUM_SECONDS);
 GbWatchStander watchStander = GbWatchStander(LED_PIN);
-GbMessageHandler messageHandler = GbMessageHandler();
+GbMessageHandler messageHandler = GbMessageHandler(MESSAGE_VERSION);
 
 void setup() {
   randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each
@@ -136,7 +135,7 @@ void loop() {
     fix = gb_gps.GetFix('f'); // 'f' = 'fake'
   }
 
-  logSentence = sentence_builder.Sentence(
+  logSentence = messageHandler.BuildOutboundMessage(
       runNum, loopCount, fix, battery1.GetVoltage(), battery2.GetVoltage(),
       sail.GetSailPosition(), messageHandler.GetDiagnosticMessage());
 
