@@ -1,20 +1,20 @@
 #include <Arduino.h>
 #include "gb_fix.h"
 
-#ifndef gb_sentence_builder_h
-#define gb_sentence_builder_h
+#ifndef GB_SENTENCE_BUILDER_H
+#define GB_SENTENCE_BUILDER_H
 
 class GbSentenceBuilder {
 
 private:
-    byte _message_version;
-    String FormatDateNumber(byte number);
-    String ConvertToBase62(unsigned long input);
+    uint8_t _message_version;
+    String FormatDateNumber(uint8_t number);
+    String ConvertToBase62(uint32_t input);
 
 public:
-    GbSentenceBuilder(byte message_version);
-    String Sentence(unsigned int run_num, unsigned int loop_count, GbFix &a_fix,
-        float battery_voltage, float battery2_voltage, int sail_position, byte diagnostic_message);
+    GbSentenceBuilder(uint8_t message_version);
+    String Sentence(uint16_t run_num, uint16_t loop_count, GbFix &a_fix,
+        float battery_voltage, float battery2_voltage, int sail_position, uint8_t diagnostic_message);
 };
 
 #endif

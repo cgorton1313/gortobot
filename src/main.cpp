@@ -8,7 +8,6 @@
 // TODO: combine message listener, parser, sentence builder, etc.
 
 // Includes
-#include <Arduino.h>
 #include "communications/gb_blinker.h"
 #include "communications/gb_message_handler.h"
 #include "communications/gb_sailing_orders.h"
@@ -17,53 +16,45 @@
 #include "configs/pins.h"
 #include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
-#include <Arduino.h>
 #include <gb_library.h>
 
 // Constants
-const byte DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
-const unsigned long CONSOLE_BAUD = 115200, WIFI_BAUD = 115200, GPS_BAUD = 38400;
-const unsigned long SAT_BAUD = 19200;
-const int SAT_CHARGE_TIME =
+const uint8_t DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
+const uint32_t CONSOLE_BAUD = 115200, WIFI_BAUD = 115200, GPS_BAUD = 38400;
+const uint32_t SAT_BAUD = 19200;
+const uint16_t SAT_CHARGE_TIME =
     30;                       // seconds to wait at start-up for super-capacitor
-const int ISBD_TIMEOUT = 600; // seconds to try getting isbd success
-const int FAILURE_RETRY = 600;     // seconds to wait after tx failure
-const byte WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
+const uint16_t ISBD_TIMEOUT = 600; // seconds to try getting isbd success
+const uint16_t FAILURE_RETRY = 600;     // seconds to wait after tx failure
+const uint8_t WIFI_ATTEMPT_LIMIT = 3; // number of times to try connecting to wifi
 const float MINIMUM_BATTERY_VOLTAGE =
     3.4; // system will wait for charging at this low voltage threshold
 const float BATTERY_OKAY_VOLTAGE =
     3.5; // system will resume program at this voltage threshold
-const int BATTERY_WAIT_TIME =
+const uint16_t BATTERY_WAIT_TIME =
     2; // seconds to wait between checking for batteryOkay
-const byte MESSAGE_VERSION =
+const uint8_t MESSAGE_VERSION =
     4; // 2 = long form, 3 = base62, 4 = base62 and 2 batteries
-const int MIN_SAIL_ANGLE = 0, MAX_SAIL_ANGLE = 360; // limits for sail
-const int TRIM_ROUTINE_MAXIMUM_SECONDS =
+const uint16_t MIN_SAIL_ANGLE = 0, MAX_SAIL_ANGLE = 360; // limits for sail
+const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =
     900; // max number of trim seconds allowed to get to ordered position.
          // testing shows 450 should be max
 
 // Global variables
 // TODO: delete this once useSail is gone to cpp
-unsigned long loggingInterval = 60; // seconds b/w logging events, 1 day =
+uint32_t loggingInterval = 60; // seconds b/w logging events, 1 day =
 // 86,400 secs which is max
-unsigned int runNum;        // increments each time the device starts
-unsigned int loopCount = 0; // increments at each loop
-boolean fixAcquired = false, staleFix = true; // for GPS
-// float batteryVoltage;
-// boolean batteryCritical = false;
-unsigned int timeSinceLastFramLog = 0;
+uint16_t runNum;        // increments each time the device starts
+uint16_t loopCount = 0; // increments at each loop
+bool fixAcquired = false, staleFix = true; // for GPS
+uint16_t timeSinceLastFramLog = 0;
 String logSentence = "";
-boolean txSuccess;
+bool txSuccess;
 
-// int sailPosition;       // the actual position of the sail
-// boolean tackIsA = true; // to keep track of which tack setting we should be
-// on
-int currentTackTime =
+uint16_t currentTackTime =
     0; // keeps track of how long we've been on current tack in minutes
-unsigned long thisWatch;
-boolean rxMessageInvalid = false;
-// boolean trimRoutineExceededMax = false;
-// boolean sailNotMoving = false;
+uint32_t thisWatch;
+bool rxMessageInvalid = false;
 GbFix fix;
 GbSailingOrders sailingOrders = {.sailMode = 'r',
                                  .loggingInterval = 60,
@@ -148,7 +139,7 @@ void loop() {
 
   if (USING_WIFI) {
     GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-    byte wifi_attempt = 1;
+    uint8_t wifi_attempt = 1;
     bool wifi_successful = false;
     while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
       if (wifi.UseWifi(logSentence)) {

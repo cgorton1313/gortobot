@@ -1,7 +1,7 @@
 #include "gb_battery.h"
 #include <Sleep_n0m1.h>
 
-GbBattery::GbBattery(byte battery_number, byte pin, float min_voltage, float retry_voltage, int wait_time, bool checking_voltage) {
+GbBattery::GbBattery(uint8_t battery_number, uint8_t pin, float min_voltage, float retry_voltage, uint16_t wait_time, bool checking_voltage) {
         _battery_number = battery_number;
         _pin = pin;
         _min_voltage = min_voltage;
@@ -13,9 +13,9 @@ GbBattery::GbBattery(byte battery_number, byte pin, float min_voltage, float ret
 float GbBattery::GetVoltage() {
         if (_checking_voltage) {
                 delay(1000); // settle down
-                int battery_voltage_int = 0;
-                const int samples = 10; // number of samples to take
-                for (int i = 0; i < samples; i++) {
+                uint16_t battery_voltage_int = 0;
+                const uint8_t samples = 10; // number of samples to take
+                for (uint8_t i = 0; i < samples; i++) {
                         delay(5);
                         battery_voltage_int = battery_voltage_int + analogRead(_pin);
                 }
