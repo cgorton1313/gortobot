@@ -116,6 +116,7 @@ void setup() {
   }
 
   runNum = GbUtility::IncrementRunNum();
+
   Serial.print(F("Starting runNum "));
   Serial.println(runNum);
 
