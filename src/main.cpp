@@ -7,7 +7,7 @@
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
 // TODO: write copious comments
-// TODO: combine message listener, parser, sentence builder, etc.
+// TODO: more unit tests
 
 // Includes
 #include "communications/gb_blinker.h"
@@ -19,7 +19,6 @@
 #include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
 #include <gb_library.h>
-#include "../lib/FakeIt/single_header/standalone/fakeit.hpp"
 
 // Constants
 const uint8_t DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean
@@ -61,6 +60,7 @@ uint32_t thisWatch;
 bool rxMessageInvalid = false;
 GbFix fix;
 GbSailingOrders sailingOrders = {.sailMode = 'r',
+                                 .validOrders = true,
                                  .loggingInterval = 60,
                                  .orderedSailPositionA = 270,
                                  .orderedTackTimeA = 90,

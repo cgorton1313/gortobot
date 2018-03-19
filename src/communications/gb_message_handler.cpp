@@ -81,7 +81,10 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
     //   asking again
     //   break;
     //}
-    default: { Serial.println(F("Not a valid rx message type.")); }
+    default: {
+      Serial.println(F("Not a valid rx message type."));
+      break;
+    }
     }
   } else {
     // How to return this?

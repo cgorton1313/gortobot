@@ -31,12 +31,21 @@ void test_GetDiagnosticMessage(void) {
   TEST_ASSERT_EQUAL(2, messageHandler.GetDiagnosticMessage());
 }
 
+void test_GetSerialMessage(void) {
+    GbMessageHandler messageHandler = GbMessageHandler(2);
+    String message = messageHandler.GetSerialMessage();
+    Serial.println(message);
+    bool success = false;
+    TEST_ASSERT_TRUE(success);
+}
+
 void setup() {
   delay(1000); // for proper printing
   UNITY_BEGIN();
 
   RUN_TEST(test_BuildOutboundMessage);
   RUN_TEST(test_GetDiagnosticMessage);
+  //RUN_TEST(test_GetSerialMessage);
 
   UNITY_END();
 
