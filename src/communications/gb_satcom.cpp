@@ -3,7 +3,8 @@
 
 String _inboundMessage;
 
-GbSatcom::GbSatcom(uint8_t sleepPin, Stream &port, uint32_t baud) : _satcom_baud(baud), _isbd(port, sleepPin) {
+// Pass by reference
+GbSatcom::GbSatcom(uint8_t sleepPin, HardwareSerial &port, uint32_t baud) : _satcom_baud(baud), _satcom_port(port), _isbd(port, sleepPin) {
 }
 
 void GbSatcom::SetUpSat(uint16_t chargeTime, uint16_t timeOut) {
@@ -87,13 +88,13 @@ String GbSatcom::GetInboundMessage() {
 
 void GbSatcom::SatOn() {
         Serial.println(F("Sat on."));
-        Serial3.begin(_satcom_baud);
+        _satcom_port.begin(_satcom_baud);
         _isbd.begin();
 }
 
 void GbSatcom::SatOff() {
         _isbd.sleep();
-        Serial3.end();
+        _satcom_port.end();
         // blinkMessage(2); // makes sure led doesn't get left ON by mistake
         Serial.println(F("Sat off."));
 }
