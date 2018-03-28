@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <IridiumSBD.h>
 
 #ifndef GB_SATCOM_H
