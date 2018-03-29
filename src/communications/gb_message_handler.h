@@ -1,6 +1,6 @@
-#include "gb_fix.h"
-#include "gb_sailing_orders.h"
 #include <Arduino.h>
+#include "navigation/gb_fix.h"
+#include "communications/gb_sailing_orders.h"
 
 // MT message starts with message type, then
 //  1 (std)-

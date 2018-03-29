@@ -1,4 +1,5 @@
 #include <IridiumSBD.h>
+#include "power/gb_battery.h"
 
 #ifndef GB_SATCOM_H
 #define GB_SATCOM_H

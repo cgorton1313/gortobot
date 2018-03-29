@@ -1,5 +1,5 @@
-#include <Arduino.h>
-#include <gb_battery.h>
+#include "power/gb_battery.h"
+#include <stdint.h>
 
 #ifndef GB_UTILITY_H
 #define GB_UTILITY_H

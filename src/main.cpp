@@ -1,5 +1,5 @@
 /* Gortobot v3c */
-#include "Arduino.h"
+#include <Arduino.h>
 #ifndef UNIT_TEST
 
 // TODO: battery classes, abstract, fake
@@ -15,11 +15,15 @@
 #include "communications/gb_message_handler.h"
 #include "communications/gb_sailing_orders.h"
 #include "communications/gb_satcom.h"
+#include "communications/gb_wifi.h"
+#include "navigation/gb_fix.h"
+#include "navigation/gb_gps.h"
+#include "power/gb_battery.h"
 #include "configs/config.h"
 #include "configs/pins.h"
+#include "sailing/gb_sail.h"
 #include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
-#include <gb_library.h>
 
 // Constants
 static const uint8_t DELAY_FOR_SERIAL = 10; // ms to delay so serial ouput is clean

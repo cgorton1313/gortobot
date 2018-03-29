@@ -1,7 +1,6 @@
 #include "communications/gb_sailing_orders.h"
 #include "communications/gb_blinker.h"
-#include <Arduino.h>
-#include <gb_sail.h>
+#include "sailing/gb_sail.h"
 
 #ifndef GB_WATCH_STANDER_H
 #define GB_WATCH_STANDER_H
