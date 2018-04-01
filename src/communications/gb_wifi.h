@@ -1,3 +1,7 @@
+/*
+The wifi class is a wrapper for the wifi object and its power methods (on, off, charge)
+*/
+
 #include <Arduino.h>
 
 #ifndef GB_WIFI_H

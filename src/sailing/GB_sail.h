@@ -1,3 +1,7 @@
+/*
+The sail class sets up and controls the sail.
+*/
+
 #include <Arduino.h> // for Stream
 
 #ifndef GB_SAIL_H

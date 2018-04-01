@@ -1,3 +1,8 @@
+/*
+This class allows any number of battery objects to be used by Gortobot. Useful
+when we switched from 1 bank to 2.
+*/
+
 #include <Vcc.h>
 
 #ifndef GB_BATTERY_H

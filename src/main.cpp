@@ -1,12 +1,20 @@
 /* Gortobot v3c */
+
+/*
+The main.cpp program handles the necessary includes, pin assignments, global consts,
+etc.
+Then, after setup, it runs the loop. The loop simply calls for a position (gps),
+sends and receives data, then executes the perceived orders. Rinse and repeat.
+*/
+
 #include <Arduino.h>
-#ifndef UNIT_TEST
+#ifndef UNIT_TEST // using platformio unit testing requires this
 
 // TODO: battery classes, abstract, fake
 // TODO: gps classes, abstract, fake
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
-// TODO: write copious comments
+// TODO: write more comments
 // TODO: more unit tests
 // TODO: constructor inits
 

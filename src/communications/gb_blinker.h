@@ -1,3 +1,8 @@
+/*
+The GbBlinker is used to communicate Gortobot's status via the LED.
+Useful for figuring out what it's doing during backyard tests
+*/
+
 #include <Arduino.h>
 
 #ifndef GB_BLINKER_H

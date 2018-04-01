@@ -1,3 +1,8 @@
+/*
+A sailing orders object is simply a struct of the various parameters used to
+control the Gortobot. 
+*/
+
 #include <stdint.h>
 
 #ifndef GB_SAILING_ORDERS_H

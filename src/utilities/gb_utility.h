@@ -1,3 +1,7 @@
+/*
+Utility class for methods that don't belong anywhere else.
+*/
+
 #include "power/gb_battery.h"
 #include <stdint.h>
 

@@ -1,3 +1,8 @@
+/*
+This is a wrapper class for a GPS object. Allows for easier switching of GPS libraries,
+and handles power methods (on, off, etc.)
+*/
+
 #include <NMEAGPS.h>
 #include "gb_fix.h"
 

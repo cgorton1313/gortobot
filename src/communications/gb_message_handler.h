@@ -1,3 +1,10 @@
+/*
+The message handler takes various data points and constructs the string
+that gets transmited back to shore.
+It also converts a received message into a sailing order object to be
+used to tell Gorotbot what to do.
+*/
+
 #include <Arduino.h>
 #include "navigation/gb_fix.h"
 #include "communications/gb_sailing_orders.h"

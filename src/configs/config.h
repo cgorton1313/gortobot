@@ -1,3 +1,7 @@
+/*
+These are the global configs
+*/
+
 #define SATCOM_SERIAL_PORT Serial3
 const bool RESET_EEPROM = false; // sets runNum back to 0
 const bool CHECKING_VOLTAGE = false;

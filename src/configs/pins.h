@@ -1,3 +1,7 @@
+/*
+This file defines all the pins. Useful for switching hardware targets.
+*/
+
 #include <Arduino.h>
 
 // Pin assignments

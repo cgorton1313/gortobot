@@ -1,3 +1,7 @@
+/*
+The SatCom class is a wrapper for the IridiumSBD modem and the power methods (on, off, charge)
+*/
+
 #include <IridiumSBD.h>
 #include "power/gb_battery.h"
 
