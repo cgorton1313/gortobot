@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <Vcc.h>
 
 #ifndef GB_BATTERY_H
