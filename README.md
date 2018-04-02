@@ -38,3 +38,8 @@ After `setup()` does some housekeeping, the `loop()` continuously performs the f
 - transmit the outboard message by wifi and/or satcom
 - receive and parse the inbound message
 - act on the current orders until it's time to transmit again
+
+## Testing
+This area is still a work-in-progress. Platformio Plus (paid) allows for unit testing. However, I haven't figured out how to use a mocking framework on the AVR. Conversely, unit testing can be conducted natively (Windows for me) but then I would need to mock Arduino itself. 
+
+This leaves me, for now, with no way to mock dependencies like the battery, gps, etc., when testing each component. Still, there is value in unit testing as many of the public methods as I can. It also seems to be a way to deprecate my practice of using all sorts of configuration switches in the main.cpp to test various scenarios. 
