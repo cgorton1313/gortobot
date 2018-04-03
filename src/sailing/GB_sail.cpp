@@ -1,24 +1,21 @@
 #include "gb_sail.h"
 
-GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin, uint8_t motorPowerEnablePin,
-               uint8_t motorIn1Pin, uint8_t motorIn2Pin, uint16_t min_sail_angle,
-               uint16_t max_sail_angle, uint16_t trimRoutineMaxSeconds) {
-  _sensorEnablePin = sensorEnablePin;
-  _sensorPin = sensorPin;
-  _motorPowerEnablePin = motorPowerEnablePin;
-  _motorIn1Pin = motorIn1Pin;
-  _motorIn2Pin = motorIn2Pin;
-  _min_sail_angle = min_sail_angle;
-  _max_sail_angle = max_sail_angle;
-  _trimRoutineMaxSeconds = trimRoutineMaxSeconds;
+GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
+               uint8_t motorPowerEnablePin, uint8_t motorIn1Pin,
+               uint8_t motorIn2Pin, uint16_t min_sail_angle,
+               uint16_t max_sail_angle, uint16_t trimRoutineMaxSeconds)
+    : _sensorPin(sensorPin), _sensorEnablePin(sensorEnablePin),
+      _mastGearSize(74), _sensorGearSize(36),
+      _motorPowerEnablePin(motorPowerEnablePin), _motorIn1Pin(motorIn1Pin),
+      _motorIn2Pin(motorIn2Pin), _min_sail_angle(min_sail_angle),
+      _max_sail_angle(max_sail_angle),
+      _trimRoutineMaxSeconds(trimRoutineMaxSeconds) {
   pinMode(_sensorPin, INPUT);
   pinMode(_sensorEnablePin, OUTPUT);
   pinMode(_motorPowerEnablePin, OUTPUT);
   digitalWrite(_motorPowerEnablePin, LOW);
   pinMode(_motorIn1Pin, OUTPUT);
   pinMode(_motorIn2Pin, OUTPUT);
-  _mastGearSize = 74;
-  _sensorGearSize = 36;
 }
 
 GbSail::GbTrimResult GbSail::Trim(uint16_t orderedSailPosition) {

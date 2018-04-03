@@ -6,7 +6,7 @@ GbMessageHandler::GbMessageHandler(uint8_t message_version) {
 
 GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
   GbSailingOrders newSailingOrders;
-  // TODO deal with invalid messages
+  // TODO: deal with invalid messages
   bool rxMessageInvalid = false;
 
   if (inboundMessage.indexOf("z") >= 0) { // we should parse it

@@ -5,10 +5,11 @@ This file defines all the pins. Useful for switching hardware targets.
 #include <Arduino.h>
 
 // Pin assignments
-#define GPS_PORT Serial1
-#define WIFI_PORT Serial2
-#define ISBD_PORT Serial3
-const uint8_t LED_PIN = 13; // brown, to external LED via 420 ohm resistor
+#define GPS_SERIAL_PORT Serial1
+#define WIFI_SERIAL_PORT Serial2
+#define SATCOM_SERIAL_PORT Serial3
+const uint8_t LED_PIN =
+    LED_BUILTIN; // brown, to external LED via 420 ohm resistor
 const uint8_t GPS_POWER_PIN_1 = 26;
 const uint8_t GPS_POWER_PIN_2 = 25;
 const uint8_t BATTERY_VOLTAGE_PIN = A0;      // green

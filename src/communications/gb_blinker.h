@@ -1,6 +1,6 @@
 /*
-The GbBlinker is used to communicate Gortobot's status via the LED.
-Useful for figuring out what it's doing during backyard tests
+   The GbBlinker is used to communicate Gortobot's status via the LED.
+   Useful for figuring out what it's doing during backyard tests
 */
 
 #include <Arduino.h>
@@ -11,7 +11,7 @@ Useful for figuring out what it's doing during backyard tests
 class GbBlinker {
 
 private:
-  uint8_t _ledPin;
+  const uint8_t _ledPin;
 
 public:
   GbBlinker(uint8_t pin);

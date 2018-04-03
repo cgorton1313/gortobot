@@ -5,9 +5,9 @@ It also converts a received message into a sailing order object to be
 used to tell Gorotbot what to do.
 */
 
-#include <Arduino.h>
-#include "navigation/gb_fix.h"
 #include "communications/gb_sailing_orders.h"
+#include "navigation/gb_fix.h"
+#include <Arduino.h>
 
 // MT message starts with message type, then
 //  1 (std)-
@@ -27,8 +27,10 @@ private:
 
 public:
   GbMessageHandler(uint8_t message_version);
-  String BuildOutboundMessage(uint16_t run_num, uint16_t loop_count, GbFix &a_fix,
-      float battery_voltage, float battery2_voltage, int sail_position, uint8_t diagnostic_message);
+  String BuildOutboundMessage(uint16_t run_num, uint16_t loop_count,
+                              GbFix &a_fix, float battery_voltage,
+                              float battery2_voltage, int sail_position,
+                              uint8_t diagnostic_message);
   GbSailingOrders ParseMessage(String inboundMessage);
   String GetSerialMessage();
   String GetFakeMessage(GbSailingOrders sailingOrders);

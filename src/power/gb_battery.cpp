@@ -25,7 +25,7 @@ float GbBattery::GetVoltage() {
     return (vcc.Read_Volts() *
             (((float)battery_voltage_int / samples) / 1023.0));
   } else {
-    return 3.99;
+    return 3.99; // a faked voltage
   }
 }
 
