@@ -82,35 +82,35 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
     //   break;
     //}
     default: {
-      Serial.println(F("Not a valid rx message type."));
+      Serial.println("Not a valid rx message type.");
       break;
     }
     }
   } else {
     // How to return this?
     rxMessageInvalid = true;
-    Serial.println(F("No valid message (no z in message)"));
+    Serial.println("No valid message (no z in message)");
   }
 
-  Serial.print(F("Logging interval = "));
-  Serial.println(newSailingOrders.loggingInterval);
-  Serial.print(F("Sail order A = "));
-  Serial.print(newSailingOrders.orderedSailPositionA);
-  Serial.print(F(" for "));
-  Serial.print(newSailingOrders.orderedTackTimeA);
-  Serial.println(F(" minutes"));
-  Serial.print(F("Sail order B = "));
-  Serial.print(newSailingOrders.orderedSailPositionB);
-  Serial.print(F(" for "));
-  Serial.print(newSailingOrders.orderedTackTimeB);
-  Serial.println(F(" minutes"));
+  // Serial.print(F("Logging interval = "));
+  // Serial.println(newSailingOrders.loggingInterval);
+  // Serial.print(F("Sail order A = "));
+  // Serial.print(newSailingOrders.orderedSailPositionA);
+  // Serial.print(F(" for "));
+  // Serial.print(newSailingOrders.orderedTackTimeA);
+  // Serial.println(F(" minutes"));
+  // Serial.print(F("Sail order B = "));
+  // Serial.print(newSailingOrders.orderedSailPositionB);
+  // Serial.print(F(" for "));
+  // Serial.print(newSailingOrders.orderedTackTimeB);
+  // Serial.println(F(" minutes"));
 
   Serial.println(rxMessageInvalid); // just to clear warning, remove later
   return newSailingOrders;
 }
 
 String GbMessageHandler::GetSerialMessage() {
-  Serial.println(F("Ready for orders:"));
+  Serial.println("Ready for orders:");
 
   // Wait for the serial data
   while (!Serial.available()) {
@@ -237,7 +237,7 @@ String GbMessageHandler::BuildOutboundMessage(
     break;
   }
 
-  Serial.print(F("log_sentence = "));
+  Serial.print("log_sentence = ");
   Serial.println(log_sentence);
   return log_sentence;
 }

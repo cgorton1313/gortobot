@@ -1,16 +1,16 @@
 #include <Arduino.h>
-#include <gb_library.h>
+#include "configs/includes.h"
 
 GbBattery battery = GbBattery(1, 16, 3.4, 3.5, 4, true);
-//GbBlinker blinker = GbBlinker(13);
+GbBlinker blinker = GbBlinker(13);
 
 void setup() { Serial.begin(115200); }
 
 void loop() {
-  Serial.print("voltage = ");
+  Serial.print(F("Voltage = "));
   Serial.print(battery.GetVoltage());
-  Serial.print(", status = ");
+  Serial.print(F(" | Status = "));
   Serial.println(battery.Status());
-  //blinker.Blink(2);
-  delay(1000);
+  blinker.Blink(2);
+  delay(500);
 }

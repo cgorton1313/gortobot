@@ -31,15 +31,6 @@ float GbBattery::GetVoltage() {
 
 char GbBattery::Status() {
   float voltage_now = GetVoltage();
-
-  Serial.print(F("Battery"));
-  Serial.print(_battery_number);
-  if (!_checking_voltage) {
-    Serial.print(F(" fake"));
-  }
-  Serial.print(F(" voltage = "));
-  Serial.println(voltage_now);
-
   char status;
   if (voltage_now < _min_voltage) {
     status = 'r'; // red, bad

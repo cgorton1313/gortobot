@@ -15,7 +15,6 @@ private:
 
 public:
   GbBlinker(uint8_t pin);
-  void SetLedPin(uint8_t pin);
   void Blink(uint16_t condition);
 };
 

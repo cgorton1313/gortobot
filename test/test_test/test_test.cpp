@@ -1,11 +1,11 @@
 #include <ArduinoFake.h>
 #include "communications/gb_blinker.h"
+#include "communications/gb_message_handler.h"
 #include <unity.h>
 
 using namespace fakeit;
 
-void test_blink(void)
-{
+void test_blink_once(void) {
 
   When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
   When(Method(ArduinoFake(), delay)).AlwaysReturn();
@@ -16,16 +16,26 @@ void test_blink(void)
 
   Verify(Method(ArduinoFake(), digitalWrite).Using(pin, HIGH)).Once();
   Verify(Method(ArduinoFake(), digitalWrite).Using(pin, LOW)).Once();
+}
+
+void test_parse_message(void) {
+  GbMessageHandler messageHandler = GbMessageHandler(1);
+  //GbSailingOrders actualOrders = messageHandler.ParseMessage("1,120,20,60,20,30,z");
+
+  TEST_ASSERT_TRUE(1 == 1);
 
 }
 
-int main(int argc, char **argv)
-{
-    UNITY_BEGIN();
+void test_battery_status(void) {
 
-    RUN_TEST(test_blink);
+}
 
-    UNITY_END();
+int main(int argc, char **argv) {
+  UNITY_BEGIN();
 
-    return 0;
+  RUN_TEST(test_blink_once);
+  RUN_TEST(test_parse_message);
+  RUN_TEST(test_battery_status);
+
+  return UNITY_END();
 }

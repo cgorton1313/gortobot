@@ -5,9 +5,9 @@ It also converts a received message into a sailing order object to be
 used to tell Gorotbot what to do.
 */
 
+#include <Arduino.h>
 #include "communications/gb_sailing_orders.h"
 #include "navigation/gb_fix.h"
-#include <Arduino.h>
 
 // MT message starts with message type, then
 //  1 (std)-
