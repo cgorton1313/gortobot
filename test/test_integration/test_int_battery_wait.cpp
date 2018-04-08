@@ -5,16 +5,30 @@
 #include <Arduino.h>
 
 class FakeBattery : public GbAbstractBattery {
+private:
+  char _scheme;
 public:
-  FakeBattery() : GbAbstractBattery(1, 3.4, 3.5, 3){};
+  FakeBattery(char scheme) : GbAbstractBattery(1, 3.4, 3.5, 3), _scheme(scheme) {};
   float GetVoltage() {
-    return (sin(millis()/10000.0)/2.0) + 3.7;
+    float voltage;
+    switch (_scheme) {
+      case 's':
+        voltage = (sin(millis()/10000.0)/2.0) + 3.7;
+        break;
+      case 'a':
+        voltage = (sin(millis()/5000.0)/2.0) + 3.7;
+        break;
+      default:
+        voltage = 3.89;
+        break;
+    }
+    return voltage;
   }
 };
 
 static const int BATTERY_WAIT_TIME = 4;
-FakeBattery battery1 = FakeBattery();
-FakeBattery battery2 = FakeBattery();
+FakeBattery battery1 = FakeBattery('s');
+FakeBattery battery2 = FakeBattery('a');
 
 void setup() {
   Serial.begin(115200);
