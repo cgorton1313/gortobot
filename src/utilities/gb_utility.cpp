@@ -55,8 +55,8 @@ void GbUtility::GortoNap(uint16_t seconds) {
   }
 }
 
-void GbUtility::WaitForBatteries(uint16_t waitTime, GbBattery battery1,
-                                 GbBattery battery2) {
+void GbUtility::WaitForBatteries(uint16_t waitTime, GbAbstractBattery &battery1,
+                                 GbAbstractBattery &battery2) {
   char battery1Status = battery1.Status();
   char battery2Status = battery2.Status();
   bool batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');

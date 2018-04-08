@@ -3,27 +3,24 @@ This class allows any number of battery objects to be used by Gortobot. Useful
 when we switched from 1 bank to 2.
 */
 
+#include "gb_abstract_battery.h"
 #include <Vcc.h>
 
 #ifndef GB_BATTERY_H
 #define GB_BATTERY_H
 
-class GbBattery {
+class GbBattery : public GbAbstractBattery {
 
 private:
-  uint8_t _battery_number;
   uint8_t _pin;
-  float _voltage;
-  float _min_voltage;
-  float _retry_voltage;
-  uint16_t _wait_time;
-  bool _checking_voltage;
 
 public:
-  GbBattery(uint8_t battery_number, uint8_t pin, float min_voltage,
-            float retry_voltage, uint16_t wait_time, bool checking_voltage);
-  float GetVoltage();
-  char Status();
+  GbBattery(uint8_t battery_number, float min_voltage, float retry_voltage,
+            uint16_t wait_time, uint8_t pin)
+      : GbAbstractBattery(battery_number, min_voltage, retry_voltage,
+                          wait_time), _pin(pin){};
+  virtual float GetVoltage();
+  virtual char Status();
 };
 
 #endif

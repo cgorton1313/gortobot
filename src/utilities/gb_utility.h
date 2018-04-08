@@ -2,7 +2,7 @@
 Utility class for methods that don't belong anywhere else.
 */
 
-#include "power/gb_battery.h"
+#include "power/gb_abstract_battery.h"
 #include <stdint.h>
 
 #ifndef GB_UTILITY_H
@@ -19,8 +19,8 @@ public:
   static void ClearEEPROM();
   static uint16_t IncrementRunNum();
   static void GortoNap(uint16_t seconds);
-  static void WaitForBatteries(uint16_t waitTime, GbBattery battery1,
-                               GbBattery battery2);
+  static void WaitForBatteries(uint16_t waitTime, GbAbstractBattery &battery1,
+                               GbAbstractBattery &battery2);
 };
 
 #endif
