@@ -3,7 +3,6 @@ The SatCom class is a wrapper for the IridiumSBD modem and the power methods (on
 */
 
 #include <IridiumSBD.h>
-#include "power/gb_battery.h"
 
 #ifndef GB_SATCOM_H
 #define GB_SATCOM_H
@@ -22,7 +21,6 @@ void ChargeSuperCapacitor(uint16_t chargeTime);
 public:
 GbSatcom(uint8_t sleepPin, HardwareSerial &port, uint32_t baud);
 void SetUpSat(uint16_t chargeTime, uint16_t timeOut);
-//bool UseMockSatcom(String txString);
 bool UseSatcom(String sentence);
 String GetInboundMessage();
 };

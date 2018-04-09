@@ -1,6 +1,5 @@
 #include "configs/includes.h"
 #include "power/gb_abstract_battery.h"
-#include "power/gb_battery.h"
 #include "utilities/gb_utility.h"
 #include <Arduino.h>
 

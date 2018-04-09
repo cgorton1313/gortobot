@@ -1,7 +1,7 @@
-#include "gb_battery.h"
+#include "gb_real_battery.h"
 #include <Sleep_n0m1.h>
 
-float GbBattery::GetVoltage() {
+float GbRealBattery::GetVoltage() {
   Serial.println("Checking a real voltage.");
   delay(1000); // settle down
   uint16_t battery_voltage_int = 0;
@@ -14,7 +14,7 @@ float GbBattery::GetVoltage() {
   return (vcc.Read_Volts() * (((float)battery_voltage_int / samples) / 1023.0));
 }
 
-char GbBattery::Status() {
+char GbRealBattery::Status() {
   Serial.println("real status");
   float voltage_now = GetVoltage();
   char status;

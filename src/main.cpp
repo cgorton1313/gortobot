@@ -7,7 +7,6 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 
 */
 
-// TODO: battery classes: abstract, fake
 // TODO: gps classes: abstract, fake
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
@@ -49,12 +48,12 @@ static GbGps gb_gps =
 static GbSatcom gb_satcom =
     GbSatcom(SATELLITE_SLEEP_PIN, SATCOM_SERIAL_PORT, SAT_BAUD);
 static GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
-static GbBattery battery1 =
-    GbBattery(1, BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
-              BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
-static GbBattery battery2 =
-    GbBattery(2, BATTERY2_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
-              BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME, CHECKING_VOLTAGE);
+static GbRealBattery battery1 =
+    GbRealBattery(1, BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
+                  BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME);
+static GbRealBattery battery2 =
+    GbRealBattery(2, BATTERY2_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
+                  BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME);
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
                    MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
                    MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
@@ -63,8 +62,8 @@ static GbWatchStander watchStander = GbWatchStander(LED_PIN);
 static GbMessageHandler messageHandler = GbMessageHandler(MESSAGE_VERSION);
 
 void setup() {
-  randomSeed(analogRead(RANDOM_SEED_PIN)); // for faking data differently each
-                                           // run, A7 should be floating
+  // for random numbers, A7 should be a floating pin
+  randomSeed(analogRead(RANDOM_SEED_PIN));
 
   Serial.begin(CONSOLE_BAUD);
 
