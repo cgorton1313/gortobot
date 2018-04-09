@@ -1,10 +1,6 @@
 #include "gb_blinker.h"
 
-GbBlinker::GbBlinker(uint8_t pin) { _ledPin = pin; }
-
-void GbBlinker::SetLedPin(uint8_t pin) {
-    _ledPin = pin;
-}
+GbBlinker::GbBlinker(uint8_t pin) : _ledPin(pin) {}
 
 void GbBlinker::Blink(uint16_t condition) {
   switch (condition) {

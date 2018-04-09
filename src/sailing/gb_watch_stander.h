@@ -1,3 +1,7 @@
+/*
+The watch stander executes the sailing orders.
+*/
+
 #include "communications/gb_sailing_orders.h"
 #include "communications/gb_blinker.h"
 #include "sailing/gb_sail.h"

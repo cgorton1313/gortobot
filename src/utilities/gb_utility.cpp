@@ -2,8 +2,6 @@
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include <Sleep_n0m1.h>
 
-GbUtility::GbUtility() {}
-
 void GbUtility::ClearEEPROM() {
   Serial.println(F("Resetting EEPROM"));
   for (uint16_t i = 0; i < EEPROM.length(); i++) {
@@ -55,8 +53,8 @@ void GbUtility::GortoNap(uint16_t seconds) {
   }
 }
 
-void GbUtility::WaitForBatteries(uint16_t waitTime, GbBattery battery1,
-                                 GbBattery battery2) {
+void GbUtility::WaitForBatteries(uint16_t waitTime, GbAbstractBattery &battery1,
+                                 GbAbstractBattery &battery2) {
   char battery1Status = battery1.Status();
   char battery2Status = battery2.Status();
   bool batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');

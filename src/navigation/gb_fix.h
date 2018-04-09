@@ -1,4 +1,3 @@
-//#include <Arduino.h>
 #include <stdint.h>
 
 #ifndef GB_FIX_H
