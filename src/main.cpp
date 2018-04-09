@@ -26,8 +26,6 @@ static uint32_t loggingInterval =
     60; // seconds b/w logging events, 1 day = 86,400 secs which is max
 static uint16_t runNum;        // increments each time the device starts
 static uint16_t loopCount = 0; // increments at each loop
-static String logSentence = "";
-static bool txSuccess;
 static uint16_t currentTackTime =
     0; // track how long we've been on current tack in minutes
 static uint32_t thisWatch;
@@ -99,9 +97,8 @@ void setup() {
   Serial.print(F("Starting runNum "));
   Serial.println(runNum);
 
-  if (USING_SAT) {
-    gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
-  }
+  // TODO check this
+  gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
 
   delay(1000);
 }
@@ -114,7 +111,7 @@ void loop() {
   fix = gb_gps.GetFix();
 
   // Construct the outbound message as a string
-  logSentence = messageHandler.BuildOutboundMessage(
+  String logSentence = messageHandler.BuildOutboundMessage(
       runNum, loopCount, fix, battery1.GetVoltage(), battery2.GetVoltage(),
       sail.GetSailPosition(), messageHandler.GetDiagnosticMessage());
 
@@ -131,34 +128,26 @@ void loop() {
     }
   }
 
-  // Optionally send/receive message via satcom, or serial monitor, or fake
+  // Send/receive message via satcom
+  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
   String inboundMessage = "";
-  txSuccess = false;
-  if (USING_SAT) {
-    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-    if (gb_satcom.UseSatcom(logSentence)) {
-      txSuccess = true;
-      inboundMessage = gb_satcom.GetInboundMessage();
-      Serial.print(F("Received mock inbound message of: "));
-      Serial.println(inboundMessage);
-    }
-  } else if (USING_SERIAL_MONITOR_ORDERS) {
-    inboundMessage = messageHandler.GetSerialMessage();
+  bool txSuccess = false;
+  if (gb_satcom.UseSatcom(logSentence)) {
     txSuccess = true;
-  } else {
-    inboundMessage = messageHandler.GetFakeMessage(sailingOrders);
-    txSuccess = true;
+    inboundMessage = gb_satcom.GetInboundMessage();
+    Serial.print(F("Received inbound message of: "));
+    Serial.println(inboundMessage);
   }
 
   // Parse inbound message
   if (txSuccess) {
     sailingOrders = messageHandler.ParseMessage(inboundMessage);
-    thisWatch = loggingInterval;
+    thisWatch = loggingInterval; // TODO deprecate this variable?
   } else {
     thisWatch = min(FAILURE_RETRY, loggingInterval);
   }
 
-  // Sail for one watch cycle
+  // Execute sailing orders for one logging interval
   sailingOrders.sailMode = sailMode; // for now
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
   watchStander.StandWatch(sail, sailingOrders);

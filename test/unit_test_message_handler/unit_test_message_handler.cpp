@@ -1,4 +1,5 @@
 #include "..\src\communications\gb_message_handler.h"
+#include "..\src\communications\gb_sailing_orders.h"
 #include <Arduino.h>
 #include <unity.h>
 
@@ -32,12 +33,31 @@ void test_GetDiagnosticMessage(void) {
   TEST_ASSERT_EQUAL(2, messageHandler.GetDiagnosticMessage());
 }
 
+void test_ParseMessage_validMessage(void) {
+  GbMessageHandler messageHandler = GbMessageHandler(2);
+  String testMessage = "1,180,1,270,2,5,z";
+  GbSailingOrders parsedOrders = messageHandler.ParseMessage(testMessage);
+
+  bool success = false;
+  if (parsedOrders.orderedSailPositionA == 180 &&
+      parsedOrders.orderedTackTimeA == 1 &&
+      parsedOrders.orderedSailPositionB == 270 &&
+      parsedOrders.orderedTackTimeB == 2 &&
+      parsedOrders.loggingInterval == 5) {
+    success = true;
+  }
+
+  TEST_ASSERT_TRUE(success);
+}
+
+
 void setup() {
   delay(1000); // for proper printing
   UNITY_BEGIN();
 
   RUN_TEST(test_BuildOutboundMessage);
   RUN_TEST(test_GetDiagnosticMessage);
+  RUN_TEST(test_ParseMessage_validMessage);
 
   UNITY_END();
 

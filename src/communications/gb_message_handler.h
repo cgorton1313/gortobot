@@ -9,7 +9,7 @@ used to tell Gorotbot what to do.
 #include "navigation/gb_fix.h"
 #include <Arduino.h>
 
-// MT message starts with message type, then
+// Mobile terminated (MT) message starts with message type, then
 //  1 (std)-
 //  mastPositionA(min-max),timeA(minutes),mastPositionB(min-max),timeB(minutes),loggingInterval(min),z
 //  (end)
