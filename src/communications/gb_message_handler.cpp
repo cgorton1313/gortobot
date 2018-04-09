@@ -1,8 +1,7 @@
 #include "gb_message_handler.h"
 
-GbMessageHandler::GbMessageHandler(uint8_t message_version) {
-  _message_version = message_version;
-}
+GbMessageHandler::GbMessageHandler(uint8_t message_version)
+    : _message_version(message_version) {}
 
 GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
   GbSailingOrders newSailingOrders;

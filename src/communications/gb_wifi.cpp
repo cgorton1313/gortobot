@@ -1,10 +1,11 @@
 #include "gb_wifi.h"
 
-GbWifi::GbWifi(uint8_t pin, HardwareSerial &port, uint32_t baud) {
-  _wifi_enable_pin = pin;
-  // try defining _gps_port first, then .begin it
+GbWifi::GbWifi(uint8_t pin, HardwareSerial &port, uint32_t baud)
+    : _wifi_enable_pin(pin), _wifi_port(&port) {
+
+  // try defining _gps_port first, then .begin it?
   port.begin(baud);
-  _wifi_port = &port;
+  ;
 }
 
 bool GbWifi::UseWifi(String sentence) {

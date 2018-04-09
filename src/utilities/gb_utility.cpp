@@ -2,8 +2,6 @@
 #include <EEPROM.h> // for saving the runNum after each re-start
 #include <Sleep_n0m1.h>
 
-GbUtility::GbUtility() {}
-
 void GbUtility::ClearEEPROM() {
   Serial.println(F("Resetting EEPROM"));
   for (uint16_t i = 0; i < EEPROM.length(); i++) {

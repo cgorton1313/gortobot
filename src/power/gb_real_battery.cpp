@@ -2,7 +2,6 @@
 #include <Sleep_n0m1.h>
 
 float GbRealBattery::GetVoltage() {
-  Serial.println("Checking a real voltage.");
   delay(1000); // settle down
   uint16_t battery_voltage_int = 0;
   const uint8_t samples = 10; // number of samples to take
@@ -15,7 +14,6 @@ float GbRealBattery::GetVoltage() {
 }
 
 char GbRealBattery::Status() {
-  Serial.println("real status");
   float voltage_now = GetVoltage();
   char status;
   if (voltage_now < _min_voltage) {

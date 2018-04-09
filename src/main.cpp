@@ -7,7 +7,6 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 
 */
 
-// TODO: gps classes: abstract, fake
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
 // TODO: more unit tests
@@ -110,13 +109,9 @@ void setup() {
 void loop() {
   loopCount++;
 
-  // Get a position, real or fake
-  if (USING_GPS) {
-    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-    fix = gb_gps.GetFix('r'); // 'r' = 'real'
-  } else {
-    fix = gb_gps.GetFix('f'); // 'f' = 'fake'
-  }
+  // Get a position
+  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
+  fix = gb_gps.GetFix();
 
   // Construct the outbound message as a string
   logSentence = messageHandler.BuildOutboundMessage(

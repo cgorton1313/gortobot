@@ -1,4 +1,5 @@
-#include "configs/includes.h"
+/* This test exercises the WaitForBatteries method with simulated batteries */
+
 #include "power/gb_abstract_battery.h"
 #include "utilities/gb_utility.h"
 #include <Arduino.h>
@@ -6,20 +7,22 @@
 class FakeBattery : public GbAbstractBattery {
 private:
   char _scheme;
+
 public:
-  FakeBattery(char scheme) : GbAbstractBattery(1, 3.4, 3.5, 3), _scheme(scheme) {};
+  FakeBattery(char scheme)
+      : GbAbstractBattery(1, 3.4, 3.5, 3), _scheme(scheme){};
   float GetVoltage() {
     float voltage;
     switch (_scheme) {
-      case 's':
-        voltage = (sin(millis()/10000.0)/2.0) + 3.7;
-        break;
-      case 'a':
-        voltage = (sin(millis()/5000.0)/2.0) + 3.7;
-        break;
-      default:
-        voltage = 3.89;
-        break;
+    case 's':
+      voltage = (sin(millis() / 10000.0) / 2.0) + 3.7;
+      break;
+    case 'a':
+      voltage = (sin(millis() / 5000.0) / 2.0) + 3.7;
+      break;
+    default:
+      voltage = 3.89;
+      break;
     }
     return voltage;
   }

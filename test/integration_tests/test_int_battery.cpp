@@ -1,7 +1,9 @@
+/* This test outputs voltage and status of a real battery */
+
 #include <Arduino.h>
 #include "configs/includes.h"
 
-GbBattery battery = GbBattery(1, 16, 3.4, 3.5, 4, true);
+GbRealBattery battery = GbRealBattery(1, 16, 3.4, 3.5, 4);
 GbBlinker blinker = GbBlinker(13);
 
 void setup() { Serial.begin(115200); }
