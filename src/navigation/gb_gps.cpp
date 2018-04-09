@@ -39,7 +39,7 @@ GbFix GbGps::GetFix() {
       fix_done = true;
     }
   }
-  
+
   GpsOff();
   return fix;
 }
