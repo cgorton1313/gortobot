@@ -20,17 +20,13 @@ void test_BuildOutboundMessage(void) {
   String logSentence =
       messageHandler.BuildOutboundMessage(1, 1, fix, 3.99, 3.99, 180, 0);
   String expected = "2,1,1,720101010101,0.0000,0.0000,3.99,180,0";
-  bool success;
-  if (logSentence == expected) {
-    success = true;
-  }
 
-  TEST_ASSERT_TRUE(success);
+  TEST_ASSERT_TRUE(logSentence == expected);
 }
 
 void test_GetDiagnosticMessage(void) {
   GbMessageHandler messageHandler = GbMessageHandler(2);
-  TEST_ASSERT_EQUAL(2, messageHandler.GetDiagnosticMessage());
+  TEST_ASSERT_EQUAL(0, messageHandler.GetDiagnosticMessage());
 }
 
 void test_ParseMessage_validMessage(void) {

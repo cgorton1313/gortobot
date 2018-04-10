@@ -147,7 +147,7 @@ uint8_t GbMessageHandler::GetDiagnosticMessage() {
   // TODO get trim result //return (trimRoutineExceededMax * pow(2, 0) +
   // sailNotMoving * pow(2, 1) +
   // rxMessageInvalid * pow(2, 3));
-  return 2;
+  return 0;
 }
 
 // TODO: use
@@ -236,8 +236,6 @@ String GbMessageHandler::BuildOutboundMessage(
     break;
   }
 
-  Serial.print("log_sentence = ");
-  Serial.println(log_sentence);
   return log_sentence;
 }
 
