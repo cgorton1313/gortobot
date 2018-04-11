@@ -32,6 +32,7 @@ public:
                               float battery2_voltage, int sail_position,
                               uint8_t diagnostic_message);
   GbSailingOrders ParseMessage(String inboundMessage, GbSailingOrders existingOrders);
+  GbSailingOrders ParseMessage2(String inboundMessage, GbSailingOrders existingOrders);
   uint8_t GetDiagnosticMessage();
 };
 

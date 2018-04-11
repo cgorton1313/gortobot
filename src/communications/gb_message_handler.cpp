@@ -9,8 +9,6 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
     switch ((inboundMessage.substring(0, inboundMessage.indexOf(',')))
                 .toInt()) { // get first value
     case 1: {               // standard message = 1,120,20,60,20,30,z
-      // TODO better way of finding commas:
-      // https://stackoverflow.com/questions/1894886/parsing-a-comma-delimited-stdstring
       uint8_t firstCommaIndex = inboundMessage.indexOf(',');
       uint8_t secondCommaIndex =
           inboundMessage.indexOf(',', firstCommaIndex + 1);
@@ -22,6 +20,7 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
           inboundMessage.indexOf(',', fourthCommaIndex + 1);
       uint8_t sixthCommaIndex =
           inboundMessage.indexOf(',', fifthCommaIndex + 1);
+
       String firstValue = inboundMessage.substring(0, firstCommaIndex);
       String secondValue =
           inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
@@ -33,17 +32,13 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
           inboundMessage.substring(fourthCommaIndex + 1, fifthCommaIndex);
       String sixthValue =
           inboundMessage.substring(fifthCommaIndex + 1, sixthCommaIndex);
-      // maybe restrict these values to 6 hr max and positive
-      newSailingOrders.orderedSailPositionA =
-          secondValue.toInt(); // tolerates spaces
+
+      newSailingOrders.orderedSailPositionA = secondValue.toInt();
       newSailingOrders.orderedTackTimeA = thirdValue.toInt();
       newSailingOrders.orderedSailPositionB = fourthValue.toInt();
       newSailingOrders.orderedTackTimeB = fifthValue.toInt();
-      uint32_t tempLoggingInterval = sixthValue.toInt();
-      if (tempLoggingInterval > 0 &&
-          tempLoggingInterval <= 86400) { // 86,400 secs = 1 day
-        newSailingOrders.loggingInterval = tempLoggingInterval;
-      }
+      newSailingOrders.loggingInterval = sixthValue.toInt();
+      
       inboundMessageValid = CheckSailingOrders(newSailingOrders);
       break;
     }

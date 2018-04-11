@@ -1,9 +1,15 @@
 #include "..\src\communications\gb_message_handler.h"
 #include "..\src\communications\gb_sailing_orders.h"
+#include <..\lib\MemoryFree\MemoryFree.h>
 #include <Arduino.h>
 #include <unity.h>
 
 #ifdef UNIT_TEST
+
+void PrintFreeMemory() {
+  Serial.print("freeMemory()=");
+  Serial.println(freeMemory());
+}
 
 void test_BuildOutboundMessage(void) {
   String outboundMessage = "";
@@ -32,6 +38,7 @@ void test_BuildOutboundMessage(void) {
   Serial.println(outboundMessage);
   expected = "5,1,1,1A11111,3m88,7YGG,6R,6R,2u,0";
   TEST_ASSERT_TRUE(outboundMessage == expected);
+  PrintFreeMemory();
 }
 
 void test_GetDiagnosticMessage(void) {
@@ -60,6 +67,7 @@ void test_ParseMessage_validMessage(void) {
   }
 
   TEST_ASSERT_TRUE(success);
+  PrintFreeMemory();
 }
 
 void test_ParseMessage_invalidMessage(void) {
@@ -101,15 +109,22 @@ void test_ParseMessage_invalidMessage(void) {
   parsedOrders =
       messageHandler.ParseMessage("2,180,1,270,2,5,z", validSailingOrders);
   TEST_ASSERT_EQUAL(60, parsedOrders.loggingInterval);
+  PrintFreeMemory();
 }
 
 void setup() {
   delay(1000); // for proper printing
   UNITY_BEGIN();
 
+  PrintFreeMemory();
   RUN_TEST(test_BuildOutboundMessage);
+  PrintFreeMemory();
   RUN_TEST(test_GetDiagnosticMessage);
+  PrintFreeMemory();
   RUN_TEST(test_ParseMessage_validMessage);
+  PrintFreeMemory();
+  RUN_TEST(test_ParseMessage_invalidMessage);
+  PrintFreeMemory();
 
   UNITY_END();
 
