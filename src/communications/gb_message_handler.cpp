@@ -38,7 +38,7 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
       newSailingOrders.orderedSailPositionB = fourthValue.toInt();
       newSailingOrders.orderedTackTimeB = fifthValue.toInt();
       newSailingOrders.loggingInterval = sixthValue.toInt();
-      
+
       inboundMessageValid = CheckSailingOrders(newSailingOrders);
       break;
     }
@@ -72,8 +72,6 @@ uint8_t GbMessageHandler::GetDiagnosticMessage() {
   return 0;
 }
 
-// TODO: use
-// https://stackoverflow.com/questions/2462951/c-equivalent-of-stringbuffer-stringbuilder
 String GbMessageHandler::BuildOutboundMessage(
     uint8_t message_version, uint16_t run_num, uint16_t loop_count,
     GbFix &a_fix, float battery_voltage, float battery2_voltage,
@@ -108,7 +106,7 @@ String GbMessageHandler::BuildOutboundMessage(
     log_sentence += ",";
     log_sentence += diagnostic_message;
     break;
-  case 5: // base62  form, 2 batteries
+  case 5: // base62 form, 2 batteries
     log_sentence += message_version;
     log_sentence += ",";
     log_sentence += ConvertToBase62(run_num);
