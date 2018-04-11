@@ -26,14 +26,11 @@ static uint32_t loggingInterval =
     60; // seconds b/w logging events, 1 day = 86,400 secs which is max
 static uint16_t runNum;        // increments each time the device starts
 static uint16_t loopCount = 0; // increments at each loop
-static uint16_t currentTackTime =
-    0; // track how long we've been on current tack in minutes
+// static uint16_t currentTackTime = 0; // track how long we've been on current
+// tack in minutes
 static uint32_t thisWatch;
-static bool rxMessageInvalid = false; // TODO: re-implement this
 static GbFix fix; // last known position and time of the vessel
-static GbSailingOrders sailingOrders = {.sailMode = 'r',
-                                        .validOrders = true,
-                                        .loggingInterval = 60,
+static GbSailingOrders sailingOrders = {.loggingInterval = 60,
                                         .orderedSailPositionA = 270,
                                         .orderedTackTimeA = 90,
                                         .orderedSailPositionB = 270,
@@ -56,7 +53,7 @@ static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
                    MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
                    TRIM_ROUTINE_MAXIMUM_SECONDS);
 static GbWatchStander watchStander = GbWatchStander(LED_PIN);
-static GbMessageHandler messageHandler = GbMessageHandler(MESSAGE_VERSION);
+static GbMessageHandler messageHandler = GbMessageHandler();
 
 void setup() {
   // for random numbers, A7 should be a floating pin
@@ -112,8 +109,9 @@ void loop() {
 
   // Construct the outbound message as a string
   String logSentence = messageHandler.BuildOutboundMessage(
-      runNum, loopCount, fix, battery1.GetVoltage(), battery2.GetVoltage(),
-      sail.GetSailPosition(), messageHandler.GetDiagnosticMessage());
+      MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
+      battery2.GetVoltage(), sail.GetSailPosition(),
+      messageHandler.GetDiagnosticMessage());
 
   // Optionally use the wifi module to transmit the outbound message
   if (USING_WIFI) {
@@ -141,14 +139,13 @@ void loop() {
 
   // Parse inbound message
   if (txSuccess) {
-    sailingOrders = messageHandler.ParseMessage(inboundMessage);
+    sailingOrders = messageHandler.ParseMessage(inboundMessage, sailingOrders);
     thisWatch = loggingInterval; // TODO deprecate this variable?
   } else {
     thisWatch = min(FAILURE_RETRY, loggingInterval);
   }
 
   // Execute sailing orders for one logging interval
-  sailingOrders.sailMode = sailMode; // for now
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
   watchStander.StandWatch(sail, sailingOrders);
 }

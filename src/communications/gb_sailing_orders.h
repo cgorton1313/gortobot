@@ -9,10 +9,6 @@ tell the Gortobot what to do during each watch cycle.
 #define GB_SAILING_ORDERS_H
 
 struct GbSailingOrders {
-  // TODO enum these
-  // Sail modes: r=real, t=testing, s=direct set, p=pulse, f=fake
-  char sailMode;
-  bool validOrders;
   uint32_t loggingInterval;
   uint16_t orderedSailPositionA;
   uint16_t orderedTackTimeA;

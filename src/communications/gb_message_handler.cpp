@@ -1,19 +1,14 @@
 #include "gb_message_handler.h"
 
-GbMessageHandler::GbMessageHandler(uint8_t message_version)
-    : _message_version(message_version) {}
-
-GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
+GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
+                                               GbSailingOrders existingOrders) {
   GbSailingOrders newSailingOrders;
-  // TODO: deal with invalid messages
-  bool rxMessageInvalid = false;
+  bool inboundMessageValid = false;
 
   if (inboundMessage.indexOf("z") >= 0) { // we should parse it
     switch ((inboundMessage.substring(0, inboundMessage.indexOf(',')))
-                .toInt()) {            // get first value
-    case 1: {                          // standard message = 1,120,20,60,20,30,z
-      newSailingOrders.sailMode = 'r'; // real sail mode
-      // find the commas, probably should move to char []?
+                .toInt()) { // get first value
+    case 1: {               // standard message = 1,120,20,60,20,30,z
       uint8_t firstCommaIndex = inboundMessage.indexOf(',');
       uint8_t secondCommaIndex =
           inboundMessage.indexOf(',', firstCommaIndex + 1);
@@ -25,6 +20,7 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
           inboundMessage.indexOf(',', fourthCommaIndex + 1);
       uint8_t sixthCommaIndex =
           inboundMessage.indexOf(',', fifthCommaIndex + 1);
+
       String firstValue = inboundMessage.substring(0, firstCommaIndex);
       String secondValue =
           inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
@@ -36,106 +32,32 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
           inboundMessage.substring(fourthCommaIndex + 1, fifthCommaIndex);
       String sixthValue =
           inboundMessage.substring(fifthCommaIndex + 1, sixthCommaIndex);
-      // maybe restrict these values to 6 hr max and positive
-      newSailingOrders.orderedSailPositionA =
-          secondValue.toInt(); // tolerates spaces
+
+      newSailingOrders.orderedSailPositionA = secondValue.toInt();
       newSailingOrders.orderedTackTimeA = thirdValue.toInt();
       newSailingOrders.orderedSailPositionB = fourthValue.toInt();
       newSailingOrders.orderedTackTimeB = fifthValue.toInt();
-      uint32_t tempLoggingInterval = sixthValue.toInt();
-      if (tempLoggingInterval > 0 &&
-          tempLoggingInterval <= 86400) { // 86,400 secs = 1 day
-        newSailingOrders.loggingInterval = tempLoggingInterval;
-      }
+      newSailingOrders.loggingInterval = sixthValue.toInt();
+      
+      inboundMessageValid = CheckSailingOrders(newSailingOrders);
       break;
     }
-    case 2: {                          // sail test mode 2,10,z is 10 min test
-      newSailingOrders.sailMode = 't'; // test sail mode
-      newSailingOrders.orderedSailPositionA = 180;
-      newSailingOrders.orderedTackTimeA = 1;
-      newSailingOrders.orderedSailPositionB = 180;
-      newSailingOrders.orderedTackTimeB = 1;
-      uint8_t firstCommaIndex = inboundMessage.indexOf(',');
-      uint8_t secondCommaIndex =
-          inboundMessage.indexOf(',', firstCommaIndex + 1);
-      String secondValue =
-          inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
-      uint32_t tempLoggingInterval = secondValue.toInt();
-      if (tempLoggingInterval > 0 && tempLoggingInterval <= 86400) {
-        newSailingOrders.loggingInterval = tempLoggingInterval;
-      }
-      break;
-    }
-    // TODO: implement this: directly setting ordered sail position not yet
-    // supported
-    // case 3: { // not to be used in real sailing
-    //   sailMode = 's';
-    //   uint8_t firstCommaIndex = inboundMessage.indexOf(',');
-    //   uint8_t secondCommaIndex =
-    //       inboundMessage.indexOf(',', firstCommaIndex + 1);
-    //   String secondValue =
-    //       inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
-    //   //orderedSailPosition = secondValue.toInt();
-    //   newSailingOrders.loggingInterval = 1; // will wait 1 second before
-    //   asking again
-    //   break;
-    //}
     default: {
-      Serial.println("Not a valid rx message type.");
+      Serial.println("Not a valid inbound message type.");
       break;
     }
     }
   } else {
     // How to return this?
-    rxMessageInvalid = true;
-    Serial.println("No valid message (no z in message)");
+    inboundMessageValid = false;
+    Serial.println(F("Not a valid message (no 'z' found)"));
   }
 
-  // Serial.print(F("Logging interval = "));
-  // Serial.println(newSailingOrders.loggingInterval);
-  // Serial.print(F("Sail order A = "));
-  // Serial.print(newSailingOrders.orderedSailPositionA);
-  // Serial.print(F(" for "));
-  // Serial.print(newSailingOrders.orderedTackTimeA);
-  // Serial.println(F(" minutes"));
-  // Serial.print(F("Sail order B = "));
-  // Serial.print(newSailingOrders.orderedSailPositionB);
-  // Serial.print(F(" for "));
-  // Serial.print(newSailingOrders.orderedTackTimeB);
-  // Serial.println(F(" minutes"));
-
-  Serial.println(rxMessageInvalid); // just to clear warning, remove later
-  return newSailingOrders;
-}
-
-String GbMessageHandler::GetSerialMessage() {
-  Serial.println("Ready for orders:");
-
-  // Wait for the serial data
-  while (!Serial.available()) {
-  }
-
-  return Serial.readString();
-}
-
-String GbMessageHandler::GetFakeMessage(GbSailingOrders sailingOrders) {
-  //  1 (std)-
-  //  mastPositionA(min-max),timeA(minutes),mastPositionB(min-max),timeB(minutes),loggingInterval(min),z
-  //  (end)
-  String fakeOrderString = "";
-  if (sailingOrders.sailMode == 't') {
-    // Build string for direct setting sail position
-    fakeOrderString = "3,";
-    fakeOrderString += sailingOrders.loggingInterval;
-    fakeOrderString += ",z";
+  if (inboundMessageValid) {
+    return newSailingOrders;
   } else {
-    // Build string for rotating sail from 0-360 each minute, with delay in
-    // between of loggingInterval
-    fakeOrderString = "1,0,1,360,1,";
-    fakeOrderString += sailingOrders.loggingInterval;
-    fakeOrderString += ",z";
+    return existingOrders;
   }
-  return fakeOrderString;
 }
 
 uint8_t GbMessageHandler::GetDiagnosticMessage() {
@@ -153,63 +75,15 @@ uint8_t GbMessageHandler::GetDiagnosticMessage() {
 // TODO: use
 // https://stackoverflow.com/questions/2462951/c-equivalent-of-stringbuffer-stringbuilder
 String GbMessageHandler::BuildOutboundMessage(
-    uint16_t run_num, uint16_t loop_count, GbFix &a_fix, float battery_voltage,
-    float battery2_voltage, int sail_position, uint8_t diagnostic_message) {
-  String log_sentence = "";
-  String base_62_date_time;
+    uint8_t message_version, uint16_t run_num, uint16_t loop_count,
+    GbFix &a_fix, float battery_voltage, float battery2_voltage,
+    int sail_position, uint8_t diagnostic_message) {
 
-  switch (this->_message_version) {
-  case 2: // long form
-    log_sentence += _message_version;
-    log_sentence += ",";
-    log_sentence += run_num;
-    log_sentence += ",";
-    log_sentence += loop_count;
-    log_sentence += ",";
-    log_sentence += String(a_fix.year % 100);
-    log_sentence += FormatDateNumber(a_fix.month);
-    log_sentence += FormatDateNumber(a_fix.day);
-    log_sentence += FormatDateNumber(a_fix.hour);
-    log_sentence += FormatDateNumber(a_fix.minute);
-    log_sentence += FormatDateNumber(a_fix.second);
-    log_sentence += ",";
-    log_sentence += String(a_fix.latitude, 4);
-    log_sentence += ",";
-    log_sentence += String(a_fix.longitude, 4);
-    log_sentence += ",";
-    log_sentence += String(battery_voltage, 2);
-    log_sentence += ",";
-    log_sentence += sail_position;
-    log_sentence += ",";
-    log_sentence += diagnostic_message;
-    break;
-  case 3: // base62 short form
-    log_sentence += _message_version;
-    log_sentence += ",";
-    log_sentence += ConvertToBase62(run_num);
-    log_sentence += ",";
-    log_sentence += ConvertToBase62(loop_count);
-    log_sentence += ",";
-    log_sentence += ConvertToBase62(a_fix.year % 100);
-    log_sentence += ConvertToBase62(a_fix.month);
-    log_sentence += ConvertToBase62(a_fix.day);
-    log_sentence += ConvertToBase62(a_fix.hour);
-    log_sentence += ConvertToBase62(a_fix.minute);
-    log_sentence += ConvertToBase62(a_fix.second);
-    log_sentence += ",";
-    log_sentence += ConvertToBase62((long)round((90 + a_fix.latitude) * 10000));
-    log_sentence += ",";
-    log_sentence +=
-        ConvertToBase62((long)round((180 + a_fix.longitude) * 10000));
-    log_sentence += ",";
-    log_sentence += ConvertToBase62((int)round(battery_voltage * 100));
-    log_sentence += ",";
-    log_sentence += ConvertToBase62(sail_position);
-    log_sentence += ",";
-    log_sentence += ConvertToBase62(diagnostic_message);
-    break;
+  String log_sentence = "";
+
+  switch (message_version) {
   case 4: // long form, 2 batteries
-    log_sentence += _message_version;
+    log_sentence += message_version;
     log_sentence += ",";
     log_sentence += run_num;
     log_sentence += ",";
@@ -233,6 +107,33 @@ String GbMessageHandler::BuildOutboundMessage(
     log_sentence += sail_position;
     log_sentence += ",";
     log_sentence += diagnostic_message;
+    break;
+  case 5: // base62  form, 2 batteries
+    log_sentence += message_version;
+    log_sentence += ",";
+    log_sentence += ConvertToBase62(run_num);
+    log_sentence += ",";
+    log_sentence += ConvertToBase62(loop_count);
+    log_sentence += ",";
+    log_sentence += ConvertToBase62(a_fix.year % 100);
+    log_sentence += ConvertToBase62(a_fix.month);
+    log_sentence += ConvertToBase62(a_fix.day);
+    log_sentence += ConvertToBase62(a_fix.hour);
+    log_sentence += ConvertToBase62(a_fix.minute);
+    log_sentence += ConvertToBase62(a_fix.second);
+    log_sentence += ",";
+    log_sentence += ConvertToBase62((long)round((90 + a_fix.latitude) * 10000));
+    log_sentence += ",";
+    log_sentence +=
+        ConvertToBase62((long)round((180 + a_fix.longitude) * 10000));
+    log_sentence += ",";
+    log_sentence += ConvertToBase62((int)round(battery_voltage * 100));
+    log_sentence += ",";
+    log_sentence += ConvertToBase62((int)round(battery2_voltage * 100));
+    log_sentence += ",";
+    log_sentence += ConvertToBase62(sail_position);
+    log_sentence += ",";
+    log_sentence += ConvertToBase62(diagnostic_message);
     break;
   }
 
@@ -260,4 +161,22 @@ String GbMessageHandler::ConvertToBase62(uint32_t input) {
   }
   base62String = BASE_62_CHARACTERS[input] + base62String;
   return base62String;
+}
+
+bool GbMessageHandler::CheckSailingOrders(GbSailingOrders ordersToCheck) {
+  // tack times have 12 hour max, logging interval has 1 day max
+  bool ordersValid = true;
+  if (ordersToCheck.orderedSailPositionA < 0 ||
+      ordersToCheck.orderedSailPositionB < 0 ||
+      ordersToCheck.orderedSailPositionA > 359 ||
+      ordersToCheck.orderedSailPositionB > 359 ||
+      ordersToCheck.orderedTackTimeA < 0 ||
+      ordersToCheck.orderedTackTimeB < 0 ||
+      ordersToCheck.orderedTackTimeA > 43200 ||
+      ordersToCheck.orderedTackTimeB > 43200 ||
+      ordersToCheck.loggingInterval < 0 ||
+      ordersToCheck.loggingInterval > 86400) {
+    ordersValid = false;
+  }
+  return ordersValid;
 }

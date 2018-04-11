@@ -10,30 +10,8 @@ GbWatchStander::GbWatchStander(uint8_t ledPin) : _blinker(ledPin) {
 }
 
 void GbWatchStander::StandWatch(GbSail sail, GbSailingOrders sailingOrders) {
-  switch (sailingOrders.sailMode) {
-  case 'r': // real sailing
     Serial.println("Entering real sail mode.");
     RealSail(sail, sailingOrders);
-    break;
-  case 't': // testing sail
-    Serial.println(F("Entering test sail mode."));
-    TestSail(sail, sailingOrders);
-    break;
-  case 's': // directly trims the sail
-    Serial.println(F("Entering direct set sail mode."));
-    sail.Trim(sailingOrders.orderedSailPositionA);
-    break;
-  case 'p': // pulse
-    Serial.println(F("Entering pulsing sail mode."));
-    PulseSail(sail);
-    break;
-  case 'f': // fake
-    Serial.println(F("Entering fake sail mode."));
-    FakeSail(sailingOrders.loggingInterval);
-    break;
-  default: // do nothing
-    break;
-  }
 }
 
 void GbWatchStander::RealSail(GbSail sail, GbSailingOrders sailingOrders) {
