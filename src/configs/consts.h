@@ -16,8 +16,9 @@ static const float BATTERY_OKAY_VOLTAGE =
     3.5; // system will resume program at this voltage threshold
 static const uint16_t BATTERY_WAIT_TIME =
     2; // seconds to wait between checking for batteryOkay
-static const uint8_t MESSAGE_VERSION =
-    4; // 2 = long form, 3 = base62, 4 = base62 and 2 batteries
+static const uint8_t MESSAGE_VERSION = 4; // 2 = long form, 3 = base62, 4 = long
+                                          // form and 2 batteries, 5 = base62
+                                          // and 2 batteries
 static const uint16_t MIN_SAIL_ANGLE = 0,
                       MAX_SAIL_ANGLE = 360; // limits for sail
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =
