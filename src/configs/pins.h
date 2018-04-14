@@ -4,6 +4,9 @@ This file defines all the pins. Useful for switching hardware targets.
 
 #include <Arduino.h>
 
+#ifndef GB_PINS_H
+#define GB_PINS_H
+
 // Pin assignments
 #define GPS_SERIAL_PORT Serial1
 #define WIFI_SERIAL_PORT Serial2
@@ -23,3 +26,5 @@ const uint8_t CHIP_SELECT = 10;        // temp while using only satellite
 const uint8_t SATELLITE_SLEEP_PIN = 7; // 7-green
 const uint8_t WIFI_ENABLE_PIN = 4;     // brown
 const uint8_t RANDOM_SEED_PIN = A7;
+
+#endif

@@ -1,4 +1,8 @@
 #include <stdint.h>
+
+#ifndef GB_CONSTS_H
+#define GB_CONSTS_H
+
 static const uint8_t DELAY_FOR_SERIAL =
     10; // ms to delay so serial ouput is clean
 static const uint32_t CONSOLE_BAUD = 115200, WIFI_BAUD = 115200,
@@ -15,7 +19,7 @@ static const float MINIMUM_BATTERY_VOLTAGE =
 static const float BATTERY_OKAY_VOLTAGE =
     3.5; // system will resume program at this voltage threshold
 static const uint16_t BATTERY_WAIT_TIME =
-    2; // seconds to wait between checking for batteryOkay
+    60; // seconds to wait between checking for batteryOkay
 static const uint8_t MESSAGE_VERSION = 4; // 2 = long form, 3 = base62, 4 = long
                                           // form and 2 batteries, 5 = base62
                                           // and 2 batteries
@@ -24,3 +28,5 @@ static const uint16_t MIN_SAIL_ANGLE = 0,
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =
     900; // max number of trim seconds allowed to get to ordered position.
          // testing shows 450 should be max
+
+#endif
