@@ -10,7 +10,7 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
 // TODO: more unit tests
-// TODO: use constructor inits
+// TODO: check with 3rpm motor that it stops better
 
 #ifndef UNIT_TEST // required for platformio unit testing
 

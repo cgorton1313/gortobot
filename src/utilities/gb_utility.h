@@ -11,7 +11,7 @@ Utility class for methods that don't belong anywhere else.
 class GbUtility {
 
 private:
-  GbUtility() {};
+  GbUtility(){};
   static int32_t EEPROMReadlong(int32_t address);
   static void EEPROMWritelong(int16_t address, int32_t value);
 

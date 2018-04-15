@@ -24,7 +24,7 @@ static const uint8_t MESSAGE_VERSION = 4; // 2 = long form, 3 = base62, 4 = long
                                           // form and 2 batteries, 5 = base62
                                           // and 2 batteries
 static const uint16_t MIN_SAIL_ANGLE = 0,
-                      MAX_SAIL_ANGLE = 360; // limits for sail
+                      MAX_SAIL_ANGLE = 359; // limits for sail
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =
     900; // max number of trim seconds allowed to get to ordered position.
          // testing shows 450 should be max

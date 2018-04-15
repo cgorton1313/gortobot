@@ -15,10 +15,7 @@ private:
   uint16_t _current_orderedSailPosition;
   bool _tackIsA;
   uint16_t _currentTackTime;
-  void RealSail(GbSail sail, GbSailingOrders sailingOrders);
-  void PulseSail(GbSail sail);
-  void FakeSail(unsigned long watchDuration);
-  void TestSail(GbSail sail, GbSailingOrders sailingOrders);
+  void Sail(GbSail sail, GbSailingOrders sailingOrders);
   GbBlinker _blinker;
 
 public:
