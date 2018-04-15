@@ -69,6 +69,7 @@ void GbUtility::WaitForBatteries(uint16_t waitTime, GbAbstractBattery &battery1,
       for (uint16_t i = 0; i < waitTime; i++) {
         GbUtility::GortoNap(1);
       }
+
       Serial.println(F("Wait time elapsed. Retrying."));
       battery1Status = battery1.Status();
       battery2Status = battery2.Status();

@@ -21,6 +21,12 @@ private:
   const uint16_t _max_sail_angle;
   const uint16_t _trimRoutineMaxSeconds;
   uint16_t GetPositionAnalogReading();
+  bool CloseEnough(uint16_t sailPosition, uint16_t orderedSailPosition);
+  bool TrimRoutineExceeded(uint32_t trimStartTime);
+  void TurnSailTowardsTarget(uint16_t sailPosition, uint16_t orderedSailPosition);
+  void TurnCW();
+  void TurnCCW();
+  void Stop();
 
 public:
   GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
@@ -29,14 +35,12 @@ public:
          uint16_t trimRoutineMaxSeconds);
   struct GbTrimResult {
     bool success;
-    bool sailNotMoving;
+    bool sailMoving;
     bool trimRoutineExceededMax;
   };
+  void OutputTrimResults(GbTrimResult trimResult);
   GbTrimResult Trim(uint16_t angle);
   uint16_t GetSailPosition();
-  void TurnCW();
-  void TurnCCW();
-  void Stop();
   bool ValidOrders(uint16_t order);
 };
 

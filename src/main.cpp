@@ -10,7 +10,7 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 // TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
 // TODO: more unit tests
-// TODO: use constructor inits
+// TODO: check with 3rpm motor that it stops better
 
 #ifndef UNIT_TEST // required for platformio unit testing
 
@@ -43,11 +43,11 @@ static GbSatcom gb_satcom =
     GbSatcom(SATELLITE_SLEEP_PIN, SATCOM_SERIAL_PORT, SAT_BAUD);
 static GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 static GbRealBattery battery1 =
-    GbRealBattery(1, BATTERY_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
-                  BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME);
+    GbRealBattery(1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
+                  BATTERY_WAIT_TIME, BATTERY_VOLTAGE_PIN);
 static GbRealBattery battery2 =
-    GbRealBattery(2, BATTERY2_VOLTAGE_PIN, MINIMUM_BATTERY_VOLTAGE,
-                  BATTERY_OKAY_VOLTAGE, BATTERY_WAIT_TIME);
+    GbRealBattery(2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
+                  BATTERY_WAIT_TIME, BATTERY2_VOLTAGE_PIN);
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
                    MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
                    MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
@@ -62,17 +62,16 @@ void setup() {
   Serial.begin(CONSOLE_BAUD);
 
   // Pin Modes
-  // TODO: these are handled by constructors. Is that okay? Check to see if it
-  // still works with outputs commented out
+  // TODO: do in contructors?
   pinMode(LED_PIN, OUTPUT);
-  // pinMode(GPS_POWER_PIN_1, OUTPUT);
-  // pinMode(GPS_POWER_PIN_2, OUTPUT);
-  pinMode(BATTERY_VOLTAGE_PIN, INPUT);  // not necessary but for clarity
-  pinMode(BATTERY2_VOLTAGE_PIN, INPUT); // not necessary but for clarity
-  // pinMode(SATELLITE_SLEEP_PIN, OUTPUT);
-  // pinMode(MOTOR_IN_1_PIN, OUTPUT);
-  // pinMode(MOTOR_IN_2_PIN, OUTPUT);
-  // pinMode(WIFI_ENABLE_PIN, OUTPUT);
+  pinMode(GPS_POWER_PIN_1, OUTPUT);
+  pinMode(GPS_POWER_PIN_2, OUTPUT);
+  pinMode(BATTERY_VOLTAGE_PIN, INPUT);
+  pinMode(BATTERY2_VOLTAGE_PIN, INPUT);
+  pinMode(SATELLITE_SLEEP_PIN, OUTPUT);
+  pinMode(MOTOR_IN_1_PIN, OUTPUT);
+  pinMode(MOTOR_IN_2_PIN, OUTPUT);
+  pinMode(WIFI_ENABLE_PIN, OUTPUT);
 
   // Initial pin states
   analogWrite(LED_PIN, LOW);          // turn off LED

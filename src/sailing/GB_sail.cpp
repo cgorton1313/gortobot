@@ -19,61 +19,65 @@ GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
 }
 
 GbSail::GbTrimResult GbSail::Trim(uint16_t orderedSailPosition) {
-  unsigned long trimTimer;
-  uint16_t trimSeconds = 0;
-  uint16_t totalTrimSeconds = 0;
+
+  uint32_t trimStartTime = millis();
+  uint32_t sailMovingCheckTime = millis();
   bool sailIsTrimming = true;
-
   uint16_t sailPosition = GetSailPosition();
-  uint16_t tempSailPosition = sailPosition;
-  bool trimRoutineExceededMax = false;
-  bool sailNotMoving = false;
+  Serial.print(F("Current position = "));
+  Serial.println(sailPosition);
+  uint16_t checkPosition = sailPosition;
 
-  if ((abs(GetSailPosition() - orderedSailPosition)) > 4) { // sail out of trim
-    trimTimer = millis(); // capture the time now
-    while (((sailPosition - orderedSailPosition) != 0) && sailIsTrimming) {
-
-      // Start rotating sail
-      digitalWrite(_motorIn1Pin, sailPosition > orderedSailPosition);
-      digitalWrite(_motorIn2Pin, sailPosition < orderedSailPosition);
-
-      // Every second, check if we're done, if we timed out or sail stopped
-      // moving
-      if ((unsigned long)(millis() - trimTimer) >= 1000) {
-        trimTimer = millis(); // reset timer
-        totalTrimSeconds++;
-        if (totalTrimSeconds > _trimRoutineMaxSeconds) {
-          sailIsTrimming = false;
-          trimRoutineExceededMax = true;
-          Serial.println(F("trimRoutineExceededMax"));
-        }
-        sailPosition = this->GetSailPosition();
-        if (sailPosition == tempSailPosition) {
-          // sail hasn't moved in the last second
-          trimSeconds++;
-          if (trimSeconds > 10) { // sail hasn't moved in 10 seconds, bad!
-            sailIsTrimming = false;
-            sailNotMoving = true;
-            Serial.println(F("Sail not moving")); // what do we do? diags!
-          }
-        } else { // sail has moved
-          tempSailPosition = sailPosition;
-          trimSeconds = 0;
-          sailNotMoving = false;
-        }
+  // Try to trim to the the ordered sail position
+  while (!CloseEnough(sailPosition, orderedSailPosition) &&
+         !TrimRoutineExceeded(trimStartTime) && sailIsTrimming) {
+    TurnSailTowardsTarget(sailPosition, orderedSailPosition);
+    sailPosition = GetSailPosition();
+    if ((uint32_t)(millis() - sailMovingCheckTime) > 10000) {
+      if (abs(sailPosition - checkPosition) < 2) {
+        sailIsTrimming = false;
+      } else {
+        checkPosition = sailPosition;
+        sailMovingCheckTime = millis();
       }
     }
-    Stop(); // sail is either in position or stuck
   }
-  Serial.print(F("Done trimming. totalTrimSeconds = "));
-  Serial.println(totalTrimSeconds);
+  Stop(); // sail is either in position or stuck
+  GbTrimResult trimResult = {
+      .success = CloseEnough(sailPosition, orderedSailPosition),
+      .sailMoving = sailIsTrimming,
+      .trimRoutineExceededMax = TrimRoutineExceeded(trimStartTime)};
 
-  bool trimSuccess = (!sailNotMoving && !trimRoutineExceededMax);
-  GbTrimResult trimResult = {.success = trimSuccess,
-                             .sailNotMoving = sailNotMoving,
-                             .trimRoutineExceededMax = trimRoutineExceededMax};
-
+  OutputTrimResults(trimResult);
   return trimResult;
+}
+
+void GbSail::OutputTrimResults(GbTrimResult trimResult) {
+  Serial.print(F("Trim routine results: success = "));
+  Serial.print(trimResult.success);
+  Serial.print(F(" | sailMoving = "));
+  Serial.print(trimResult.sailMoving);
+  Serial.print(F(" | trimRoutineExceededMax = "));
+  Serial.println(trimResult.trimRoutineExceededMax);
+}
+
+bool GbSail::CloseEnough(uint16_t sailPosition, uint16_t orderedSailPosition) {
+  return abs(sailPosition - orderedSailPosition) < 2;
+}
+
+bool GbSail::TrimRoutineExceeded(uint32_t trimStartTime) {
+  return ((trimStartTime / 1000) > _trimRoutineMaxSeconds);
+}
+
+void GbSail::TurnSailTowardsTarget(uint16_t sailPosition,
+                                   uint16_t orderedSailPosition) {
+  if (sailPosition < orderedSailPosition) {
+    TurnCW();
+  } else if (sailPosition > orderedSailPosition) {
+    TurnCCW();
+  } else {
+    Stop();
+  }
 }
 
 uint16_t GbSail::GetSailPosition() {
