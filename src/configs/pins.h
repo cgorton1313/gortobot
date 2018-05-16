@@ -26,8 +26,6 @@ const uint8_t CHIP_SELECT = 10;        // temp while using only satellite
 const uint8_t SATELLITE_SLEEP_PIN = 7; // 7-green
 const uint8_t WIFI_ENABLE_PIN = 4;     // brown
 const uint8_t RANDOM_SEED_PIN = A7;
-const uint8_t TEMP_HUMIDITY_POWER_PIN = 22;
-const uint8_t TEMP_HUMIDITY_SCL_PIN = 21; // 21 = SCL on Mega
-const uint8_t TEMP_HUMIDITY_SCA_PIN = 20; // 20 = SCA on Mega
+const uint8_t TEMP_HUMIDITY_POWER_PIN = 6;
 
 #endif

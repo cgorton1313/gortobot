@@ -7,6 +7,7 @@ used to tell Gorotbot what to do.
 
 #include "communications/gb_sailing_orders.h"
 #include "navigation/gb_fix.h"
+#include "sailing/gb_sail.h"
 #include <Arduino.h>
 
 /*
@@ -25,15 +26,29 @@ private:
   String FormatDateNumber(uint8_t number);
   String ConvertToBase62(uint32_t input);
   bool CheckSailingOrders(GbSailingOrders ordersToCheck);
+  String LongFormBase(uint16_t run_num, uint16_t loop_count, GbFix &a_fix,
+                      float battery_voltage, float battery2_voltage,
+                      int sail_position, uint8_t diagnostic_message);
+  String ShortFormBase(uint16_t run_num, uint16_t loop_count, GbFix &a_fix,
+                       float battery_voltage, float battery2_voltage,
+                       int sail_position, uint8_t diagnostic_message);
 
 public:
-  String BuildOutboundMessage(uint8_t message_version, uint16_t run_num, uint16_t loop_count,
-                              GbFix &a_fix, float battery_voltage,
-                              float battery2_voltage, int sail_position,
-                              uint8_t diagnostic_message);
-  GbSailingOrders ParseMessage(String inboundMessage, GbSailingOrders existingOrders);
-  GbSailingOrders ParseMessage2(String inboundMessage, GbSailingOrders existingOrders);
-  uint8_t GetDiagnosticMessage();
+  String BuildOutboundMessage(uint8_t message_version, uint16_t run_num,
+                              uint16_t loop_count, GbFix &a_fix,
+                              float battery_voltage, float battery2_voltage,
+                              int sail_position, uint8_t diagnostic_message);
+  String BuildOutboundMessage(uint8_t message_version, uint16_t run_num,
+                              uint16_t loop_count, GbFix &a_fix,
+                              float battery_voltage, float battery2_voltage,
+                              int sail_position, uint8_t diagnostic_message,
+                              float temperature, float humidity);
+
+  GbSailingOrders ParseMessage(String inboundMessage,
+                               GbSailingOrders existingOrders);
+  GbSailingOrders ParseMessage2(String inboundMessage,
+                                GbSailingOrders existingOrders);
+  uint8_t GetDiagnosticMessage(GbTrimResult trimResult, bool rxMessageInvalid);
 };
 
 #endif
