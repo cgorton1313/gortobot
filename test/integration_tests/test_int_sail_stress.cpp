@@ -20,7 +20,7 @@ Adafruit_HTU21DF airSensor = Adafruit_HTU21DF();
 GbFix fix;
 GbTrimResult trimResult;
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
-                   MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
+                   MOTOR_POWER_ENABLE_PIN, MOTOR_DIRECTION_PIN, MOTOR_SPEED_PIN,
                    MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
                    TRIM_ROUTINE_MAXIMUM_SECONDS);
 GbRealBattery battery1 = GbRealBattery(
@@ -89,14 +89,14 @@ void loop() {
       humidity);
   Serial.println(logSentence);
 
-  uint8_t wifi_attempt = 1;
-  bool wifi_successful = false;
-  while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
-    if (gb_wifi.UseWifi(logSentence)) {
-      wifi_successful = true;
-    }
-    wifi_attempt++;
-  }
+  // uint8_t wifi_attempt = 1;
+  // bool wifi_successful = false;
+  // while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
+  //   if (gb_wifi.UseWifi(logSentence)) {
+  //     wifi_successful = true;
+  //   }
+  //   wifi_attempt++;
+  // }
 
   Serial.print(F("Napping for "));
   Serial.print(interval);

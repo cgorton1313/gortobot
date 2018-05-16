@@ -26,7 +26,6 @@ static const uint8_t MESSAGE_VERSION = 4; // 2 = long form, 3 = base62, 4 = long
 static const uint16_t MIN_SAIL_ANGLE = 0,
                       MAX_SAIL_ANGLE = 359; // limits for sail
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =
-    120; // max number of trim seconds allowed to get to ordered position.
-         // testing shows 450 should be max
+    180; // max number of trim seconds allowed to get to ordered position
 
 #endif

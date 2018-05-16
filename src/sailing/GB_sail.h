@@ -16,8 +16,8 @@ private:
   const uint8_t _mastGearSize;
   const uint8_t _sensorGearSize;
   const uint8_t _motorPowerEnablePin;
-  const uint8_t _motorIn1Pin;
-  const uint8_t _motorIn2Pin;
+  const uint8_t _motorDirectionPin;
+  const uint8_t _motorSpeedPin;
   const uint16_t _min_sail_angle;
   const uint16_t _max_sail_angle;
   const uint16_t _trimRoutineMaxSeconds;
@@ -34,7 +34,7 @@ private:
 
 public:
   GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
-         uint8_t motorPowerEnablePin, uint8_t motorIn1Pin, uint8_t motorIn2Pin,
+         uint8_t motorPowerEnablePin, uint8_t motorDirectionPin, uint8_t motorSpeedPin,
          uint16_t min_sail_angle, uint16_t max_sail_angle,
          uint16_t trimRoutineMaxSeconds);
   void OutputTrimResults(GbTrimResult trimResult);

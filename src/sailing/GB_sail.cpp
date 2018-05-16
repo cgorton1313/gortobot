@@ -1,21 +1,21 @@
 #include "gb_sail.h"
 
 GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
-               uint8_t motorPowerEnablePin, uint8_t motorIn1Pin,
-               uint8_t motorIn2Pin, uint16_t min_sail_angle,
+               uint8_t motorPowerEnablePin, uint8_t motorDirectionPin,
+               uint8_t motorSpeedPin, uint16_t min_sail_angle,
                uint16_t max_sail_angle, uint16_t trimRoutineMaxSeconds)
     : _sensorPin(sensorPin), _sensorEnablePin(sensorEnablePin),
       _mastGearSize(74), _sensorGearSize(36),
-      _motorPowerEnablePin(motorPowerEnablePin), _motorIn1Pin(motorIn1Pin),
-      _motorIn2Pin(motorIn2Pin), _min_sail_angle(min_sail_angle),
+      _motorPowerEnablePin(motorPowerEnablePin), _motorDirectionPin(motorDirectionPin),
+      _motorSpeedPin(motorSpeedPin), _min_sail_angle(min_sail_angle),
       _max_sail_angle(max_sail_angle),
       _trimRoutineMaxSeconds(trimRoutineMaxSeconds) {
   pinMode(_sensorPin, INPUT);
   pinMode(_sensorEnablePin, OUTPUT);
   pinMode(_motorPowerEnablePin, OUTPUT);
   digitalWrite(_motorPowerEnablePin, LOW);
-  pinMode(_motorIn1Pin, OUTPUT);
-  pinMode(_motorIn2Pin, OUTPUT);
+  pinMode(_motorSpeedPin, OUTPUT);
+  pinMode(_motorSpeedPin, OUTPUT);
 }
 
 GbTrimResult GbSail::Trim(uint16_t orderedSailPosition) {
@@ -29,7 +29,6 @@ GbTrimResult GbSail::Trim(uint16_t orderedSailPosition) {
   while (!CloseEnough(sailPosition, orderedSailPosition) &&
          !TrimRoutineExceeded(trimStartTime) && sailIsTrimming) {
     TurnSailTowardsTarget(sailPosition, orderedSailPosition);
-    sailPosition = GetSailPosition();
 
     if (CloserToTarget(sailPosition, sailPositionBefore, orderedSailPosition)) {
       sailIsTrimming = true;
@@ -40,6 +39,9 @@ GbTrimResult GbSail::Trim(uint16_t orderedSailPosition) {
         sailIsTrimming = false;
       }
     }
+
+    sailPosition = GetSailPosition();
+
   }
 
   Stop(); // sail is either in position or stuck
@@ -55,8 +57,8 @@ GbTrimResult GbSail::Trim(uint16_t orderedSailPosition) {
 
 bool GbSail::CloserToTarget(uint16_t sailPosition, uint16_t sailPositionBefore,
                             uint16_t orderedSailPosition) {
-  return (abs(sailPosition - orderedSailPosition) <
-          abs(sailPositionBefore - orderedSailPosition));
+  return (abs((int16_t)(sailPosition - orderedSailPosition)) <
+          abs((int16_t)(sailPositionBefore - orderedSailPosition)));
 }
 
 void GbSail::OutputTrimResults(GbTrimResult trimResult) {
@@ -71,7 +73,7 @@ void GbSail::OutputTrimResults(GbTrimResult trimResult) {
 }
 
 bool GbSail::CloseEnough(uint16_t sailPosition, uint16_t orderedSailPosition) {
-  return abs(sailPosition - orderedSailPosition) < 2;
+  return abs((int16_t)(sailPosition - orderedSailPosition)) < 2;
 }
 
 bool GbSail::TrimRoutineExceeded(uint32_t trimStartTime) {
@@ -117,21 +119,21 @@ uint16_t GbSail::GetPositionAnalogReading() {
 }
 
 void GbSail::TurnCW() {
-  digitalWrite(_motorPowerEnablePin, LOW);
-  digitalWrite(_motorIn1Pin, HIGH);
-  digitalWrite(_motorIn2Pin, LOW);
+  digitalWrite(_motorPowerEnablePin, HIGH);
+  digitalWrite(_motorDirectionPin, LOW);
+  digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::TurnCCW() {
-  digitalWrite(_motorPowerEnablePin, LOW);
-  digitalWrite(_motorIn1Pin, LOW);
-  digitalWrite(_motorIn2Pin, HIGH);
+  digitalWrite(_motorPowerEnablePin, HIGH);
+  digitalWrite(_motorDirectionPin, HIGH);
+  digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::Stop() {
-  digitalWrite(_motorPowerEnablePin, HIGH);
-  digitalWrite(_motorIn1Pin, LOW);
-  digitalWrite(_motorIn2Pin, LOW);
+  digitalWrite(_motorPowerEnablePin, LOW);
+  digitalWrite(_motorDirectionPin, LOW);
+  digitalWrite(_motorSpeedPin, LOW);
 }
 
 bool GbSail::ValidOrders(uint16_t order) {
