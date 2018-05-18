@@ -14,7 +14,7 @@
 uint16_t runNum;
 uint16_t loopCount = 0;
 const uint16_t BATTERY_TEST_WAIT_TIME = 6;
-uint32_t interval = 6;
+const uint32_t interval = 6;
 
 Adafruit_HTU21DF airSensor = Adafruit_HTU21DF();
 GbFix fix;
@@ -30,7 +30,7 @@ GbRealBattery battery2 = GbRealBattery(
 GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 GbMessageHandler messageHandler = GbMessageHandler();
 
-void GetVoltages() {
+void PrintVoltages() {
   Serial.print(F("battery1: "));
   Serial.print(battery1.GetVoltage());
   Serial.print(F(" | battery2: "));
@@ -67,7 +67,7 @@ void loop() {
                   .sailBatteryTooLow = true};
   }
 
-  GetVoltages();
+  PrintVoltages();
 
   digitalWrite(TEMP_HUMIDITY_POWER_PIN, HIGH);
   delay(1000);
@@ -89,14 +89,14 @@ void loop() {
       humidity);
   Serial.println(logSentence);
 
-  // uint8_t wifi_attempt = 1;
-  // bool wifi_successful = false;
-  // while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
-  //   if (gb_wifi.UseWifi(logSentence)) {
-  //     wifi_successful = true;
-  //   }
-  //   wifi_attempt++;
-  // }
+  uint8_t wifi_attempt = 1;
+  bool wifi_successful = false;
+  while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
+    if (gb_wifi.UseWifi(logSentence)) {
+      wifi_successful = true;
+    }
+    wifi_attempt++;
+  }
 
   Serial.print(F("Napping for "));
   Serial.print(interval);

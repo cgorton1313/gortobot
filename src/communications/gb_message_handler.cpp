@@ -62,8 +62,8 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
 
 uint8_t GbMessageHandler::GetDiagnosticMessage(GbTrimResult trimResult,
                                                bool rxMessageInvalid) {
-  // 1- too many trim pulses and sail is moving
-  // 2- sail not moving after trim pulses
+  // 1- trimRoutineExceededMax
+  // 2- sailStuck
   // 4- fram problem
   // 8- rxMessage not valid
   // 16- sail battery too low
