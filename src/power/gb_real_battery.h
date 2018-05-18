@@ -16,9 +16,9 @@ private:
 
 public:
   GbRealBattery(uint8_t battery_number, float min_voltage, float retry_voltage,
-            uint16_t wait_time, uint8_t pin)
-      : GbAbstractBattery(battery_number, min_voltage, retry_voltage,
-                          wait_time), _pin(pin){};
+                uint8_t pin)
+      : GbAbstractBattery(battery_number, min_voltage, retry_voltage),
+        _pin(pin){};
   virtual float GetVoltage();
   virtual char Status();
 };

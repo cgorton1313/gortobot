@@ -9,11 +9,10 @@ protected:
   uint8_t _battery_number;
   float _min_voltage;
   float _retry_voltage;
-  uint16_t _wait_time;
 
 public:
   GbAbstractBattery(uint8_t battery_number, float min_voltage,
-                    float retry_voltage, uint16_t wait_time);
+                    float retry_voltage);
   virtual float GetVoltage() = 0;
   virtual char Status();
 };

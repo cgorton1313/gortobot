@@ -1,6 +1,7 @@
 #include "gb_watch_stander.h"
 #include "utilities/gb_utility.h"
 #include "communications/gb_blinker.h"
+#include "sailing/gb_trim_result.h"
 
 GbWatchStander::GbWatchStander(uint8_t ledPin) : _blinker(ledPin) {
   // Start on tack A at time 0
@@ -19,8 +20,8 @@ void GbWatchStander::Sail(GbSail sail, GbSailingOrders sailingOrders) {
   Serial.print(sailingOrders.loggingInterval);
   Serial.println(F(" seconds."));
 
-  unsigned long elapsedTime = 0; // used to track seconds during sail operation
-  GbSail::GbTrimResult trimResult;
+  uint32_t elapsedTime = 0; // used to track seconds during sail operation
+  GbTrimResult trimResult;
   while (elapsedTime < sailingOrders.loggingInterval) {
 
     // Every minute, check sail trim angle and whether it is time to tack

@@ -1,9 +1,9 @@
 #include "gb_abstract_battery.h"
 
 GbAbstractBattery::GbAbstractBattery(uint8_t battery_number, float min_voltage,
-                                     float retry_voltage, uint16_t wait_time)
+                                     float retry_voltage)
     : _battery_number(battery_number), _min_voltage(min_voltage),
-      _retry_voltage(retry_voltage), _wait_time(wait_time) {}
+      _retry_voltage(retry_voltage) {}
 
 char GbAbstractBattery::Status() {
   float voltage_now = GetVoltage();
