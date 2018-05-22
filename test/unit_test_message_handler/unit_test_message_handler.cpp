@@ -1,3 +1,4 @@
+//#include "..\src\communications\gb_message_handler.h"
 #include "..\src\communications\gb_message_handler.h"
 #include "..\src\communications\gb_sailing_orders.h"
 #include <..\lib\MemoryFree\MemoryFree.h>
@@ -43,7 +44,13 @@ void test_BuildOutboundMessage(void) {
 
 void test_GetDiagnosticMessage(void) {
   GbMessageHandler messageHandler = GbMessageHandler();
-  TEST_ASSERT_EQUAL(0, messageHandler.GetDiagnosticMessage());
+  bool rxMessageInvalid = true;
+  GbTrimResult trimResult = {
+      .success = true,
+      .sailStuck = false,
+      .trimRoutineExceededMax = false,
+      .sailBatteryTooLow = false};
+  TEST_ASSERT_EQUAL(0, messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid));
 }
 
 void test_ParseMessage_validMessage(void) {

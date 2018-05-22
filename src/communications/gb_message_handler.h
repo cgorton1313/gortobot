@@ -46,6 +46,7 @@ public:
 
   GbSailingOrders ParseMessage(String inboundMessage,
                                GbSailingOrders existingOrders);
+  // TODO: why is this here?
   GbSailingOrders ParseMessage2(String inboundMessage,
                                 GbSailingOrders existingOrders);
   uint8_t GetDiagnosticMessage(GbTrimResult trimResult, bool rxMessageInvalid);

@@ -14,7 +14,7 @@ GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
   pinMode(_sensorEnablePin, OUTPUT);
   pinMode(_motorPowerEnablePin, OUTPUT);
   digitalWrite(_motorPowerEnablePin, LOW);
-  pinMode(_motorSpeedPin, OUTPUT);
+  pinMode(_motorDirectionPin, OUTPUT);
   pinMode(_motorSpeedPin, OUTPUT);
 }
 
