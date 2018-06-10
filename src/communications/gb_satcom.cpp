@@ -2,36 +2,25 @@
 #include "utilities/gb_utility.h"
 
 String _inboundMessage;
+#define _diagnostics true // get serial diagnostics
 
 GbSatcom::GbSatcom(uint8_t sleepPin, HardwareSerial &port, uint32_t baud)
-    : _satcom_baud(baud), _satcom_port(port), _isbd(port, sleepPin) {}
+    : _satcom_baud(baud), _satcom_port(port), _isbd(port, sleepPin) {
+      pinMode(sleepPin, OUTPUT);
+      digitalWrite(sleepPin, LOW);
+    }
 
 void GbSatcom::SetUpSat(uint16_t chargeTime, uint16_t timeOut) {
 
   ChargeSuperCapacitor(chargeTime);
 
-  // TODO: new ISBD interface in 2.0?
-  // isbd.attachConsole(Serial); // lets me see what the sat modem is doing
-
   // For battery set ups, where plenty of power can recharge the super capacitor
   _isbd.setPowerProfile(IridiumSBD::DEFAULT_POWER_PROFILE);
 
-  // TODO: necessary?
   _isbd.adjustSendReceiveTimeout(timeOut);
 
-  // isbd.setMinimumSignalQuality(3); // default is 2, trying this for stability
-
-  // See erratum in ISBD docs. This work around si not needed for firmware since
-  // 2013
-  _isbd.useMSSTMWorkaround(
-      false); // I think I need this here, which is a good thing
+  _isbd.useMSSTMWorkaround(false);
 }
-
-// bool GbSatcom::UseMockSatcom(String txString) {
-//   char rxBuffer[27] = "1,359,1439,359,1439,1439,z";
-//   _inboundMessage = rxBuffer;
-//   return true;
-// }
 
 bool GbSatcom::UseSatcom(String txString) {
   // Clear out the last inbound message`
@@ -69,6 +58,7 @@ bool GbSatcom::UseSatcom(String txString) {
     Serial.println(rxBufferSize);
     if (rxBufferSize == 0) {
       Serial.println(F("No message received"));
+      _inboundMessage = '0';
     } else {
       Serial.print(F("Message received: "));
       Serial.println(rxBuffer);
@@ -92,6 +82,7 @@ void GbSatcom::SatOn() {
 void GbSatcom::SatOff() {
   _isbd.sleep();
   _satcom_port.end();
+  // TODO: make sure led is off
   // blinkMessage(2); // makes sure led doesn't get left ON by mistake
   Serial.println(F("Sat off."));
 }
@@ -101,4 +92,22 @@ void GbSatcom::ChargeSuperCapacitor(uint16_t chargeTime) {
   Serial.print(chargeTime);
   Serial.println(F(" seconds..."));
   GbUtility::GortoNap(chargeTime); // allow capacitor to charge
+}
+
+bool ISBDCallback() {
+  unsigned ledOn = (millis() / 500) % 2;
+  digitalWrite(13, ledOn ? HIGH : LOW);
+  return true;
+}
+
+void ISBDConsoleCallback(IridiumSBD *device, char c) {
+#if _diagnostics
+  Serial.write(c);
+#endif
+}
+
+void ISBDDiagsCallback(IridiumSBD *device, char c) {
+#if _diagnostics
+  Serial.write(c);
+#endif
 }

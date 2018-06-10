@@ -17,11 +17,9 @@ GbMessageHandler messageHandler = GbMessageHandler();
 GbFix fix;
 GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 GbRealBattery battery1 =
-    GbRealBattery(1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  60, BATTERY_VOLTAGE_PIN);
+    GbRealBattery(1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_VOLTAGE_PIN);
 GbRealBattery battery2 =
-    GbRealBattery(2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  60, BATTERY2_VOLTAGE_PIN);
+    GbRealBattery(2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY2_VOLTAGE_PIN);
 
 void setup() {
   Serial.begin(CONSOLE_BAUD);

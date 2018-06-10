@@ -9,8 +9,8 @@ static const uint32_t CONSOLE_BAUD = 115200, WIFI_BAUD = 115200,
                       GPS_BAUD = 38400;
 static const uint32_t SAT_BAUD = 19200;
 static const uint16_t SAT_CHARGE_TIME =
-    30; // seconds to wait at start-up for super-capacitor
-static const uint16_t ISBD_TIMEOUT = 600; // seconds to try getting isbd success
+    10; // seconds to wait at start-up for super-capacitor
+static const uint16_t ISBD_TIMEOUT = 300; // seconds to try getting isbd success
 static const uint16_t FAILURE_RETRY = 600; // seconds to wait after tx failure
 static const uint8_t WIFI_ATTEMPT_LIMIT =
     3; // number of times to try connecting to wifi
@@ -20,9 +20,16 @@ static const float BATTERY_OKAY_VOLTAGE =
     3.5; // system will resume program at this voltage threshold
 static const uint16_t BATTERY_WAIT_TIME =
     60; // seconds to wait between checking for batteryOkay
-static const uint8_t MESSAGE_VERSION = 4; // 2 = long form, 3 = base62, 4 = long
-                                          // form and 2 batteries, 5 = base62
-                                          // and 2 batteries
+
+// Message versions:
+//    2 = long form
+//    3 = base62
+//    4 = 2 + 2 batteries
+//    5 = 3 + 2 batteries
+//    6 = 4 + temp/humidity
+//    7 = 5 + temp/humidity
+static const uint8_t MESSAGE_VERSION = 7;
+
 static const uint16_t MIN_SAIL_ANGLE = 0,
                       MAX_SAIL_ANGLE = 359; // limits for sail
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =

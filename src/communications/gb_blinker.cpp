@@ -12,7 +12,7 @@ void GbBlinker::Blink(uint16_t condition) {
     break;
   case 2: // single quick flash
     digitalWrite(_ledPin, HIGH);
-    delay(10);
+    delay(20);
     digitalWrite(_ledPin, LOW);
     break;
   case 3: // continuous on 2, off half, program stops here

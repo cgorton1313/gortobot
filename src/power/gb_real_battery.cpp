@@ -3,7 +3,7 @@
 
 float GbRealBattery::GetVoltage() {
   delay(1000); // settle down
-  uint16_t battery_voltage_int = 0;
+  uint32_t battery_voltage_int = 0;
   const uint8_t samples = 10; // number of samples to take
   for (uint8_t i = 0; i < samples; i++) {
     delay(5);

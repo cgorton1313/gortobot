@@ -7,9 +7,7 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 
 */
 
-// TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
-// TODO: more unit tests
 // TODO: check with 3rpm motor that it stops better
 
 #ifndef UNIT_TEST // required for platformio unit testing
@@ -87,11 +85,9 @@ void setup() {
   }
 
   runNum = GbUtility::IncrementRunNum();
-
   Serial.print(F("Starting runNum "));
   Serial.println(runNum);
 
-  // TODO check this
   gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
 
   delay(1000);

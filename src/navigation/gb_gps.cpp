@@ -5,6 +5,7 @@ GbFix GbGps::GetFix() {
   NMEAGPS nmea_gps;
   gps_fix nmea_gps_fix;
   GbFix fix;
+  bool ledOn;
 
   delay(2005); // to trigger staleFix because millis stop during sleep
   GpsOn();
@@ -33,6 +34,13 @@ GbFix GbGps::GetFix() {
       Serial.println();
     }
 
+    if (millis()/50 % 20 == 0) {
+      ledOn = true;
+    } else {
+      ledOn = false;
+    }
+    digitalWrite(LED_BUILTIN, ledOn);
+
     if (nmea_gps_fix.valid.location && nmea_gps_fix.valid.date &&
         nmea_gps_fix.valid.time && (nmea_gps_fix.satellites > 3)) {
       Serial.println(F("Fix done."));
@@ -40,6 +48,7 @@ GbFix GbGps::GetFix() {
     }
   }
 
+  digitalWrite(LED_BUILTIN, LOW);
   GpsOff();
   return fix;
 }
