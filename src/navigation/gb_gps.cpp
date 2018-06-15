@@ -42,7 +42,7 @@ GbFix GbGps::GetFix() {
     digitalWrite(LED_BUILTIN, ledOn);
 
     if (nmea_gps_fix.valid.location && nmea_gps_fix.valid.date &&
-        nmea_gps_fix.valid.time && (nmea_gps_fix.satellites > 3)) {
+        nmea_gps_fix.valid.time && (nmea_gps_fix.satellites > 2)) {
       Serial.println(F("Fix done."));
       fix_done = true;
     }

@@ -75,7 +75,7 @@ uint8_t GbMessageHandler::GetDiagnosticMessage(GbTrimResult trimResult,
 }
 
 String GbMessageHandler::BuildOutboundMessage(
-    uint8_t message_version, uint16_t run_num, uint16_t loop_count,
+    uint8_t message_version, uint16_t run_num, uint32_t loop_count,
     GbFix &a_fix, float battery_voltage, float battery2_voltage,
     int sail_position, uint8_t diagnostic_message) {
 
@@ -100,7 +100,7 @@ String GbMessageHandler::BuildOutboundMessage(
 }
 
 String GbMessageHandler::BuildOutboundMessage(
-    uint8_t message_version, uint16_t run_num, uint16_t loop_count,
+    uint8_t message_version, uint16_t run_num, uint32_t loop_count,
     GbFix &a_fix, float battery_voltage, float battery2_voltage,
     int sail_position, uint8_t diagnostic_message, float temperature,
     float humidity) {
@@ -174,7 +174,7 @@ bool GbMessageHandler::CheckSailingOrders(GbSailingOrders ordersToCheck) {
   return ordersValid;
 }
 
-String GbMessageHandler::LongFormBase(uint16_t run_num, uint16_t loop_count,
+String GbMessageHandler::LongFormBase(uint16_t run_num, uint32_t loop_count,
                                       GbFix &a_fix, float battery_voltage,
                                       float battery2_voltage, int sail_position,
                                       uint8_t diagnostic_message) {
@@ -205,7 +205,7 @@ String GbMessageHandler::LongFormBase(uint16_t run_num, uint16_t loop_count,
   return longFormBase;
 }
 
-String GbMessageHandler::ShortFormBase(uint16_t run_num, uint16_t loop_count,
+String GbMessageHandler::ShortFormBase(uint16_t run_num, uint32_t loop_count,
                                        GbFix &a_fix, float battery_voltage,
                                        float battery2_voltage,
                                        int sail_position,

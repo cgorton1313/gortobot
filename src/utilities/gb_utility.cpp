@@ -50,6 +50,11 @@ void GbUtility::GortoNap(uint16_t seconds) {
   delay(5);
   for (uint16_t i = 0; i < seconds; i++) {
     sleep.sleepDelay(1000);
+    if (i % 6 == 0) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(20);
+      digitalWrite(LED_BUILTIN, LOW);
+    }
   }
 }
 

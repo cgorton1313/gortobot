@@ -23,8 +23,8 @@ const uint8_t MOTOR_DIRECTION_PIN = 29; // brown (to Ph on driver)
 const uint8_t MOTOR_SPEED_PIN = 46; // green (to EN on driver)
 const uint8_t CHIP_SELECT = 10; // temp while using only satellite
 const uint8_t SATELLITE_SLEEP_PIN = 7; //
-const uint8_t WIFI_ENABLE_PIN = 4;
+const uint8_t WIFI_ENABLE_PIN = 40;
 const uint8_t RANDOM_SEED_PIN = A7; // leave unused
-const uint8_t TEMP_HUMIDITY_POWER_PIN = 6;
+const uint8_t AIR_SENSOR_POWER_PIN = 6;
 
 #endif

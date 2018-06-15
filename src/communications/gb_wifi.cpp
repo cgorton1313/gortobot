@@ -2,6 +2,8 @@
 
 GbWifi::GbWifi(uint8_t pin, HardwareSerial &port, uint32_t baud)
     : _wifi_enable_pin(pin), _wifi_port(&port) {
+  pinMode(_wifi_enable_pin, OUTPUT);
+  digitalWrite(_wifi_enable_pin, LOW);
   _wifi_port->begin(baud);
 }
 

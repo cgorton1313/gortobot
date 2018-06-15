@@ -9,6 +9,7 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 
 // TODO: watchdog timer
 // TODO: check with 3rpm motor that it stops better
+// TODO: store orders in EEPROM?
 
 #ifndef UNIT_TEST // required for platformio unit testing
 
