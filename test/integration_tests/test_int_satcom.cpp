@@ -1,7 +1,7 @@
 /* This test exercises the SatCom */
 
 // Includes
-#include "communications/gb_message_handler.h"
+#include "../../src/communications/gb_message_handler.h"
 #include "communications/gb_satcom.h"
 #include "configs/pins.h"
 #include "power/gb_abstract_battery.h"
@@ -26,8 +26,8 @@ static GbSatcom gb_satcom =
 static GbMessageHandler messageHandler = GbMessageHandler();
 
 void setup() {
-  Serial.begin(CONSOLE_BAUD);
-  Serial.println(F("Satcom test starting..."));
+  DEBUG_BEGIN(CONSOLE_BAUD);
+  DEBUG_PRINTLN(F("Satcom test starting..."));
 
   // Pin Modes
   pinMode(LED_PIN, OUTPUT);
@@ -39,8 +39,8 @@ void setup() {
   analogWrite(LED_PIN, LOW);
 
   runNum = GbUtility::IncrementRunNum();
-  Serial.print(F("Starting runNum "));
-  Serial.println(runNum);
+  DEBUG_PRINT(F("Starting runNum "));
+  DEBUG_PRINTLN(runNum);
 
   gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
 }
@@ -69,8 +69,8 @@ void loop() {
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
       battery2.GetVoltage(), 180,
       messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid));
-  Serial.print(F("logSentence = "));
-  Serial.println(logSentence);
+  DEBUG_PRINT(F("logSentence = "));
+  DEBUG_PRINTLN(logSentence);
 
   // Send/receive message via satcom
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
@@ -79,13 +79,13 @@ void loop() {
   if (gb_satcom.UseSatcom(logSentence)) {
     txSuccess = true;
     inboundMessage = gb_satcom.GetInboundMessage();
-    Serial.print(F("Received inbound message of: "));
-    Serial.println(inboundMessage);
+    DEBUG_PRINT(F("Received inbound message of: "));
+    DEBUG_PRINTLN(inboundMessage);
   } else {
     txSuccess = false;
-    Serial.println(F("No message received."));
+    DEBUG_PRINTLN(F("No message received."));
   }
-  Serial.println(txSuccess);
+  DEBUG_PRINTLN(txSuccess);
 
   // Sleep for some minutes
   GbUtility::GortoNap(1 * 60);

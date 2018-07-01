@@ -1,7 +1,7 @@
 /* This test outputs voltage and status of a real battery */
 
-#include "configs/consts.h"
-#include "configs/includes.h"
+#include "../../src/configs/consts.h"
+#include "../../src/configs/includes.h"
 #include <Arduino.h>
 
 uint16_t runNum;
@@ -22,13 +22,13 @@ GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 GbMessageHandler messageHandler = GbMessageHandler();
 
 void setup() {
-  Serial.begin(CONSOLE_BAUD);
+  DEBUG_BEGIN(CONSOLE_BAUD);
 
   pinMode(WIFI_ENABLE_PIN, OUTPUT);
 
   runNum = GbUtility::IncrementRunNum();
-  Serial.print(F("Starting runNum "));
-  Serial.println(runNum);
+  DEBUG_PRINT(F("Starting runNum "));
+  DEBUG_PRINTLN(runNum);
   delay(1000);
 }
 
@@ -43,7 +43,7 @@ void loop() {
   String logSentence = messageHandler.BuildOutboundMessage(
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
       battery2.GetVoltage(), 181, messageHandler.GetDiagnosticMessage());
-  Serial.println(logSentence);
+  DEBUG_PRINTLN(logSentence);
 
   // Use the wifi module to transmit the outbound message
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);

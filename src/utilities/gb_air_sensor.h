@@ -6,6 +6,7 @@ and handles power methods (on, off, etc.)
 
 #include <Adafruit_HTU21DF.h>
 #include "gb_air_stats.h"
+#include "../../src/configs/config.h"
 
 #ifndef GB_AIR_SENSOR_H
 #define GB_AIR_SENSOR_H

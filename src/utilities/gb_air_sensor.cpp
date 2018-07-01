@@ -9,14 +9,14 @@ GbAirStats GbAirSensor::GetAirStats() {
   if (htu.begin()) {
     airStats.temperature = htu.readTemperature();
     airStats.humidity = htu.readHumidity();
-    Serial.print(F("temperature = "));
-    Serial.print(airStats.temperature);
-    Serial.print(F(" | humidity = "));
-    Serial.println(airStats.humidity);
+    DEBUG_PRINT(F("temperature = "));
+    DEBUG_PRINT(airStats.temperature);
+    DEBUG_PRINT(F(" | humidity = "));
+    DEBUG_PRINTLN(airStats.humidity);
   } else {
     airStats.temperature = 0.0;
     airStats.humidity = 0.0;
-    Serial.println(F("Air sensor failure!"));
+    DEBUG_PRINTLN(F("Air sensor failure!"));
   }
 
   AirSensorOff();
@@ -26,10 +26,10 @@ GbAirStats GbAirSensor::GetAirStats() {
 void GbAirSensor::AirSensorOn() {
   digitalWrite(_air_sensor_power_pin, HIGH);
   delay(500);
-  Serial.println(F("Air sensor on."));
+  DEBUG_PRINTLN(F("Air sensor on."));
 }
 
 void GbAirSensor::AirSensorOff() {
   digitalWrite(_air_sensor_power_pin, LOW);
-  Serial.println(F("Air sensor off."));
+  DEBUG_PRINTLN(F("Air sensor off."));
 }

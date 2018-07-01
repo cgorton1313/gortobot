@@ -1,12 +1,12 @@
 /* This test exercises the message handler */
 
-#include "communications\gb_message_handler.h"
-#include "communications\gb_sailing_orders.h"
+#include "../../src/communications\gb_message_handler.h"
+#include "../../src/communications\gb_sailing_orders.h"
 #include <Arduino.h>
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println(F("Message Handler test starting..."));
+  DEBUG_BEGIN(115200);
+  DEBUG_PRINTLN(F("Message Handler test starting..."));
 
   // Test happy path
   GbMessageHandler messageHandler = GbMessageHandler();
@@ -20,9 +20,9 @@ void setup() {
       messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid);
 
   if (result == 0) {
-    Serial.println(F("Happy Path test - Pass"));
+    DEBUG_PRINTLN(F("Happy Path test - Pass"));
   } else {
-    Serial.println(F("Happy Path test - Fail"));
+    DEBUG_PRINTLN(F("Happy Path test - Fail"));
   }
 
   // Test rxMessageInvalid
@@ -30,9 +30,9 @@ void setup() {
   result = messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid);
 
   if (result == 8) {
-    Serial.println(F("rxInvalid test - Pass"));
+    DEBUG_PRINTLN(F("rxInvalid test - Pass"));
   } else {
-    Serial.println(F("rxInvalid test - Fail"));
+    DEBUG_PRINTLN(F("rxInvalid test - Fail"));
   }
 
   // Test mix
@@ -42,9 +42,9 @@ void setup() {
   result = messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid);
 
   if (result == 10) {
-    Serial.println(F("Mix test - Pass"));
+    DEBUG_PRINTLN(F("Mix test - Pass"));
   } else {
-    Serial.println(F("Mix test - Fail"));
+    DEBUG_PRINTLN(F("Mix test - Fail"));
   }
 }
 

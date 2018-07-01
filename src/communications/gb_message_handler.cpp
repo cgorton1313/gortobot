@@ -43,14 +43,14 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
       break;
     }
     default: {
-      Serial.println("Not a valid inbound message type.");
+      DEBUG_PRINTLN("Not a valid inbound message type.");
       break;
     }
     }
   } else {
     // How to return this?
     inboundMessageValid = false;
-    Serial.println(F("Not a valid message (no 'z' found)"));
+    DEBUG_PRINTLN(F("Not a valid message (no 'z' found)"));
   }
 
   if (inboundMessageValid) {

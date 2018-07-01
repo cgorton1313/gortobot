@@ -6,6 +6,7 @@ and handles power methods (on, off, etc.)
 
 #include "gb_abstract_gps.h"
 #include "gb_fix.h"
+#include "../../src/configs/config.h"
 #include <NMEAGPS.h>
 
 #ifndef GB_GPS_H

@@ -58,7 +58,7 @@ void setup() {
   // for random numbers, A7 should be a floating pin
   randomSeed(analogRead(RANDOM_SEED_PIN));
 
-  Serial.begin(CONSOLE_BAUD);
+  DEBUG_BEGIN(CONSOLE_BAUD);
 
   // Pin Modes
   // TODO: do in contructors?
@@ -86,8 +86,8 @@ void setup() {
   }
 
   runNum = GbUtility::IncrementRunNum();
-  Serial.print(F("Starting runNum "));
-  Serial.println(runNum);
+  DEBUG_PRINT(F("Starting runNum "));
+  DEBUG_PRINTLN(runNum);
 
   gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
 
@@ -134,8 +134,8 @@ void loop() {
   if (gb_satcom.UseSatcom(logSentence)) {
     txSuccess = true;
     inboundMessage = gb_satcom.GetInboundMessage();
-    Serial.print(F("Received inbound message of: "));
-    Serial.println(inboundMessage);
+    DEBUG_PRINT(F("Received inbound message of: "));
+    DEBUG_PRINTLN(inboundMessage);
   }
 
   // Parse inbound message

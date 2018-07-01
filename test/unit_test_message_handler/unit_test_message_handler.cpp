@@ -1,5 +1,5 @@
 //#include "..\src\communications\gb_message_handler.h"
-#include "..\src\communications\gb_message_handler.h"
+#include "..\..\src\communications\gb_message_handler.h"
 #include "..\src\communications\gb_sailing_orders.h"
 #include <..\lib\MemoryFree\MemoryFree.h>
 #include <Arduino.h>
@@ -8,8 +8,8 @@
 #ifdef UNIT_TEST
 
 void PrintFreeMemory() {
-  Serial.print("freeMemory()=");
-  Serial.println(freeMemory());
+  DEBUG_PRINT("freeMemory()=");
+  DEBUG_PRINTLN(freeMemory());
 }
 
 void test_BuildOutboundMessage(void) {
@@ -29,14 +29,14 @@ void test_BuildOutboundMessage(void) {
   // Test version 4 message (long form 2 batteries)
   outboundMessage =
       messageHandler.BuildOutboundMessage(4, 1, 1, fix, 3.99, 3.99, 180, 0);
-  Serial.println(outboundMessage);
+  DEBUG_PRINTLN(outboundMessage);
   expected = "4,1,1,720101010101,0.0000,0.0000,3.99,3.99,180,0";
   TEST_ASSERT_TRUE(outboundMessage == expected);
 
   // Test version 5 message (base62 form 2 batteries)
   outboundMessage =
       messageHandler.BuildOutboundMessage(5, 1, 1, fix, 3.99, 3.99, 180, 0);
-  Serial.println(outboundMessage);
+  DEBUG_PRINTLN(outboundMessage);
   expected = "5,1,1,1A11111,3m88,7YGG,6R,6R,2u,0";
   TEST_ASSERT_TRUE(outboundMessage == expected);
   PrintFreeMemory();

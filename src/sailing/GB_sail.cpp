@@ -64,14 +64,14 @@ bool GbSail::CloserToTarget(int16_t sailPosition, int16_t sailPositionBefore,
 }
 
 void GbSail::OutputTrimResults(GbTrimResult trimResult) {
-  Serial.print(F("Trim routine results: success = "));
-  Serial.print(trimResult.success);
-  Serial.print(F(" | sailStuck = "));
-  Serial.print(trimResult.sailStuck);
-  Serial.print(F(" | trimRoutineExceededMax = "));
-  Serial.print(trimResult.trimRoutineExceededMax);
-  Serial.print(F(" | sailBatteryTooLow = "));
-  Serial.println(trimResult.sailBatteryTooLow);
+  DEBUG_PRINT(F("Trim routine results: success = "));
+  DEBUG_PRINT(trimResult.success);
+  DEBUG_PRINT(F(" | sailStuck = "));
+  DEBUG_PRINT(trimResult.sailStuck);
+  DEBUG_PRINT(F(" | trimRoutineExceededMax = "));
+  DEBUG_PRINT(trimResult.trimRoutineExceededMax);
+  DEBUG_PRINT(F(" | sailBatteryTooLow = "));
+  DEBUG_PRINTLN(trimResult.sailBatteryTooLow);
 }
 
 bool GbSail::CloseEnough(int16_t sailPosition, int16_t orderedSailPosition) {

@@ -15,9 +15,9 @@ static const uint16_t FAILURE_RETRY = 600; // seconds to wait after tx failure
 static const uint8_t WIFI_ATTEMPT_LIMIT =
     3; // number of times to try connecting to wifi
 static const float MINIMUM_BATTERY_VOLTAGE =
-    3.4; // system will wait for charging at this low voltage threshold
+    3.5; // system will wait for charging at this low voltage threshold
 static const float BATTERY_OKAY_VOLTAGE =
-    3.5; // system will resume program at this voltage threshold
+    3.6; // system will resume program at this voltage threshold
 static const uint16_t BATTERY_WAIT_TIME =
     60; // seconds to wait between checking for batteryOkay
 

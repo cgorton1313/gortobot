@@ -1,7 +1,7 @@
 /* This test exercises the Sail motor */
 
-#include "..\lib\Adafruit_HTU21DF_Library\Adafruit_HTU21DF.h"
-#include "communications/gb_message_handler.h"
+#include "..\..\lib\Adafruit_HTU21DF_Library\Adafruit_HTU21DF.h"
+#include "../../src/communications/gb_message_handler.h"
 #include "communications/gb_wifi.h"
 #include "configs/consts.h"
 #include "configs/pins.h"
@@ -31,22 +31,22 @@ GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 GbMessageHandler messageHandler = GbMessageHandler();
 
 void PrintVoltages() {
-  Serial.print(F("battery1: "));
-  Serial.print(battery1.GetVoltage());
-  Serial.print(F(" | battery2: "));
-  Serial.println(battery2.GetVoltage());
+  DEBUG_PRINT(F("battery1: "));
+  DEBUG_PRINT(battery1.GetVoltage());
+  DEBUG_PRINT(F(" | battery2: "));
+  DEBUG_PRINTLN(battery2.GetVoltage());
 }
 
 void setup() {
-  Serial.begin(CONSOLE_BAUD);
+  DEBUG_BEGIN(CONSOLE_BAUD);
 
   pinMode(WIFI_ENABLE_PIN, OUTPUT);
   pinMode(TEMP_HUMIDITY_POWER_PIN, OUTPUT);
   digitalWrite(TEMP_HUMIDITY_POWER_PIN, LOW);
 
   runNum = GbUtility::IncrementRunNum();
-  Serial.print(F("Starting runNum "));
-  Serial.println(runNum);
+  DEBUG_PRINT(F("Starting runNum "));
+  DEBUG_PRINTLN(runNum);
   delay(1000);
 }
 
@@ -56,11 +56,11 @@ void loop() {
 
   if (battery2.GetVoltage() > MINIMUM_BATTERY_VOLTAGE) {
     uint16_t order = (sail.GetSailPosition() + 25) % 360;
-    Serial.print("Trimming to: ");
-    Serial.println(order);
+    DEBUG_PRINT("Trimming to: ");
+    DEBUG_PRINTLN(order);
     trimResult = sail.Trim(order);
   } else {
-    Serial.println(F("Skipping sail routine - not enough voltage."));
+    DEBUG_PRINTLN(F("Skipping sail routine - not enough voltage."));
     trimResult = {.success = false,
                   .sailStuck = false,
                   .trimRoutineExceededMax = false,
@@ -75,7 +75,7 @@ void loop() {
   float humidity = 0.0;
 
   if (!airSensor.begin()) {
-    Serial.println("Couldn't find sensor!");
+    DEBUG_PRINTLN("Couldn't find sensor!");
   } else {
     temperature = airSensor.readTemperature();
     humidity = airSensor.readHumidity();
@@ -87,7 +87,7 @@ void loop() {
       sail.GetSailPosition(),
       messageHandler.GetDiagnosticMessage(trimResult, false), temperature,
       humidity);
-  Serial.println(logSentence);
+  DEBUG_PRINTLN(logSentence);
 
   uint8_t wifi_attempt = 1;
   bool wifi_successful = false;
@@ -98,8 +98,8 @@ void loop() {
     wifi_attempt++;
   }
 
-  Serial.print(F("Napping for "));
-  Serial.print(interval);
-  Serial.println(F(" seconds."));
+  DEBUG_PRINT(F("Napping for "));
+  DEBUG_PRINT(interval);
+  DEBUG_PRINTLN(F(" seconds."));
   GbUtility::GortoNap(interval);
 }

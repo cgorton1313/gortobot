@@ -1,7 +1,7 @@
 /* This test exercises the fake GPS */
 
-#include "navigation/gb_abstract_gps.h"
-#include "utilities/gb_utility.h"
+#include "../../src/navigation/gb_abstract_gps.h"
+#include "../../src/utilities/gb_utility.h"
 #include <Arduino.h>
 
 class FakeGps : public GbAbstractGps {
@@ -30,24 +30,24 @@ public:
 FakeGps gps = FakeGps('s');
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println(F("Gps test starting..."));
+  DEBUG_BEGIN(115200);
+  DEBUG_PRINTLN(F("Gps test starting..."));
 }
 
 void loop() {
   GbFix fix = gps.GetFix();
-  Serial.print(fix.year);
-  Serial.print(fix.month);
-  Serial.print(fix.day);
-  Serial.print("-");
-  Serial.print(fix.hour);
-  Serial.print(fix.minute);
-  Serial.print(fix.second);
-  Serial.print(", ");
-  Serial.print(fix.latitude);
-  Serial.print(", ");
-  Serial.print(fix.longitude);
-  Serial.print(", ");
-  Serial.println(fix.satellites);
+  DEBUG_PRINT(fix.year);
+  DEBUG_PRINT(fix.month);
+  DEBUG_PRINT(fix.day);
+  DEBUG_PRINT("-");
+  DEBUG_PRINT(fix.hour);
+  DEBUG_PRINT(fix.minute);
+  DEBUG_PRINT(fix.second);
+  DEBUG_PRINT(", ");
+  DEBUG_PRINT(fix.latitude);
+  DEBUG_PRINT(", ");
+  DEBUG_PRINT(fix.longitude);
+  DEBUG_PRINT(", ");
+  DEBUG_PRINTLN(fix.satellites);
   delay(500);
 }

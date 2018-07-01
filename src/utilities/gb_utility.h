@@ -2,7 +2,8 @@
 Utility class for methods that don't belong anywhere else.
 */
 
-#include "power/gb_abstract_battery.h"
+#include "../power/gb_abstract_battery.h"
+#include "../../src/configs/config.h"
 #include <stdint.h>
 
 #ifndef GB_UTILITY_H

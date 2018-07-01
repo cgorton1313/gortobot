@@ -1,5 +1,5 @@
 #include "gb_satcom.h"
-#include "utilities/gb_utility.h"
+#include "../../src/utilities/gb_utility.h"
 
 String _inboundMessage;
 #define _diagnostics true // get serial diagnostics
@@ -46,25 +46,25 @@ bool GbSatcom::UseSatcom(String txString) {
     uint16_t error =
         _isbd.sendReceiveSBDText(txBuffer, (uint8_t *)rxBuffer, rxBufferSize);
     if (error != 0) {
-      Serial.print(F("sendReceiveSBDText failed. Error: "));
-      Serial.println(error);
+      DEBUG_PRINT(F("sendReceiveSBDText failed. Error: "));
+      DEBUG_PRINTLN(error);
       SatOff();
       return false;
     }
 
     // Handle inbound message. Only the last inbound message will survive this
     // loop.
-    Serial.print(F("rxBufferSize = "));
-    Serial.println(rxBufferSize);
+    DEBUG_PRINT(F("rxBufferSize = "));
+    DEBUG_PRINTLN(rxBufferSize);
     if (rxBufferSize == 0) {
-      Serial.println(F("No message received"));
+      DEBUG_PRINTLN(F("No message received"));
       _inboundMessage = '0';
     } else {
-      Serial.print(F("Message received: "));
-      Serial.println(rxBuffer);
+      DEBUG_PRINT(F("Message received: "));
+      DEBUG_PRINTLN(rxBuffer);
       _inboundMessage = rxBuffer;
-      Serial.print(F("Messages left: "));
-      Serial.println(_isbd.getWaitingMessageCount());
+      DEBUG_PRINT(F("Messages left: "));
+      DEBUG_PRINTLN(_isbd.getWaitingMessageCount());
     }
   } while (_isbd.getWaitingMessageCount() > 0);
   SatOff();
@@ -74,7 +74,7 @@ bool GbSatcom::UseSatcom(String txString) {
 String GbSatcom::GetInboundMessage() { return _inboundMessage; }
 
 void GbSatcom::SatOn() {
-  Serial.println(F("Sat on."));
+  DEBUG_PRINTLN(F("Sat on."));
   _satcom_port.begin(_satcom_baud);
   _isbd.begin();
 }
@@ -84,13 +84,13 @@ void GbSatcom::SatOff() {
   _satcom_port.end();
   // TODO: make sure led is off
   // blinkMessage(2); // makes sure led doesn't get left ON by mistake
-  Serial.println(F("Sat off."));
+  DEBUG_PRINTLN(F("Sat off."));
 }
 
 void GbSatcom::ChargeSuperCapacitor(uint16_t chargeTime) {
-  Serial.print(F("Charging super-capacitor. Waiting "));
-  Serial.print(chargeTime);
-  Serial.println(F(" seconds..."));
+  DEBUG_PRINT(F("Charging super-capacitor. Waiting "));
+  DEBUG_PRINT(chargeTime);
+  DEBUG_PRINTLN(F(" seconds..."));
   GbUtility::GortoNap(chargeTime); // allow capacitor to charge
 }
 
