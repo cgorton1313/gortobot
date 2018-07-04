@@ -1,7 +1,7 @@
 /* This test exercises the WaitForBatteries method with simulated batteries */
 
-#include "power/gb_abstract_battery.h"
-#include "utilities/gb_utility.h"
+#include "../../src/power/gb_abstract_battery.h"
+#include "../../src/utilities/gb_utility.h"
 #include <Arduino.h>
 
 class FakeBattery : public GbAbstractBattery {
@@ -28,25 +28,25 @@ public:
   }
 };
 
-static const int BATTERY_WAIT_TIME = 4;
+static const int BATTERY_WAIT_TIME = 10;
 FakeBattery battery1 = FakeBattery('s');
 FakeBattery battery2 = FakeBattery('a');
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println(F("Wait_for_batteries test starting..."));
+  DEBUG_BEGIN(115200);
+  DEBUG_PRINTLN(F("Wait_for_batteries test starting..."));
 }
 
 void loop() {
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-  Serial.print("battery1 voltage: ");
-  Serial.print(battery1.GetVoltage());
-  Serial.print(" | battery1 status: ");
-  Serial.println(battery1.Status());
-  Serial.print("battery2 voltage: ");
-  Serial.print(battery2.GetVoltage());
-  Serial.print(" | battery2 status: ");
-  Serial.println(battery2.Status());
-  Serial.println("*******************************************");
+  DEBUG_PRINT("battery1 voltage: ");
+  DEBUG_PRINT(battery1.GetVoltage());
+  DEBUG_PRINT(" | battery1 status: ");
+  DEBUG_PRINTLN(battery1.Status());
+  DEBUG_PRINT("battery2 voltage: ");
+  DEBUG_PRINT(battery2.GetVoltage());
+  DEBUG_PRINT(" | battery2 status: ");
+  DEBUG_PRINTLN(battery2.Status());
+  DEBUG_PRINTLN("*******************************************");
   delay(500);
 }

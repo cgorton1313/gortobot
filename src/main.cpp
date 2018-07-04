@@ -7,10 +7,9 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 
 */
 
-// TODO: integrate IridiumSBD 2.0 and test
 // TODO: watchdog timer
-// TODO: more unit tests
 // TODO: check with 3rpm motor that it stops better
+// TODO: store orders in EEPROM?
 
 #ifndef UNIT_TEST // required for platformio unit testing
 
@@ -44,12 +43,12 @@ static GbSatcom gb_satcom =
 static GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 static GbRealBattery battery1 =
     GbRealBattery(1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  BATTERY_WAIT_TIME, BATTERY_VOLTAGE_PIN);
+                  BATTERY_VOLTAGE_PIN);
 static GbRealBattery battery2 =
     GbRealBattery(2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  BATTERY_WAIT_TIME, BATTERY2_VOLTAGE_PIN);
+                  BATTERY2_VOLTAGE_PIN);
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
-                   MOTOR_POWER_ENABLE_PIN, MOTOR_IN_1_PIN, MOTOR_IN_2_PIN,
+                   MOTOR_POWER_ENABLE_PIN, MOTOR_DIRECTION_PIN, MOTOR_SPEED_PIN,
                    MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
                    TRIM_ROUTINE_MAXIMUM_SECONDS);
 static GbWatchStander watchStander = GbWatchStander(LED_PIN);
@@ -59,7 +58,7 @@ void setup() {
   // for random numbers, A7 should be a floating pin
   randomSeed(analogRead(RANDOM_SEED_PIN));
 
-  Serial.begin(CONSOLE_BAUD);
+  DEBUG_BEGIN(CONSOLE_BAUD);
 
   // Pin Modes
   // TODO: do in contructors?
@@ -69,8 +68,6 @@ void setup() {
   pinMode(BATTERY_VOLTAGE_PIN, INPUT);
   pinMode(BATTERY2_VOLTAGE_PIN, INPUT);
   pinMode(SATELLITE_SLEEP_PIN, OUTPUT);
-  pinMode(MOTOR_IN_1_PIN, OUTPUT);
-  pinMode(MOTOR_IN_2_PIN, OUTPUT);
   pinMode(WIFI_ENABLE_PIN, OUTPUT);
 
   // Initial pin states
@@ -89,11 +86,9 @@ void setup() {
   }
 
   runNum = GbUtility::IncrementRunNum();
+  DEBUG_PRINT(F("Starting runNum "));
+  DEBUG_PRINTLN(runNum);
 
-  Serial.print(F("Starting runNum "));
-  Serial.println(runNum);
-
-  // TODO check this
   gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
 
   delay(1000);
@@ -107,10 +102,17 @@ void loop() {
   fix = gb_gps.GetFix();
 
   // Construct the outbound message as a string
+  // TODO: GbTrimResult and rx
+  bool rxMessageInvalid = true;
+  GbTrimResult trimResult = {
+      .success = true,
+      .sailStuck = false,
+      .trimRoutineExceededMax = false,
+      .sailBatteryTooLow = false};
   String logSentence = messageHandler.BuildOutboundMessage(
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
       battery2.GetVoltage(), sail.GetSailPosition(),
-      messageHandler.GetDiagnosticMessage());
+      messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid));
 
   // Optionally use the wifi module to transmit the outbound message
   if (USING_WIFI) {
@@ -132,8 +134,8 @@ void loop() {
   if (gb_satcom.UseSatcom(logSentence)) {
     txSuccess = true;
     inboundMessage = gb_satcom.GetInboundMessage();
-    Serial.print(F("Received inbound message of: "));
-    Serial.println(inboundMessage);
+    DEBUG_PRINT(F("Received inbound message of: "));
+    DEBUG_PRINTLN(inboundMessage);
   }
 
   // Parse inbound message

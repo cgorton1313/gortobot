@@ -26,26 +26,27 @@ private:
   String FormatDateNumber(uint8_t number);
   String ConvertToBase62(uint32_t input);
   bool CheckSailingOrders(GbSailingOrders ordersToCheck);
-  String LongFormBase(uint16_t run_num, uint16_t loop_count, GbFix &a_fix,
+  String LongFormBase(uint16_t run_num, uint32_t loop_count, GbFix &a_fix,
                       float battery_voltage, float battery2_voltage,
                       int sail_position, uint8_t diagnostic_message);
-  String ShortFormBase(uint16_t run_num, uint16_t loop_count, GbFix &a_fix,
+  String ShortFormBase(uint16_t run_num, uint32_t loop_count, GbFix &a_fix,
                        float battery_voltage, float battery2_voltage,
                        int sail_position, uint8_t diagnostic_message);
 
 public:
   String BuildOutboundMessage(uint8_t message_version, uint16_t run_num,
-                              uint16_t loop_count, GbFix &a_fix,
+                              uint32_t loop_count, GbFix &a_fix,
                               float battery_voltage, float battery2_voltage,
                               int sail_position, uint8_t diagnostic_message);
   String BuildOutboundMessage(uint8_t message_version, uint16_t run_num,
-                              uint16_t loop_count, GbFix &a_fix,
+                              uint32_t loop_count, GbFix &a_fix,
                               float battery_voltage, float battery2_voltage,
                               int sail_position, uint8_t diagnostic_message,
                               float temperature, float humidity);
 
   GbSailingOrders ParseMessage(String inboundMessage,
                                GbSailingOrders existingOrders);
+  // TODO: why is this here?
   GbSailingOrders ParseMessage2(String inboundMessage,
                                 GbSailingOrders existingOrders);
   uint8_t GetDiagnosticMessage(GbTrimResult trimResult, bool rxMessageInvalid);

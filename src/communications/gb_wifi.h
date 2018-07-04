@@ -4,6 +4,7 @@ charge)
 */
 
 #include <Arduino.h>
+#include "../../src/configs/config.h"
 
 #ifndef GB_WIFI_H
 #define GB_WIFI_H

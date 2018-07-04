@@ -1,7 +1,7 @@
 /* This test exercises the fake GPS */
 
-#include "..\lib\Adafruit_HTU21DF_Library\Adafruit_HTU21DF.h"
-#include "communications/gb_message_handler.h"
+#include "..\..\lib\Adafruit_HTU21DF_Library\Adafruit_HTU21DF.h"
+#include "../../src/communications/gb_message_handler.h"
 #include "configs/consts.h"
 #include "configs/pins.h"
 #include "navigation/gb_fix.h"
@@ -17,26 +17,24 @@ GbMessageHandler messageHandler = GbMessageHandler();
 GbFix fix;
 GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 GbRealBattery battery1 =
-    GbRealBattery(1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  60, BATTERY_VOLTAGE_PIN);
+    GbRealBattery(1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_VOLTAGE_PIN);
 GbRealBattery battery2 =
-    GbRealBattery(2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  60, BATTERY2_VOLTAGE_PIN);
+    GbRealBattery(2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY2_VOLTAGE_PIN);
 
 void setup() {
-  Serial.begin(CONSOLE_BAUD);
-  Serial.println("HTU21D-F test");
+  DEBUG_BEGIN(CONSOLE_BAUD);
+  DEBUG_PRINTLN("HTU21D-F test");
   pinMode(TEMP_HUMIDITY_POWER_PIN, OUTPUT);
   digitalWrite(TEMP_HUMIDITY_POWER_PIN, HIGH);
 
   runNum = GbUtility::IncrementRunNum();
-  Serial.print(F("Starting runNum "));
-  Serial.println(runNum);
+  DEBUG_PRINT(F("Starting runNum "));
+  DEBUG_PRINTLN(runNum);
 
   pinMode(WIFI_ENABLE_PIN, OUTPUT);
 
   if (!htu.begin()) {
-    Serial.println("Couldn't find sensor!");
+    DEBUG_PRINTLN("Couldn't find sensor!");
     while (1)
       ;
   }
@@ -47,7 +45,7 @@ void loop() {
   String logSentence = messageHandler.BuildOutboundMessage(
       7, runNum, loopCount, fix, battery1.GetVoltage(), battery2.GetVoltage(), 181, messageHandler.GetDiagnosticMessage(),
       htu.readTemperature(), htu.readHumidity());
-  Serial.println(logSentence);
+  DEBUG_PRINTLN(logSentence);
 
   // Use the wifi module to transmit the outbound message
   // GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);

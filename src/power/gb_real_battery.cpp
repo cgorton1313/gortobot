@@ -3,14 +3,18 @@
 
 float GbRealBattery::GetVoltage() {
   delay(1000); // settle down
-  uint16_t battery_voltage_int = 0;
-  const uint8_t samples = 10; // number of samples to take
+  uint32_t battery_voltage_int = 0;
+  float vccSum = 0.0;
+  Vcc vcc(5.12/5.04); // VccCorrection
+
+  const uint8_t samples = 50; // number of samples to take (50 is best from testing)
   for (uint8_t i = 0; i < samples; i++) {
-    delay(5);
-    battery_voltage_int = battery_voltage_int + analogRead(_pin);
+    delay(20); // 20ms is best from testing
+    battery_voltage_int += analogRead(_pin);
+    vccSum += vcc.Read_Volts();
   }
-  Vcc vcc(1); // VccCorrection
-  return (vcc.Read_Volts() * (((float)battery_voltage_int / samples) / 1023.0));
+
+  return (vccSum/samples * (((float)battery_voltage_int / samples) / 1023.0));
 }
 
 char GbRealBattery::Status() {

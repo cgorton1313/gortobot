@@ -12,4 +12,6 @@
 #include "sailing/gb_sail.h"
 #include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
+#include "utilities/gb_air_stats.h"
+#include "utilities/gb_air_sensor.h"
 #include <Arduino.h>

@@ -1,37 +1,26 @@
 #include "gb_satcom.h"
-#include "utilities/gb_utility.h"
+#include "../../src/utilities/gb_utility.h"
 
 String _inboundMessage;
+#define _diagnostics false // get serial diagnostics
 
 GbSatcom::GbSatcom(uint8_t sleepPin, HardwareSerial &port, uint32_t baud)
-    : _satcom_baud(baud), _satcom_port(port), _isbd(port, sleepPin) {}
+    : _satcom_baud(baud), _satcom_port(port), _isbd(port, sleepPin) {
+      pinMode(sleepPin, OUTPUT);
+      digitalWrite(sleepPin, LOW);
+    }
 
 void GbSatcom::SetUpSat(uint16_t chargeTime, uint16_t timeOut) {
 
   ChargeSuperCapacitor(chargeTime);
 
-  // TODO: new ISBD interface in 2.0?
-  // isbd.attachConsole(Serial); // lets me see what the sat modem is doing
-
   // For battery set ups, where plenty of power can recharge the super capacitor
   _isbd.setPowerProfile(IridiumSBD::DEFAULT_POWER_PROFILE);
 
-  // TODO: necessary?
   _isbd.adjustSendReceiveTimeout(timeOut);
 
-  // isbd.setMinimumSignalQuality(3); // default is 2, trying this for stability
-
-  // See erratum in ISBD docs. This work around si not needed for firmware since
-  // 2013
-  _isbd.useMSSTMWorkaround(
-      false); // I think I need this here, which is a good thing
+  _isbd.useMSSTMWorkaround(false);
 }
-
-// bool GbSatcom::UseMockSatcom(String txString) {
-//   char rxBuffer[27] = "1,359,1439,359,1439,1439,z";
-//   _inboundMessage = rxBuffer;
-//   return true;
-// }
 
 bool GbSatcom::UseSatcom(String txString) {
   // Clear out the last inbound message`
@@ -57,24 +46,25 @@ bool GbSatcom::UseSatcom(String txString) {
     uint16_t error =
         _isbd.sendReceiveSBDText(txBuffer, (uint8_t *)rxBuffer, rxBufferSize);
     if (error != 0) {
-      Serial.print(F("sendReceiveSBDText failed. Error: "));
-      Serial.println(error);
+      DEBUG_PRINT(F("sendReceiveSBDText failed. Error: "));
+      DEBUG_PRINTLN(error);
       SatOff();
       return false;
     }
 
     // Handle inbound message. Only the last inbound message will survive this
     // loop.
-    Serial.print(F("rxBufferSize = "));
-    Serial.println(rxBufferSize);
+    DEBUG_PRINT(F("rxBufferSize = "));
+    DEBUG_PRINTLN(rxBufferSize);
     if (rxBufferSize == 0) {
-      Serial.println(F("No message received"));
+      DEBUG_PRINTLN(F("No message received"));
+      _inboundMessage = '0';
     } else {
-      Serial.print(F("Message received: "));
-      Serial.println(rxBuffer);
+      DEBUG_PRINT(F("Message received: "));
+      DEBUG_PRINTLN(rxBuffer);
       _inboundMessage = rxBuffer;
-      Serial.print(F("Messages left: "));
-      Serial.println(_isbd.getWaitingMessageCount());
+      DEBUG_PRINT(F("Messages left: "));
+      DEBUG_PRINTLN(_isbd.getWaitingMessageCount());
     }
   } while (_isbd.getWaitingMessageCount() > 0);
   SatOff();
@@ -84,7 +74,7 @@ bool GbSatcom::UseSatcom(String txString) {
 String GbSatcom::GetInboundMessage() { return _inboundMessage; }
 
 void GbSatcom::SatOn() {
-  Serial.println(F("Sat on."));
+  DEBUG_PRINTLN(F("Sat on."));
   _satcom_port.begin(_satcom_baud);
   _isbd.begin();
 }
@@ -92,13 +82,31 @@ void GbSatcom::SatOn() {
 void GbSatcom::SatOff() {
   _isbd.sleep();
   _satcom_port.end();
-  // blinkMessage(2); // makes sure led doesn't get left ON by mistake
-  Serial.println(F("Sat off."));
+  digitalWrite(LED_BUILTIN, LOW);
+  DEBUG_PRINTLN(F("Sat off."));
 }
 
 void GbSatcom::ChargeSuperCapacitor(uint16_t chargeTime) {
-  Serial.print(F("Charging super-capacitor. Waiting "));
-  Serial.print(chargeTime);
-  Serial.println(F(" seconds..."));
-  GbUtility::GortoNap(chargeTime); // allow capacitor to charge
+  DEBUG_PRINT(F("Charging super-capacitor. Waiting "));
+  DEBUG_PRINT(chargeTime);
+  DEBUG_PRINTLN(F(" seconds..."));
+  delay(chargeTime * 1000); // allow capacitor to charge
+}
+
+bool ISBDCallback() {
+  unsigned ledOn = (millis() / 500) % 2;
+  digitalWrite(13, ledOn ? HIGH : LOW);
+  return true;
+}
+
+void ISBDConsoleCallback(IridiumSBD *device, char c) {
+#if _diagnostics
+  Serial.write(c);
+#endif
+}
+
+void ISBDDiagsCallback(IridiumSBD *device, char c) {
+#if _diagnostics
+  Serial.write(c);
+#endif
 }
