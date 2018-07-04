@@ -54,7 +54,7 @@ GbTrimResult GbSail::Trim(int16_t orderedSailPosition) {
       .trimRoutineExceededMax = TrimRoutineExceeded(trimStartTime),
       .sailBatteryTooLow = false};
 
-  OutputTrimResults(trimResult);
+  //OutputTrimResults(trimResult);
   return trimResult;
 }
 

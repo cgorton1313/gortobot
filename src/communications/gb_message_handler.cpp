@@ -67,11 +67,11 @@ uint8_t GbMessageHandler::GetDiagnosticMessage(GbTrimResult trimResult,
   // 4- fram problem
   // 8- rxMessage not valid
   // 16- sail battery too low
+  // 32- invalid sail position order
   // add these up to determine which combo is being reported
-// return (trimResult.trimRoutineExceededMax * pow(2, 0) +
-//         trimResult.sailStuck * pow(2, 1) + rxMessageInvalid * pow(2, 3) +
-//         trimResult.sailBatteryTooLow * pow(2, 4));
-  return trimResult.trimRoutineExceededMax | trimResult.sailStuck << 1 | 0 | rxMessageInvalid << 3 | trimResult.sailBatteryTooLow << 4;
+  return trimResult.trimRoutineExceededMax | trimResult.sailStuck << 1 | 0 |
+         rxMessageInvalid << 3 | trimResult.sailBatteryTooLow << 4 |
+         trimResult.invalidSailPositionOrder << 5;
 }
 
 String GbMessageHandler::BuildOutboundMessage(

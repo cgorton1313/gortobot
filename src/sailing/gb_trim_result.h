@@ -6,6 +6,7 @@ struct GbTrimResult {
   bool sailStuck;
   bool trimRoutineExceededMax;
   bool sailBatteryTooLow;
+  bool invalidSailPositionOrder;
 };
 
 #endif

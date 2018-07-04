@@ -10,7 +10,6 @@
 #include "power/gb_abstract_battery.h"
 #include "power/gb_real_battery.h"
 #include "sailing/gb_sail.h"
-#include "sailing/gb_watch_stander.h"
 #include "utilities/gb_utility.h"
 #include "utilities/gb_air_stats.h"
 #include "utilities/gb_air_sensor.h"
