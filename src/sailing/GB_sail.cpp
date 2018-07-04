@@ -25,12 +25,15 @@ GbTrimResult GbSail::Trim(int16_t orderedSailPosition) {
   uint32_t trimStartTime = millis();
   uint32_t lastMoveTime = trimStartTime;
   int16_t sailPosition = GetSailPosition();
+  DEBUG_PRINT(F("Now I think position is: "));
+  DEBUG_PRINTLN(sailPosition);
   int16_t sailPositionBefore = sailPosition;
   bool sailIsTrimming = true;
 
   // Try to trim to the the ordered sail position
   while (!CloseEnough(sailPosition, orderedSailPosition) &&
          !TrimRoutineExceeded(trimStartTime) && sailIsTrimming) {
+
     TurnSailTowardsTarget(sailPosition, orderedSailPosition);
 
     if (CloserToTarget(sailPosition, sailPositionBefore, orderedSailPosition)) {
@@ -43,7 +46,7 @@ GbTrimResult GbSail::Trim(int16_t orderedSailPosition) {
       }
     }
 
-    sailPosition = GetSailPosition();
+    sailPosition = GetSailPosition() + 5; // correction for motor
   }
 
   Stop(); // sail is either in position or stuck
@@ -102,6 +105,8 @@ int16_t GbSail::GetSailPosition() {
   int16_t positionDegrees =
       degreesInMast * float((positionAnalogReading / 1023.0)) -
       (degreesInMast / 2) + 180;
+
+  DEBUG_PRINTLN(positionDegrees);
   return positionDegrees;
 }
 
@@ -111,7 +116,7 @@ uint16_t GbSail::GetPositionAnalogReading() {
   digitalWrite(_sensorEnablePin, HIGH);
   for (uint8_t i = 0; i < REPETITIONS; i++) {
     sum = sum + analogRead(_sensorPin);
-    delay(1);
+    delay(10);
   }
   digitalWrite(_sensorEnablePin, LOW);
   uint16_t averageAnalogReading = sum / REPETITIONS;
@@ -119,18 +124,21 @@ uint16_t GbSail::GetPositionAnalogReading() {
 }
 
 void GbSail::TurnCW() {
+  DEBUG_PRINTLN(F("CW"));
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, LOW);
   digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::TurnCCW() {
+  DEBUG_PRINTLN(F("CCW"));
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, HIGH);
   digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::Stop() {
+  DEBUG_PRINTLN(F("Stop"));
   digitalWrite(_motorPowerEnablePin, LOW);
   digitalWrite(_motorDirectionPin, LOW);
   digitalWrite(_motorSpeedPin, LOW);

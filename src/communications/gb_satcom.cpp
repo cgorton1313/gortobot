@@ -91,7 +91,7 @@ void GbSatcom::ChargeSuperCapacitor(uint16_t chargeTime) {
   DEBUG_PRINT(F("Charging super-capacitor. Waiting "));
   DEBUG_PRINT(chargeTime);
   DEBUG_PRINTLN(F(" seconds..."));
-  GbUtility::GortoNap(chargeTime); // allow capacitor to charge
+  delay(chargeTime * 1000); // allow capacitor to charge
 }
 
 bool ISBDCallback() {

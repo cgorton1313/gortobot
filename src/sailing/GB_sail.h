@@ -5,6 +5,7 @@ The sail class sets up and controls the sail.
 #include "gb_trim_result.h"
 #include "../../src/configs/config.h"
 #include <Arduino.h> // for Stream
+#include <Vcc.h>
 
 #ifndef GB_SAIL_H
 #define GB_SAIL_H

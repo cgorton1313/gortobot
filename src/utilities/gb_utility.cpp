@@ -1,6 +1,5 @@
 #include "gb_utility.h"
 #include <EEPROM.h> // for saving the runNum after each re-start
-#include <Sleep_n0m1.h>
 
 void GbUtility::ClearEEPROM() {
   DEBUG_PRINTLN(F("Resetting EEPROM"));
@@ -41,40 +40,4 @@ void GbUtility::EEPROMWritelong(int16_t address, int32_t value) {
   EEPROM.write(address + 1, three);
   EEPROM.write(address + 2, two);
   EEPROM.write(address + 3, one);
-}
-
-void GbUtility::GortoNap(uint16_t seconds) { // must be multiple of 10
-  Sleep sleep;
-  sleep.pwrDownMode(); // best power saving mode for sleeping
-  delay(5);
-
-  // sleep in blocks of 10 seconds until total is met
-  for (uint16_t i = 0; i < (seconds / 10); i++) {
-    sleep.sleepDelay(10000);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(20);
-    digitalWrite(LED_BUILTIN, LOW);
-  }
-}
-
-void GbUtility::WaitForBatteries(uint16_t waitTime, GbAbstractBattery &battery1,
-                                 GbAbstractBattery &battery2) {
-  char battery1Status = battery1.Status();
-  char battery2Status = battery2.Status();
-  bool batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');
-
-  if (batteriesCritical) {
-    DEBUG_PRINTLN(F("Both batteries critical!"));
-    while (battery1Status != 'g' && battery2Status != 'g') {
-      DEBUG_PRINT(F("Neither battery green. Waiting "));
-      DEBUG_PRINT(waitTime);
-      DEBUG_PRINTLN(F(" seconds."));
-
-      GbUtility::GortoNap(waitTime);
-
-      DEBUG_PRINTLN(F("Wait time elapsed. Retrying."));
-      battery1Status = battery1.Status();
-      battery2Status = battery2.Status();
-    }
-  }
 }

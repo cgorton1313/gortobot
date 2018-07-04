@@ -1,14 +1,19 @@
 /* This test exercises the full stack except satcom */
 
+#include "../../src/configs/config.h"
 #include "../../src/configs/consts.h"
 #include "../../src/configs/includes.h"
+#include "../../src/configs/pins.h"
+#include "../../src/utilities/gb_utility.h"
 #include <Arduino.h>
+#include <Sleep_n0m1.h>
 
 // Global variables
-static uint32_t loggingInterval = 60;
+static uint32_t loggingInterval = 20;
 static uint16_t runNum;
 static uint32_t loopCount = 0;
 static GbFix fix;
+static Sleep sleeper;
 static GbSailingOrders sailingOrders = {.loggingInterval = 60,
                                         .orderedSailPositionA = 270,
                                         .orderedTackTimeA = 90,
@@ -31,16 +36,42 @@ static GbWatchStander watchStander = GbWatchStander(LED_PIN);
 static GbMessageHandler messageHandler = GbMessageHandler();
 static GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
 
+void wait() {
+  char battery1Status = battery1.Status();
+  char battery2Status = battery2.Status();
+  bool batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');
+
+  if (batteriesCritical) {
+    DEBUG_PRINTLN(F("Both batteries critical!"));
+    while (battery1Status != 'g' && battery2Status != 'g') {
+      DEBUG_PRINT(F("Neither battery green. Waiting "));
+      DEBUG_PRINT(BATTERY_WAIT_TIME);
+      DEBUG_PRINTLN(F(" seconds."));
+      delay(DELAY_FOR_SERIAL);
+
+      sleeper.sleepDelay(BATTERY_WAIT_TIME * 1000);
+
+      DEBUG_PRINTLN(F("Wait time elapsed. Retrying."));
+      battery1Status = battery1.Status();
+      battery2Status = battery2.Status();
+    }
+  }
+}
+
 void setup() {
+  initPins();
+
+  sleeper.pwrDownMode();
+
   DEBUG_BEGIN(CONSOLE_BAUD);
   DEBUG_PRINTLN(F("Full Wifi Test starting"));
-
-  pinMode(LED_BUILTIN, OUTPUT);
 
   runNum = GbUtility::IncrementRunNum();
   DEBUG_PRINT(F("Starting runNum "));
   DEBUG_PRINTLN(runNum);
-  delay(1000);
+  delay(500);
+  sleeper.sleepDelay(1000); // so the subsequent sleep works
+  delay(500);
 }
 
 void loop() {
@@ -48,17 +79,17 @@ void loop() {
   DEBUG_PRINTLN(loopCount);
 
   // Get a position
-  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-  fix = gb_gps.GetFix();
-  // fix = {.latitude = 1.11,
-  //              .longitude = -2.22,
-  //              .year = 2018,
-  //              .month = 6,
-  //              .day = 5,
-  //              .hour = 11,
-  //              .minute = 59,
-  //              .second = 1,
-  //              .satellites = 4};
+  wait();
+  // fix = gb_gps.GetFix();
+  fix = {.latitude = 1.11,
+               .longitude = -2.22,
+               .year = 2018,
+               .month = 6,
+               .day = 5,
+               .hour = 11,
+               .minute = 59,
+               .second = 1,
+               .satellites = 4};
 
   // Construct the outbound message as a string
   // TODO: GbTrimResult and rx
@@ -75,7 +106,7 @@ void loop() {
       airStats.temperature, airStats.humidity);
 
   // use the wifi module to transmit the outbound message
-  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
+  wait();
   uint8_t wifi_attempt = 1;
   bool wifi_successful = false;
   while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
@@ -88,9 +119,9 @@ void loop() {
   if (battery2.GetVoltage() > MINIMUM_BATTERY_VOLTAGE) {
     int16_t order;
     if (loopCount % 2 == 0) {
-      order = 0;
+      order = 10;
     } else {
-      order = 20;
+      order = 30;
     }
 
     DEBUG_PRINT("sailPosition = ");
@@ -106,6 +137,7 @@ void loop() {
                   .sailBatteryTooLow = true};
   }
 
-  GbUtility::GortoNap(6);
+  delay(DELAY_FOR_SERIAL);
+  sleeper.sleepDelay(loggingInterval * 1000);
   blinker.Blink(2);
 }

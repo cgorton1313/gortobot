@@ -2,6 +2,7 @@
 Utility class for methods that don't belong anywhere else.
 */
 
+#include <Arduino.h>
 #include "../power/gb_abstract_battery.h"
 #include "../../src/configs/config.h"
 #include <stdint.h>
