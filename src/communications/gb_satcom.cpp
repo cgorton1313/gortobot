@@ -2,7 +2,7 @@
 #include "../../src/utilities/gb_utility.h"
 
 String _inboundMessage;
-#define _diagnostics true // get serial diagnostics
+#define _diagnostics false // get serial diagnostics
 
 GbSatcom::GbSatcom(uint8_t sleepPin, HardwareSerial &port, uint32_t baud)
     : _satcom_baud(baud), _satcom_port(port), _isbd(port, sleepPin) {
@@ -82,8 +82,7 @@ void GbSatcom::SatOn() {
 void GbSatcom::SatOff() {
   _isbd.sleep();
   _satcom_port.end();
-  // TODO: make sure led is off
-  // blinkMessage(2); // makes sure led doesn't get left ON by mistake
+  digitalWrite(LED_BUILTIN, LOW);
   DEBUG_PRINTLN(F("Sat off."));
 }
 

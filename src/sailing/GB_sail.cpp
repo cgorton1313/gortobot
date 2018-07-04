@@ -25,8 +25,6 @@ GbTrimResult GbSail::Trim(int16_t orderedSailPosition) {
   uint32_t trimStartTime = millis();
   uint32_t lastMoveTime = trimStartTime;
   int16_t sailPosition = GetSailPosition();
-  DEBUG_PRINT(F("Now I think position is: "));
-  DEBUG_PRINTLN(sailPosition);
   int16_t sailPositionBefore = sailPosition;
   bool sailIsTrimming = true;
 
@@ -105,8 +103,6 @@ int16_t GbSail::GetSailPosition() {
   int16_t positionDegrees =
       degreesInMast * float((positionAnalogReading / 1023.0)) -
       (degreesInMast / 2) + 180;
-
-  DEBUG_PRINTLN(positionDegrees);
   return positionDegrees;
 }
 
@@ -124,21 +120,18 @@ uint16_t GbSail::GetPositionAnalogReading() {
 }
 
 void GbSail::TurnCW() {
-  DEBUG_PRINTLN(F("CW"));
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, LOW);
   digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::TurnCCW() {
-  DEBUG_PRINTLN(F("CCW"));
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, HIGH);
   digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::Stop() {
-  DEBUG_PRINTLN(F("Stop"));
   digitalWrite(_motorPowerEnablePin, LOW);
   digitalWrite(_motorDirectionPin, LOW);
   digitalWrite(_motorSpeedPin, LOW);

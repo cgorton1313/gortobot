@@ -1,7 +1,7 @@
+#include "../communications/gb_blinker.h"
 #include "gb_watch_stander.h"
-#include "utilities/gb_utility.h"
-#include "communications/gb_blinker.h"
 #include "sailing/gb_trim_result.h"
+#include "utilities/gb_utility.h"
 
 GbWatchStander::GbWatchStander(uint8_t ledPin) : _blinker(ledPin) {
   // Start on tack A at time 0
@@ -11,8 +11,8 @@ GbWatchStander::GbWatchStander(uint8_t ledPin) : _blinker(ledPin) {
 }
 
 void GbWatchStander::StandWatch(GbSail sail, GbSailingOrders sailingOrders) {
-    DEBUG_PRINTLN(F("Standing watch."));
-    Sail(sail, sailingOrders);
+  DEBUG_PRINTLN(F("Standing watch."));
+  Sail(sail, sailingOrders);
 }
 
 void GbWatchStander::Sail(GbSail sail, GbSailingOrders sailingOrders) {
