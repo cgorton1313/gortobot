@@ -1,7 +1,7 @@
 #include "gb_message_handler.h"
 
 bool GbMessageHandler::IsValidInboundMessage(String inboundMessage) {
-  if (inboundMessage.indexOf("z") == 0) {
+  if (inboundMessage.indexOf("z") == -1) {
     DEBUG_PRINTLN(F("No z found in inbound message."));
     return false;
   }
@@ -61,11 +61,9 @@ uint8_t GbMessageHandler::GetDiagnosticMessage(GbTrimResult trimResult,
   // 4- fram problem
   // 8- rxMessage not valid
   // 16- sail battery too low
-  // 32- invalid sail position order
   // add these up to determine which combo is being reported
   return trimResult.trimRoutineExceededMax | trimResult.sailStuck << 1 | 0 |
-         rxMessageInvalid << 3 | trimResult.sailBatteryTooLow << 4 |
-         trimResult.invalidSailPositionOrder << 5;
+         rxMessageInvalid << 3 | trimResult.sailBatteryTooLow << 4;
 }
 
 String GbMessageHandler::BuildOutboundMessage(
@@ -157,11 +155,11 @@ bool GbMessageHandler::ValidSailingOrders(GbSailingOrders ordersToCheck) {
       ordersToCheck.orderedSailPositionB < 0 ||
       ordersToCheck.orderedSailPositionA > 359 ||
       ordersToCheck.orderedSailPositionB > 359 ||
-      ordersToCheck.orderedTackTimeA < 0 ||
-      ordersToCheck.orderedTackTimeB < 0 ||
+      ordersToCheck.orderedTackTimeA <= 0 ||
+      ordersToCheck.orderedTackTimeB <= 0 ||
       ordersToCheck.orderedTackTimeA > 43200 || // 12 hours
       ordersToCheck.orderedTackTimeB > 43200 || // 12 hours
-      ordersToCheck.loggingInterval < 0 ||
+      ordersToCheck.loggingInterval <= 0 ||
       ordersToCheck.loggingInterval > 86400) { // 24 hours
     ordersValid = false;
   }

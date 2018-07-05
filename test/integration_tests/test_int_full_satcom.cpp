@@ -15,8 +15,7 @@ bool rxMessageInvalid = false;
 static GbTrimResult trimResult = {.success = true,
                                   .sailStuck = false,
                                   .trimRoutineExceededMax = false,
-                                  .sailBatteryTooLow = false,
-                                  .invalidSailPositionOrder = false};
+                                  .sailBatteryTooLow = false};
 
 static GbSailingOrders sailingOrders = {.loggingInterval = 10 * 60,
                                         .orderedSailPositionA = 90,
@@ -82,8 +81,7 @@ void standWatch() {
   trimResult = {.success = true,
                 .sailStuck = false,
                 .trimRoutineExceededMax = false,
-                .sailBatteryTooLow = false,
-                .invalidSailPositionOrder = false};
+                .sailBatteryTooLow = false};
 
   if (battery2.GetVoltage() < MINIMUM_BATTERY_VOLTAGE) {
     trimResult.success = false;
@@ -112,7 +110,6 @@ void standWatch() {
     }
 
     if (trimResult.success) {
-      DEBUG_PRINTLN(abs(sail.GetSailPosition() - currentOrderedSailPosition));
       if (abs(sail.GetSailPosition() - currentOrderedSailPosition) > 5) {
         trimResult = sail.Trim(currentOrderedSailPosition);
       } else {
@@ -181,19 +178,27 @@ void loop() {
   wait();
   String inboundMessage = "";
   bool txSuccess = false;
-  if (gb_satcom.UseSatcom(logSentence)) {
+  if (true) {
+  //if (gb_satcom.UseSatcom(logSentence)) {
     txSuccess = true;
-    inboundMessage = gb_satcom.GetInboundMessage();
-    DEBUG_PRINT(
-        F("Satcom transmission success. Received inbound message of: "));
-    DEBUG_PRINTLN(inboundMessage);
-    if (messageHandler.IsValidInboundMessage(inboundMessage)) {
-      sailingOrders = messageHandler.ParseMessage(inboundMessage);
-      rxMessageInvalid = false;
-    } else {
-      rxMessageInvalid = true;
-    }
+    //inboundMessage = gb_satcom.GetInboundMessage();
+    String inboundMessage = "1,120,1,60,1,2,z";
+    DEBUG_PRINTLN(F("Satcom transmission success."));
 
+    if (inboundMessage.length() != 0) {
+      DEBUG_PRINT(F("Received inbound message of: "));
+      DEBUG_PRINT(inboundMessage);
+      if (messageHandler.IsValidInboundMessage(inboundMessage)) {
+        sailingOrders = messageHandler.ParseMessage(inboundMessage);
+        rxMessageInvalid = false;
+        DEBUG_PRINTLN(F(" which is valid."));
+      } else {
+        rxMessageInvalid = true;
+        DEBUG_PRINTLN(F(" which is NOT valid."));
+      }
+    } else {
+      DEBUG_PRINT(F("No inbound message received."));
+    }
   } else {
     txSuccess = false;
     DEBUG_PRINTLN(F("SatCom transmission failed."));
