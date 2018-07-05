@@ -1,15 +1,8 @@
 /* This test exercises the SatCom */
 
 // Includes
-#include "../../src/communications/gb_message_handler.h"
 #include "../../src/configs/config.h"
 #include "../../src/configs/includes.h"
-#include "../../src/configs/pins.h"
-#include "../../src/power/gb_abstract_battery.h"
-#include "../../src/power/gb_real_battery.h"
-#include "../../src/utilities/gb_utility.h"
-#include <Arduino.h>
-#include <Sleep_n0m1.h>
 
 // Constants
 #include "configs/consts.h"
@@ -18,12 +11,18 @@
 static uint16_t runNum;        // increments each time the device starts
 static uint16_t loopCount = 0; // increments at each loop
 static GbFix fix;
-GbTrimResult trimResult;
-static GbSailingOrders sailingOrders = {.loggingInterval = 30 * 60,
+bool rxMessageInvalid = false;
+static GbTrimResult trimResult = {.success = true,
+                                  .sailStuck = false,
+                                  .trimRoutineExceededMax = false,
+                                  .sailBatteryTooLow = false,
+                                  .invalidSailPositionOrder = false};
+
+static GbSailingOrders sailingOrders = {.loggingInterval = 10 * 60,
                                         .orderedSailPositionA = 90,
-                                        .orderedTackTimeA = 15 * 60,
+                                        .orderedTackTimeA = 5 * 60,
                                         .orderedSailPositionB = 270,
-                                        .orderedTackTimeB = 15};
+                                        .orderedTackTimeB = 5 * 60};
 
 // Objects
 static Sleep sleeper;
@@ -80,10 +79,21 @@ void standWatch() {
   DEBUG_PRINT(F(" seconds at sail position "));
   DEBUG_PRINTLN(sailingOrders.orderedSailPositionB);
 
+  trimResult = {.success = true,
+                .sailStuck = false,
+                .trimRoutineExceededMax = false,
+                .sailBatteryTooLow = false,
+                .invalidSailPositionOrder = false};
+
+  if (battery2.GetVoltage() < MINIMUM_BATTERY_VOLTAGE) {
+    trimResult.success = false;
+    trimResult.sailBatteryTooLow = true;
+  }
+
   bool tackIsA = true;      // keeps track of which tack we're on
   uint32_t elapsedTime = 0; // used to track seconds during sail operation
   uint32_t currentTackTime = 0;
-  uint16_t currentOrderedSailPosition;
+  int16_t currentOrderedSailPosition;
 
   while (elapsedTime < sailingOrders.loggingInterval) {
     if ((tackIsA && currentTackTime >= sailingOrders.orderedTackTimeA) ||
@@ -101,15 +111,15 @@ void standWatch() {
       DEBUG_PRINTLN(F("Sailing on tack B"));
     }
 
-    if (sail.ValidOrders(currentOrderedSailPosition)) {
-      trimResult = sail.Trim(currentOrderedSailPosition);
+    if (trimResult.success) {
+      DEBUG_PRINTLN(abs(sail.GetSailPosition() - currentOrderedSailPosition));
+      if (abs(sail.GetSailPosition() - currentOrderedSailPosition) > 5) {
+        trimResult = sail.Trim(currentOrderedSailPosition);
+      } else {
+        DEBUG_PRINTLN(F("Close enough, no need to trim."));
+      }
     } else {
-      DEBUG_PRINTLN(F("Invalid sail position order."));
-      trimResult = {.success = false,
-                    .sailStuck = false,
-                    .trimRoutineExceededMax = false,
-                    .sailBatteryTooLow = false,
-                    .invalidSailPositionOrder = true};
+      DEBUG_PRINTLN(F("Unsuccessful sail trim."));
     }
 
     delay(DELAY_FOR_SERIAL);
@@ -148,13 +158,7 @@ void loop() {
   DEBUG_PRINT(F("loopCount = "));
   DEBUG_PRINTLN(loopCount);
 
-  // Construct the outbound message as a string with fake values
-  // TODO: rx valid
-  bool rxMessageInvalid = false;
-  GbTrimResult trimResult = {.success = true,
-                             .sailStuck = false,
-                             .trimRoutineExceededMax = false,
-                             .sailBatteryTooLow = false};
+  // Construct the outbound message
   GbFix fix = {.latitude = 1.11,
                .longitude = -2.22,
                .year = 2018,
@@ -164,12 +168,12 @@ void loop() {
                .minute = 59,
                .second = 1,
                .satellites = 4};
-
+  GbAirStats airStats = airSensor.GetAirStats();
   String logSentence = messageHandler.BuildOutboundMessage(
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
       battery2.GetVoltage(), sail.GetSailPosition(),
-      messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid), 20.0,
-      40.0);
+      messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid),
+      airStats.temperature, airStats.humidity);
   DEBUG_PRINT(F("logSentence = "));
   DEBUG_PRINTLN(logSentence);
 
@@ -180,8 +184,16 @@ void loop() {
   if (gb_satcom.UseSatcom(logSentence)) {
     txSuccess = true;
     inboundMessage = gb_satcom.GetInboundMessage();
-    DEBUG_PRINT(F("Received inbound message of: "));
+    DEBUG_PRINT(
+        F("Satcom transmission success. Received inbound message of: "));
     DEBUG_PRINTLN(inboundMessage);
+    if (messageHandler.IsValidInboundMessage(inboundMessage)) {
+      sailingOrders = messageHandler.ParseMessage(inboundMessage);
+      rxMessageInvalid = false;
+    } else {
+      rxMessageInvalid = true;
+    }
+
   } else {
     txSuccess = false;
     DEBUG_PRINTLN(F("SatCom transmission failed."));

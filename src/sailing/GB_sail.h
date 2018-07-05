@@ -29,8 +29,8 @@ private:
                       int16_t orderedSailPosition);
   bool TrimRoutineExceeded(uint32_t trimStartTime);
   void TurnSailTowardsTarget(int16_t sailPosition, int16_t orderedSailPosition);
-  void TurnCW();
-  void TurnCCW();
+  void TurnCW(uint16_t outOfTrim);
+  void TurnCCW(uint16_t outOfTrim);
   void Stop();
 
 public:

@@ -1,63 +1,57 @@
 #include "gb_message_handler.h"
 
-GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage,
-                                               GbSailingOrders existingOrders) {
+bool GbMessageHandler::IsValidInboundMessage(String inboundMessage) {
+  if (inboundMessage.indexOf("z") == 0) {
+    DEBUG_PRINTLN(F("No z found in inbound message."));
+    return false;
+  }
+
+  if ((inboundMessage.substring(0, inboundMessage.indexOf(','))).toInt() != 1) {
+    DEBUG_PRINTLN(F("Message did not start with 1."));
+    return false;
+  }
+
+  GbSailingOrders tempOrders = ParseMessage(inboundMessage);
+  if (!ValidSailingOrders(tempOrders)) {
+    DEBUG_PRINTLN(F("Orders were not valid."));
+    return false;
+  }
+
+  return true;
+}
+
+GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
   GbSailingOrders newSailingOrders;
-  bool inboundMessageValid = false;
 
-  if (inboundMessage.indexOf("z") >= 0) { // we should parse it
-    switch ((inboundMessage.substring(0, inboundMessage.indexOf(',')))
-                .toInt()) { // get first value
-    case 1: {               // standard message = 1,120,20,60,20,30,z
-      uint8_t firstCommaIndex = inboundMessage.indexOf(',');
-      uint8_t secondCommaIndex =
-          inboundMessage.indexOf(',', firstCommaIndex + 1);
-      uint8_t thirdCommaIndex =
-          inboundMessage.indexOf(',', secondCommaIndex + 1);
-      uint8_t fourthCommaIndex =
-          inboundMessage.indexOf(',', thirdCommaIndex + 1);
-      uint8_t fifthCommaIndex =
-          inboundMessage.indexOf(',', fourthCommaIndex + 1);
-      uint8_t sixthCommaIndex =
-          inboundMessage.indexOf(',', fifthCommaIndex + 1);
+  // [message_type],[positionA],[timeA],[positionB],[timeB],[interval]
+  // standard message = 1,120,20,60,20,30,z
+  uint8_t firstCommaIndex = inboundMessage.indexOf(',');
+  uint8_t secondCommaIndex = inboundMessage.indexOf(',', firstCommaIndex + 1);
+  uint8_t thirdCommaIndex = inboundMessage.indexOf(',', secondCommaIndex + 1);
+  uint8_t fourthCommaIndex = inboundMessage.indexOf(',', thirdCommaIndex + 1);
+  uint8_t fifthCommaIndex = inboundMessage.indexOf(',', fourthCommaIndex + 1);
+  uint8_t sixthCommaIndex = inboundMessage.indexOf(',', fifthCommaIndex + 1);
 
-      String firstValue = inboundMessage.substring(0, firstCommaIndex);
-      String secondValue =
-          inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
-      String thirdValue =
-          inboundMessage.substring(secondCommaIndex + 1, thirdCommaIndex);
-      String fourthValue =
-          inboundMessage.substring(thirdCommaIndex + 1, fourthCommaIndex);
-      String fifthValue =
-          inboundMessage.substring(fourthCommaIndex + 1, fifthCommaIndex);
-      String sixthValue =
-          inboundMessage.substring(fifthCommaIndex + 1, sixthCommaIndex);
+  String firstValue = inboundMessage.substring(0, firstCommaIndex);
+  String secondValue =
+      inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
+  String thirdValue =
+      inboundMessage.substring(secondCommaIndex + 1, thirdCommaIndex);
+  String fourthValue =
+      inboundMessage.substring(thirdCommaIndex + 1, fourthCommaIndex);
+  String fifthValue =
+      inboundMessage.substring(fourthCommaIndex + 1, fifthCommaIndex);
+  String sixthValue =
+      inboundMessage.substring(fifthCommaIndex + 1, sixthCommaIndex);
 
-      newSailingOrders.orderedSailPositionA = secondValue.toInt();
-      newSailingOrders.orderedTackTimeA = thirdValue.toInt();
-      newSailingOrders.orderedSailPositionB = fourthValue.toInt();
-      newSailingOrders.orderedTackTimeB = fifthValue.toInt();
-      newSailingOrders.loggingInterval = sixthValue.toInt();
+  // transmission will be converted from minutes to seconds
+  newSailingOrders.orderedSailPositionA = secondValue.toInt();
+  newSailingOrders.orderedTackTimeA = thirdValue.toInt() * 60;
+  newSailingOrders.orderedSailPositionB = fourthValue.toInt();
+  newSailingOrders.orderedTackTimeB = fifthValue.toInt() * 60;
+  newSailingOrders.loggingInterval = sixthValue.toInt() * 60;
 
-      inboundMessageValid = CheckSailingOrders(newSailingOrders);
-      break;
-    }
-    default: {
-      DEBUG_PRINTLN("Not a valid inbound message type.");
-      break;
-    }
-    }
-  } else {
-    // How to return this?
-    inboundMessageValid = false;
-    DEBUG_PRINTLN(F("Not a valid message (no 'z' found)"));
-  }
-
-  if (inboundMessageValid) {
-    return newSailingOrders;
-  } else {
-    return existingOrders;
-  }
+  return newSailingOrders;
 }
 
 uint8_t GbMessageHandler::GetDiagnosticMessage(GbTrimResult trimResult,
@@ -156,7 +150,7 @@ String GbMessageHandler::ConvertToBase62(uint32_t input) {
   return base62String;
 }
 
-bool GbMessageHandler::CheckSailingOrders(GbSailingOrders ordersToCheck) {
+bool GbMessageHandler::ValidSailingOrders(GbSailingOrders ordersToCheck) {
   // tack times have 12 hour max, logging interval has 1 day max
   bool ordersValid = true;
   if (ordersToCheck.orderedSailPositionA < 0 ||
@@ -165,10 +159,10 @@ bool GbMessageHandler::CheckSailingOrders(GbSailingOrders ordersToCheck) {
       ordersToCheck.orderedSailPositionB > 359 ||
       ordersToCheck.orderedTackTimeA < 0 ||
       ordersToCheck.orderedTackTimeB < 0 ||
-      ordersToCheck.orderedTackTimeA > 43200 ||
-      ordersToCheck.orderedTackTimeB > 43200 ||
+      ordersToCheck.orderedTackTimeA > 43200 || // 12 hours
+      ordersToCheck.orderedTackTimeB > 43200 || // 12 hours
       ordersToCheck.loggingInterval < 0 ||
-      ordersToCheck.loggingInterval > 86400) {
+      ordersToCheck.loggingInterval > 86400) { // 24 hours
     ordersValid = false;
   }
   return ordersValid;

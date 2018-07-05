@@ -30,7 +30,8 @@ GbTrimResult GbSail::Trim(int16_t orderedSailPosition) {
 
   // Try to trim to the the ordered sail position
   while (!CloseEnough(sailPosition, orderedSailPosition) &&
-         !TrimRoutineExceeded(trimStartTime) && sailIsTrimming) {
+         !TrimRoutineExceeded(trimStartTime) && sailIsTrimming &&
+         ValidOrders(orderedSailPosition)) {
 
     TurnSailTowardsTarget(sailPosition, orderedSailPosition);
 
@@ -48,13 +49,15 @@ GbTrimResult GbSail::Trim(int16_t orderedSailPosition) {
   }
 
   Stop(); // sail is either in position or stuck
+
   GbTrimResult trimResult = {
       .success = CloseEnough(sailPosition, orderedSailPosition),
       .sailStuck = !sailIsTrimming,
       .trimRoutineExceededMax = TrimRoutineExceeded(trimStartTime),
-      .sailBatteryTooLow = false};
+      .sailBatteryTooLow = false,
+      .invalidSailPositionOrder = ValidOrders(orderedSailPosition)};
 
-  //OutputTrimResults(trimResult);
+  // OutputTrimResults(trimResult);
   return trimResult;
 }
 
@@ -85,10 +88,11 @@ bool GbSail::TrimRoutineExceeded(uint32_t trimStartTime) {
 
 void GbSail::TurnSailTowardsTarget(int16_t sailPosition,
                                    int16_t orderedSailPosition) {
+  uint16_t outOfTrim = abs(sailPosition - orderedSailPosition);
   if (sailPosition < orderedSailPosition) {
-    TurnCW();
+    TurnCW(outOfTrim);
   } else if (sailPosition > orderedSailPosition) {
-    TurnCCW();
+    TurnCCW(outOfTrim);
   } else {
     Stop();
   }
@@ -119,16 +123,24 @@ uint16_t GbSail::GetPositionAnalogReading() {
   return averageAnalogReading;
 }
 
-void GbSail::TurnCW() {
+void GbSail::TurnCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, LOW);
-  digitalWrite(_motorSpeedPin, HIGH);
+  if (outOfTrim > 10) {
+    analogWrite(_motorSpeedPin, 255);
+  } else {
+    analogWrite(_motorSpeedPin, 50);
+  }
 }
 
-void GbSail::TurnCCW() {
+void GbSail::TurnCCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, HIGH);
-  digitalWrite(_motorSpeedPin, HIGH);
+  if (outOfTrim > 10) {
+    analogWrite(_motorSpeedPin, 255);
+  } else {
+    analogWrite(_motorSpeedPin, 50);
+  }
 }
 
 void GbSail::Stop() {
