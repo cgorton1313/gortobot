@@ -6,8 +6,8 @@ used to tell Gorotbot what to do.
 */
 
 #include "gb_sailing_orders.h"
-#include "navigation/gb_fix.h"
-#include "sailing/gb_sail.h"
+#include "../navigation/gb_fix.h"
+#include "../sailing/gb_sail.h"
 #include <Arduino.h>
 
 /*

@@ -1,17 +1,16 @@
 /* Gortobot v3c
 
 The main.cpp program handles the necessary includes, pin assignments, global
-consts, etc.
-Then, after setup, it runs the loop. The loop simply calls for a position (gps),
-sends and receives data, then executes the perceived orders. Rinse and repeat.
+consts & variables, etc.
+Then, after setup, it runs the loop. The loop simply collects data,
+sends data and receives instructions, then executes the received orders.
+Rinse and repeat.
+
+There are some global housekeeping functions here as well.
 
 */
 
-// TODO: watchdog timer
-// TODO: check with 3rpm motor that it stops better
 // TODO: store orders in EEPROM?
-
-#ifndef UNIT_TEST // required for platformio unit testing
 
 // Includes
 #include "configs/includes.h"
@@ -20,66 +19,132 @@ sends and receives data, then executes the perceived orders. Rinse and repeat.
 #include "configs/consts.h"
 
 // Global variables
-// TODO: delete this once useSail is gone to cpp
-static uint32_t loggingInterval =
-    60; // seconds b/w logging events, 1 day = 86,400 secs which is max
 static uint16_t runNum;        // increments each time the device starts
 static uint16_t loopCount = 0; // increments at each loop
-// static uint16_t currentTackTime = 0; // track how long we've been on current
-// tack in minutes
-static uint32_t thisWatch;
-static GbFix fix; // last known position and time of the vessel
-static GbSailingOrders sailingOrders = {.loggingInterval = 60,
-                                        .orderedSailPositionA = 270,
-                                        .orderedTackTimeA = 90,
-                                        .orderedSailPositionB = 270,
-                                        .orderedTackTimeB = 90};
+static GbFix fix;              // last known position and time of the vessel
+bool rxMessageInvalid = false;
+bool tackIsA = true; // keeps track of which tack we're on
+uint32_t currentTackTime = 0;
+
+// Global structs
+static GbTrimResult trimResult = {.success = true,
+                                  .sailStuck = false,
+                                  .trimRoutineExceededMax = false,
+                                  .sailBatteryTooLow = false};
+
+static GbSailingOrders sailingOrders = {.loggingInterval = 12 * 60,
+                                        .orderedSailPositionA = 10,
+                                        .orderedTackTimeA = 24 * 60,
+                                        .orderedSailPositionB = 90,
+                                        .orderedTackTimeB = 12 * 60};
 
 // Objects
+static Sleep sleeper;
+static GbBlinker blinker(LED_PIN);
+static GbAirSensor airSensor(AIR_SENSOR_POWER_PIN);
 static GbGps gb_gps =
     GbGps(GPS_POWER_PIN_1, GPS_POWER_PIN_2, GPS_SERIAL_PORT, GPS_BAUD);
+static GbRealBattery battery1 = GbRealBattery(
+    1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY_VOLTAGE_PIN);
+static GbRealBattery battery2 = GbRealBattery(
+    2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE, BATTERY2_VOLTAGE_PIN);
 static GbSatcom gb_satcom =
     GbSatcom(SATELLITE_SLEEP_PIN, SATCOM_SERIAL_PORT, SAT_BAUD);
-static GbWifi gb_wifi = GbWifi(WIFI_ENABLE_PIN, WIFI_SERIAL_PORT, WIFI_BAUD);
-static GbRealBattery battery1 =
-    GbRealBattery(1, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  BATTERY_VOLTAGE_PIN);
-static GbRealBattery battery2 =
-    GbRealBattery(2, MINIMUM_BATTERY_VOLTAGE, BATTERY_OKAY_VOLTAGE,
-                  BATTERY2_VOLTAGE_PIN);
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
                    MOTOR_POWER_ENABLE_PIN, MOTOR_DIRECTION_PIN, MOTOR_SPEED_PIN,
-                   MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
-                   TRIM_ROUTINE_MAXIMUM_SECONDS);
-static GbWatchStander watchStander = GbWatchStander(LED_PIN);
+                   MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, TRIM_ROUTINE_MAXIMUM_SECONDS,
+                   MAST_POSITION_CALIBRATION);
 static GbMessageHandler messageHandler = GbMessageHandler();
 
+void waitForBatteries() {
+  char battery1Status = battery1.Status();
+  char battery2Status = battery2.Status();
+  bool batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');
+
+  if (batteriesCritical) {
+    DEBUG_PRINTLN(F("Both batteries critical!"));
+    while (battery1Status != 'g' && battery2Status != 'g') {
+      DEBUG_PRINT(F("Neither battery green. Waiting "));
+      DEBUG_PRINT(BATTERY_WAIT_TIME);
+      DEBUG_PRINTLN(F(" seconds."));
+      delay(DELAY_FOR_SERIAL);
+
+      sleeper.sleepDelay(BATTERY_WAIT_TIME * 1000);
+
+      DEBUG_PRINTLN(F("Wait time elapsed. Retrying."));
+      battery1Status = battery1.Status();
+      battery2Status = battery2.Status();
+    }
+  }
+}
+
+void standWatch() {
+  DEBUG_PRINT(F("Sailing for "));
+  DEBUG_PRINT(sailingOrders.loggingInterval);
+  DEBUG_PRINTLN(F(" seconds."));
+
+  trimResult = {.success = true,
+                .sailStuck = false,
+                .trimRoutineExceededMax = false,
+                .sailBatteryTooLow = false};
+
+  if (battery2.GetVoltage() < MINIMUM_BATTERY_VOLTAGE) {
+    trimResult.success = false;
+    trimResult.sailBatteryTooLow = true;
+  }
+
+  uint32_t elapsedTime = 0; // used to track seconds during sail operation
+  int16_t currentOrderedSailPosition;
+
+  while (elapsedTime < sailingOrders.loggingInterval) {
+    if ((tackIsA && currentTackTime >= sailingOrders.orderedTackTimeA) ||
+        (!tackIsA && currentTackTime >= sailingOrders.orderedTackTimeB)) {
+      tackIsA = !tackIsA; // change tacks
+      currentTackTime = 0;
+      DEBUG_PRINTLN(F("Changing tacks"));
+    }
+
+    if (tackIsA) {
+      currentOrderedSailPosition = sailingOrders.orderedSailPositionA;
+      DEBUG_PRINTLN(F("Sailing on tack A"));
+    } else {
+      currentOrderedSailPosition = sailingOrders.orderedSailPositionB;
+      DEBUG_PRINTLN(F("Sailing on tack B"));
+    }
+
+    if (trimResult.success) {
+      if (abs(sail.GetSailPosition() - currentOrderedSailPosition) > 5) {
+        trimResult = sail.Trim(currentOrderedSailPosition);
+      } else {
+        DEBUG_PRINTLN(F("Close enough, no need to trim."));
+      }
+    } else {
+      DEBUG_PRINTLN(F("Unsuccessful sail trim."));
+    }
+
+    delay(DELAY_FOR_SERIAL);
+    blinker.Blink(2);
+    sleeper.sleepDelay(6000);
+    currentTackTime += 6;
+    elapsedTime += 6;
+
+    DEBUG_PRINT(F("elapsedTime = "));
+    DEBUG_PRINT(elapsedTime);
+    DEBUG_PRINT(F(" | currentTackTime = "));
+    DEBUG_PRINTLN(currentTackTime);
+  }
+}
+
 void setup() {
-  // for random numbers, A7 should be a floating pin
-  randomSeed(analogRead(RANDOM_SEED_PIN));
+  initPins();
+  sleeper.pwrDownMode(); // lowest power setting for sleeping
 
   DEBUG_BEGIN(CONSOLE_BAUD);
+  DEBUG_PRINTLN(F("Satcom test starting..."));
 
-  // Pin Modes
-  // TODO: do in contructors?
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(GPS_POWER_PIN_1, OUTPUT);
-  pinMode(GPS_POWER_PIN_2, OUTPUT);
-  pinMode(BATTERY_VOLTAGE_PIN, INPUT);
-  pinMode(BATTERY2_VOLTAGE_PIN, INPUT);
-  pinMode(SATELLITE_SLEEP_PIN, OUTPUT);
-  pinMode(WIFI_ENABLE_PIN, OUTPUT);
-
-  // Initial pin states
-  analogWrite(LED_PIN, LOW);          // turn off LED
-  digitalWrite(GPS_POWER_PIN_1, LOW); // turn off GPS
-  digitalWrite(GPS_POWER_PIN_2, LOW); // turn off GPS
-  digitalWrite(WIFI_ENABLE_PIN, LOW); // turn off wifi
-  digitalWrite(MOTOR_POWER_ENABLE_PIN,
-               HIGH); // turn off motor driver high is off
-
-  // TODO: check this
-  // isbd.sleep(); // turn off ISBD
+  runNum = GbUtility::IncrementRunNum();
+  DEBUG_PRINT(F("Starting runNum "));
+  DEBUG_PRINTLN(runNum);
 
   if (RESET_EEPROM) {
     GbUtility::ClearEEPROM();
@@ -91,7 +156,8 @@ void setup() {
 
   gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
 
-  delay(1000);
+  sleeper.sleepDelay(1000); // so the subsequent sleep works
+  delay(500);
 }
 
 void loop() {
@@ -104,11 +170,10 @@ void loop() {
   // Construct the outbound message as a string
   // TODO: GbTrimResult and rx
   bool rxMessageInvalid = true;
-  GbTrimResult trimResult = {
-      .success = true,
-      .sailStuck = false,
-      .trimRoutineExceededMax = false,
-      .sailBatteryTooLow = false};
+  GbTrimResult trimResult = {.success = true,
+                             .sailStuck = false,
+                             .trimRoutineExceededMax = false,
+                             .sailBatteryTooLow = false};
   String logSentence = messageHandler.BuildOutboundMessage(
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
       battery2.GetVoltage(), sail.GetSailPosition(),
@@ -150,5 +215,3 @@ void loop() {
   GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
   watchStander.StandWatch(sail, sailingOrders);
 }
-
-#endif // for platformio unit testing

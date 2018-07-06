@@ -5,7 +5,7 @@
 #include "../../src/configs/includes.h"
 
 // Constants
-#include "configs/consts.h"
+#include "../../src/configs/consts.h"
 
 // Objects
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
@@ -23,9 +23,9 @@ void setup() {
 void loop() {
   int angles[] = {0, 90, 120, 150, 180, 210, 240, 270};
 
-  for (int i = 0; i < (sizeof(angles) / sizeof(int)); i++) {
+  for (uint16_t i = 0; i < (sizeof(angles) / sizeof(int)); i++) {
     Serial.println(angles[i]);
     sail.Trim(angles[i]);
-    delay(6 * 1000);
+    delay(60000);
   }
 }

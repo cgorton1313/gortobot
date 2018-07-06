@@ -1,27 +1,30 @@
 /* This test exercises the SatCom */
 
 // Includes
-#include "../../src/configs/config.h"
 #include "../../src/configs/includes.h"
 
 // Constants
-#include "configs/consts.h"
+#include "../../src/configs/consts.h"
 
 // Global variables
 static uint16_t runNum;        // increments each time the device starts
 static uint16_t loopCount = 0; // increments at each loop
 static GbFix fix;
 bool rxMessageInvalid = false;
+bool tackIsA = true; // keeps track of which tack we're on
+uint32_t currentTackTime = 0;
+
+// Global structs
 static GbTrimResult trimResult = {.success = true,
                                   .sailStuck = false,
                                   .trimRoutineExceededMax = false,
                                   .sailBatteryTooLow = false};
 
-static GbSailingOrders sailingOrders = {.loggingInterval = 30,
-                                        .orderedSailPositionA = 0,
-                                        .orderedTackTimeA = 10,
+static GbSailingOrders sailingOrders = {.loggingInterval = 12 * 60,
+                                        .orderedSailPositionA = 10,
+                                        .orderedTackTimeA = 24 * 60,
                                         .orderedSailPositionB = 90,
-                                        .orderedTackTimeB = 10};
+                                        .orderedTackTimeB = 12 * 60};
 
 // Objects
 static Sleep sleeper;
@@ -68,16 +71,6 @@ void standWatch() {
   DEBUG_PRINT(sailingOrders.loggingInterval);
   DEBUG_PRINTLN(F(" seconds."));
 
-  DEBUG_PRINT(F("Tack A for "));
-  DEBUG_PRINT(sailingOrders.orderedTackTimeA);
-  DEBUG_PRINT(F(" seconds at sail position "));
-  DEBUG_PRINTLN(sailingOrders.orderedSailPositionA);
-
-  DEBUG_PRINT(F("Tack B for "));
-  DEBUG_PRINT(sailingOrders.orderedTackTimeB);
-  DEBUG_PRINT(F(" seconds at sail position "));
-  DEBUG_PRINTLN(sailingOrders.orderedSailPositionB);
-
   trimResult = {.success = true,
                 .sailStuck = false,
                 .trimRoutineExceededMax = false,
@@ -88,9 +81,7 @@ void standWatch() {
     trimResult.sailBatteryTooLow = true;
   }
 
-  bool tackIsA = true;      // keeps track of which tack we're on
   uint32_t elapsedTime = 0; // used to track seconds during sail operation
-  uint32_t currentTackTime = 0;
   int16_t currentOrderedSailPosition;
 
   while (elapsedTime < sailingOrders.loggingInterval) {
@@ -156,9 +147,11 @@ void loop() {
   DEBUG_PRINT(F("loopCount = "));
   DEBUG_PRINTLN(loopCount);
 
-  // Construct the outbound message
+  // Get GPS fix and air stats
   fix = gb_gps.GetFix();
   GbAirStats airStats = airSensor.GetAirStats();
+
+  // Construct the outbound message
   String logSentence = messageHandler.BuildOutboundMessage(
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
       battery2.GetVoltage(), sail.GetSailPosition(),
@@ -171,28 +164,32 @@ void loop() {
   wait();
   String inboundMessage = "";
   bool txSuccess = false;
-  if (gb_satcom.UseSatcom(logSentence)) {
-    txSuccess = true;
-    inboundMessage = gb_satcom.GetInboundMessage();
-    DEBUG_PRINTLN(F("Satcom transmission success."));
+  uint8_t numSatTries = 0;
+  while (!txSuccess && numSatTries < 2) { // try once or twice, then give up
+    if (gb_satcom.UseSatcom(logSentence)) {
+      txSuccess = true;
+      inboundMessage = gb_satcom.GetInboundMessage();
+      DEBUG_PRINTLN(F("Satcom transmission success."));
 
-    if (inboundMessage[0] != '0') {
-      DEBUG_PRINT(F("Received inbound message of: "));
-      DEBUG_PRINT(inboundMessage);
-      if (messageHandler.IsValidInboundMessage(inboundMessage)) {
-        sailingOrders = messageHandler.ParseMessage(inboundMessage);
-        rxMessageInvalid = false;
-        DEBUG_PRINTLN(F(" which is valid."));
+      if (inboundMessage[0] != '0') {
+        DEBUG_PRINT(F("Received inbound message of: "));
+        DEBUG_PRINT(inboundMessage);
+        if (messageHandler.IsValidInboundMessage(inboundMessage)) {
+          sailingOrders = messageHandler.ParseMessage(inboundMessage);
+          rxMessageInvalid = false;
+          DEBUG_PRINTLN(F(" which is valid."));
+        } else {
+          rxMessageInvalid = true;
+          DEBUG_PRINTLN(F(" which is NOT valid."));
+        }
       } else {
-        rxMessageInvalid = true;
-        DEBUG_PRINTLN(F(" which is NOT valid."));
+        DEBUG_PRINT(F("No inbound message received."));
       }
     } else {
-      DEBUG_PRINT(F("No inbound message received."));
+      txSuccess = false;
+      numSatTries++;
+      DEBUG_PRINTLN(F("SatCom transmission failed."));
     }
-  } else {
-    txSuccess = false;
-    DEBUG_PRINTLN(F("SatCom transmission failed."));
   }
 
   wait();
