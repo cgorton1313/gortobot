@@ -162,56 +162,55 @@ void setup() {
 
 void loop() {
   loopCount++;
+  DEBUG_PRINT(F("loopCount = "));
+  DEBUG_PRINTLN(loopCount);
 
-  // Get a position
-  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
+  // Get GPS fix and air stats
+  waitForBatteries();
   fix = gb_gps.GetFix();
+  GbAirStats airStats = airSensor.GetAirStats();
 
-  // Construct the outbound message as a string
-  // TODO: GbTrimResult and rx
-  bool rxMessageInvalid = true;
-  GbTrimResult trimResult = {.success = true,
-                             .sailStuck = false,
-                             .trimRoutineExceededMax = false,
-                             .sailBatteryTooLow = false};
+  // Construct the outbound message
   String logSentence = messageHandler.BuildOutboundMessage(
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
       battery2.GetVoltage(), sail.GetSailPosition(),
-      messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid));
+      messageHandler.GetDiagnosticMessage(trimResult, rxMessageInvalid),
+      airStats.temperature, airStats.humidity);
+  DEBUG_PRINT(F("logSentence = "));
+  DEBUG_PRINTLN(logSentence);
 
-  // Optionally use the wifi module to transmit the outbound message
-  if (USING_WIFI) {
-    GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-    uint8_t wifi_attempt = 1;
-    bool wifi_successful = false;
-    while (wifi_attempt <= WIFI_ATTEMPT_LIMIT && !wifi_successful) {
-      if (gb_wifi.UseWifi(logSentence)) {
-        wifi_successful = true;
+  // Send/receive message via satcom
+  waitForBatteries();
+  String inboundMessage = "";
+  bool txSuccess = false;
+  uint8_t numSatTries = 0;
+  while (!txSuccess && numSatTries < 2) { // try once or twice, then give up
+    if (gb_satcom.UseSatcom(logSentence)) {
+      txSuccess = true;
+      inboundMessage = gb_satcom.GetInboundMessage();
+      DEBUG_PRINTLN(F("Satcom transmission success."));
+
+      if (inboundMessage[0] != '0') {
+        DEBUG_PRINT(F("Received inbound message of: "));
+        DEBUG_PRINT(inboundMessage);
+        if (messageHandler.IsValidInboundMessage(inboundMessage)) {
+          sailingOrders = messageHandler.ParseMessage(inboundMessage);
+          rxMessageInvalid = false;
+          DEBUG_PRINTLN(F(" which is valid."));
+        } else {
+          rxMessageInvalid = true;
+          DEBUG_PRINTLN(F(" which is NOT valid."));
+        }
+      } else {
+        DEBUG_PRINT(F("No inbound message received."));
       }
-      wifi_attempt++;
+    } else {
+      txSuccess = false;
+      numSatTries++;
+      DEBUG_PRINTLN(F("SatCom transmission failed."));
     }
   }
 
-  // Send/receive message via satcom
-  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-  String inboundMessage = "";
-  bool txSuccess = false;
-  if (gb_satcom.UseSatcom(logSentence)) {
-    txSuccess = true;
-    inboundMessage = gb_satcom.GetInboundMessage();
-    DEBUG_PRINT(F("Received inbound message of: "));
-    DEBUG_PRINTLN(inboundMessage);
-  }
-
-  // Parse inbound message
-  if (txSuccess) {
-    sailingOrders = messageHandler.ParseMessage(inboundMessage, sailingOrders);
-    thisWatch = loggingInterval; // TODO deprecate this variable?
-  } else {
-    thisWatch = min(FAILURE_RETRY, loggingInterval);
-  }
-
-  // Execute sailing orders for one logging interval
-  GbUtility::WaitForBatteries(BATTERY_WAIT_TIME, battery1, battery2);
-  watchStander.StandWatch(sail, sailingOrders);
+  // Execute sailing orders for one logging interval (watch)
+  standWatch();
 }
