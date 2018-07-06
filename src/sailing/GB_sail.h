@@ -23,7 +23,8 @@ private:
   const int16_t _min_sail_angle;
   const int16_t _max_sail_angle;
   const uint16_t _trimRoutineMaxSeconds;
-  uint16_t GetPositionAnalogReading();
+  const int16_t _mast_position_calibration;
+  int16_t GetPositionAnalogReading();
   bool CloseEnough(int16_t sailPosition, int16_t orderedSailPosition);
   bool CloserToTarget(int16_t sailPosition, int16_t sailPositionBefore,
                       int16_t orderedSailPosition);
@@ -37,7 +38,7 @@ public:
   GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
          uint8_t motorPowerEnablePin, uint8_t motorDirectionPin,
          uint8_t motorSpeedPin, int16_t min_sail_angle, int16_t max_sail_angle,
-         uint16_t trimRoutineMaxSeconds);
+         uint16_t trimRoutineMaxSeconds, int16_t mastPositionCalibration);
   void OutputTrimResults(GbTrimResult trimResult);
   GbTrimResult Trim(int16_t angle);
   int16_t GetSailPosition();

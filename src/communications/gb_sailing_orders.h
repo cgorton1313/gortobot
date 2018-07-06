@@ -10,9 +10,9 @@ tell the Gortobot what to do during each watch cycle.
 
 struct GbSailingOrders {
   uint32_t loggingInterval;      // in seconds
-  uint16_t orderedSailPositionA; // degrees b/w 0-359
+  int16_t orderedSailPositionA; // degrees b/w 0-359
   uint16_t orderedTackTimeA;     // in seconds
-  uint16_t orderedSailPositionB; // degrees b/w 0-359
+  int16_t orderedSailPositionB; // degrees b/w 0-359
   uint16_t orderedTackTimeB;     // in seconds
 };
 

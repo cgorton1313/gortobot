@@ -24,7 +24,7 @@ class GbMessageHandler {
 
 private:
   String FormatDateNumber(uint8_t number);
-  String ConvertToBase62(uint32_t input);
+  String ConvertToBase62(int32_t input);
   bool ValidSailingOrders(GbSailingOrders ordersToCheck);
   String LongFormBase(uint16_t run_num, uint32_t loop_count, GbFix &a_fix,
                       float battery_voltage, float battery2_voltage,

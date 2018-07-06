@@ -3,13 +3,15 @@
 GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
                uint8_t motorPowerEnablePin, uint8_t motorDirectionPin,
                uint8_t motorSpeedPin, int16_t min_sail_angle,
-               int16_t max_sail_angle, uint16_t trimRoutineMaxSeconds)
+               int16_t max_sail_angle, uint16_t trimRoutineMaxSeconds,
+               int16_t mastPositionCalibration)
     : _sensorPin(sensorPin), _sensorEnablePin(sensorEnablePin),
       _mastGearSize(74), _sensorGearSize(36),
       _motorPowerEnablePin(motorPowerEnablePin),
       _motorDirectionPin(motorDirectionPin), _motorSpeedPin(motorSpeedPin),
       _min_sail_angle(min_sail_angle), _max_sail_angle(max_sail_angle),
-      _trimRoutineMaxSeconds(trimRoutineMaxSeconds) {
+      _trimRoutineMaxSeconds(trimRoutineMaxSeconds),
+      _mast_position_calibration(mastPositionCalibration) {
   pinMode(_sensorPin, INPUT);
   pinMode(_sensorEnablePin, OUTPUT);
   digitalWrite(_sensorEnablePin, LOW);
@@ -98,48 +100,41 @@ void GbSail::TurnSailTowardsTarget(int16_t sailPosition,
 }
 
 int16_t GbSail::GetSailPosition() {
-  uint16_t positionAnalogReading = GetPositionAnalogReading();
+  int16_t positionAnalogReading = GetPositionAnalogReading();
   float gearRatio = float(_mastGearSize) / _sensorGearSize;
-  const uint8_t TURNS_IN_POT = 10;
+  const int8_t TURNS_IN_POT = 10;
   float turnsInMast = TURNS_IN_POT / gearRatio;
-  uint16_t degreesInMast = turnsInMast * 360.0;
+  int16_t degreesInMast = turnsInMast * 360.0;
   int16_t positionDegrees =
       degreesInMast * float((positionAnalogReading / 1023.0)) -
       (degreesInMast / 2) + 180;
+  positionDegrees += _mast_position_calibration;
   return positionDegrees;
 }
 
-uint16_t GbSail::GetPositionAnalogReading() {
-  const uint8_t REPETITIONS = 20;
-  uint16_t sum = 0;
+int16_t GbSail::GetPositionAnalogReading() {
+  const int8_t REPETITIONS = 20;
+  int16_t sum = 0;
   digitalWrite(_sensorEnablePin, HIGH);
-  for (uint8_t i = 0; i < REPETITIONS; i++) {
+  for (int8_t i = 0; i < REPETITIONS; i++) {
     sum = sum + analogRead(_sensorPin);
     delay(10);
   }
   digitalWrite(_sensorEnablePin, LOW);
-  uint16_t averageAnalogReading = sum / REPETITIONS;
+  int16_t averageAnalogReading = sum / REPETITIONS;
   return averageAnalogReading;
 }
 
 void GbSail::TurnCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, LOW);
-  if (outOfTrim > 10) {
-    analogWrite(_motorSpeedPin, 255);
-  } else {
-    analogWrite(_motorSpeedPin, 50);
-  }
+  analogWrite(_motorSpeedPin, 255);
 }
 
 void GbSail::TurnCCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, HIGH);
-  if (outOfTrim > 10) {
-    analogWrite(_motorSpeedPin, 255);
-  } else {
-    analogWrite(_motorSpeedPin, 50);
-  }
+  analogWrite(_motorSpeedPin, 255);
 }
 
 void GbSail::Stop() {

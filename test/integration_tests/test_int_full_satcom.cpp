@@ -17,11 +17,11 @@ static GbTrimResult trimResult = {.success = true,
                                   .trimRoutineExceededMax = false,
                                   .sailBatteryTooLow = false};
 
-static GbSailingOrders sailingOrders = {.loggingInterval = 10 * 60,
-                                        .orderedSailPositionA = 90,
-                                        .orderedTackTimeA = 5 * 60,
-                                        .orderedSailPositionB = 270,
-                                        .orderedTackTimeB = 5 * 60};
+static GbSailingOrders sailingOrders = {.loggingInterval = 30,
+                                        .orderedSailPositionA = 0,
+                                        .orderedTackTimeA = 10,
+                                        .orderedSailPositionB = 90,
+                                        .orderedTackTimeB = 10};
 
 // Objects
 static Sleep sleeper;
@@ -37,8 +37,8 @@ static GbSatcom gb_satcom =
     GbSatcom(SATELLITE_SLEEP_PIN, SATCOM_SERIAL_PORT, SAT_BAUD);
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
                    MOTOR_POWER_ENABLE_PIN, MOTOR_DIRECTION_PIN, MOTOR_SPEED_PIN,
-                   MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
-                   TRIM_ROUTINE_MAXIMUM_SECONDS);
+                   MIN_SAIL_ANGLE, MAX_SAIL_ANGLE, TRIM_ROUTINE_MAXIMUM_SECONDS,
+                   MAST_POSITION_CALIBRATION);
 static GbMessageHandler messageHandler = GbMessageHandler();
 
 void wait() {
@@ -120,6 +120,7 @@ void standWatch() {
     }
 
     delay(DELAY_FOR_SERIAL);
+    blinker.Blink(2);
     sleeper.sleepDelay(6000);
     currentTackTime += 6;
     elapsedTime += 6;
@@ -156,15 +157,7 @@ void loop() {
   DEBUG_PRINTLN(loopCount);
 
   // Construct the outbound message
-  GbFix fix = {.latitude = 1.11,
-               .longitude = -2.22,
-               .year = 2018,
-               .month = 6,
-               .day = 5,
-               .hour = 11,
-               .minute = 59,
-               .second = 1,
-               .satellites = 4};
+  fix = gb_gps.GetFix();
   GbAirStats airStats = airSensor.GetAirStats();
   String logSentence = messageHandler.BuildOutboundMessage(
       MESSAGE_VERSION, runNum, loopCount, fix, battery1.GetVoltage(),
@@ -178,14 +171,12 @@ void loop() {
   wait();
   String inboundMessage = "";
   bool txSuccess = false;
-  if (true) {
-  //if (gb_satcom.UseSatcom(logSentence)) {
+  if (gb_satcom.UseSatcom(logSentence)) {
     txSuccess = true;
-    //inboundMessage = gb_satcom.GetInboundMessage();
-    String inboundMessage = "1,120,1,60,1,2,z";
+    inboundMessage = gb_satcom.GetInboundMessage();
     DEBUG_PRINTLN(F("Satcom transmission success."));
 
-    if (inboundMessage.length() != 0) {
+    if (inboundMessage[0] != '0') {
       DEBUG_PRINT(F("Received inbound message of: "));
       DEBUG_PRINT(inboundMessage);
       if (messageHandler.IsValidInboundMessage(inboundMessage)) {

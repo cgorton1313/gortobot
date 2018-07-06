@@ -94,8 +94,15 @@ void GbSatcom::ChargeSuperCapacitor(uint16_t chargeTime) {
 }
 
 bool ISBDCallback() {
-  unsigned ledOn = (millis() / 500) % 2;
-  digitalWrite(13, ledOn ? HIGH : LOW);
+  // unsigned ledOn = (millis() / 500) % 2;
+  // digitalWrite(13, ledOn ? HIGH : LOW);
+bool ledOn;
+  if ((millis()/50 % 20 == 0) || (millis()/50 % 20 == 5)) {
+    ledOn = true;
+  } else {
+    ledOn = false;
+  }
+  digitalWrite(LED_BUILTIN, ledOn);
   return true;
 }
 

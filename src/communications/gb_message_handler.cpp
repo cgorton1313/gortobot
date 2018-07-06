@@ -134,17 +134,27 @@ String GbMessageHandler::FormatDateNumber(uint8_t number) {
   return tempString;
 }
 
-String GbMessageHandler::ConvertToBase62(uint32_t input) {
+String GbMessageHandler::ConvertToBase62(int32_t input) {
   // when decoding the base 62 numbers, remember to look for 5 digits. if this
   // is the case, add a "0"!
   const char BASE_62_CHARACTERS[63] =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   String base62String;
+  bool isNegative = false;
+  if (input < 0) {
+    isNegative = true;
+    input = input * -1;
+  }
   while ((input / 62) != 0) {
     base62String = BASE_62_CHARACTERS[(input % 62)] + base62String;
     input = input / 62;
   }
   base62String = BASE_62_CHARACTERS[input] + base62String;
+
+  if (isNegative) {
+    base62String = "-" + base62String;
+  }
+
   return base62String;
 }
 
