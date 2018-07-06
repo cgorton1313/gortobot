@@ -20,9 +20,6 @@ private:
 public:
   static void ClearEEPROM();
   static uint16_t IncrementRunNum();
-  static void GortoNap(uint16_t seconds);
-  static void WaitForBatteries(uint16_t waitTime, GbAbstractBattery &battery1,
-                               GbAbstractBattery &battery2);
 };
 
 #endif
