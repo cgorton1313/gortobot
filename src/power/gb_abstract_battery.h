@@ -6,9 +6,9 @@
 class GbAbstractBattery {
 
 protected:
-  uint8_t _battery_number;
-  float _min_voltage;
-  float _retry_voltage;
+  const uint8_t _battery_number;
+  const float _min_voltage;
+  const float _retry_voltage;
 
 public:
   GbAbstractBattery(uint8_t battery_number, float min_voltage,

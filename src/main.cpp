@@ -12,6 +12,7 @@ There are some global housekeeping functions here as well.
 
 // TODO: store orders in EEPROM?
 // TODO: figure out negative sail position
+// TODO: test GPS timeout
 
 // Includes
 #include "configs/includes.h"

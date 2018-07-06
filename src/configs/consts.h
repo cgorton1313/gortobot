@@ -6,13 +6,11 @@
 static const uint8_t DELAY_FOR_SERIAL =
     10; // ms to delay so serial ouput is clean
 static const uint32_t CONSOLE_BAUD = 115200, WIFI_BAUD = 115200,
-                      GPS_BAUD = 38400;
-static const uint32_t SAT_BAUD = 19200;
+                      GPS_BAUD = 38400, SAT_BAUD = 19200;
 static const uint16_t SAT_CHARGE_TIME =
     10; // seconds to wait at start-up for super-capacitor
 static const uint16_t ISBD_TIMEOUT =
     300; // seconds to try getting isbd success each time, 5 min default
-static const uint16_t FAILURE_RETRY = 600; // seconds to wait after tx failure
 static const uint8_t WIFI_ATTEMPT_LIMIT =
     3; // number of times to try connecting to wifi
 static const float MINIMUM_BATTERY_VOLTAGE =
@@ -22,16 +20,16 @@ static const float BATTERY_OKAY_VOLTAGE =
 static const uint16_t BATTERY_WAIT_TIME =
     60; // seconds to wait between checking for batteryOkay
 
-// Message versions:
+// Message versions (evolution):
 //    2 = long form
 //    3 = base62
-//    4 = 2 + 2 batteries
-//    5 = 3 + 2 batteries
+//    4 = 2 + two batteries
+//    5 = 3 + two batteries
 //    6 = 4 + temp/humidity
 //    7 = 5 + temp/humidity
 static const uint8_t MESSAGE_VERSION = 7;
 
-static const int16_t MAST_POSITION_CALIBRATION = 0;
+static const int16_t MAST_POSITION_CALIBRATION = 0; // Use this if the mast is mounted slightly askew.
 static const uint16_t MIN_SAIL_ANGLE = 0,
                       MAX_SAIL_ANGLE = 359; // limits for sail
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =

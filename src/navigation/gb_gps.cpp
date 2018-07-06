@@ -7,12 +7,14 @@ GbGps::GbGps(uint8_t power_pin1, uint8_t power_pin2, HardwareSerial &port,
   port.begin(baud);
   pinMode(power_pin1, OUTPUT);
   pinMode(power_pin2, OUTPUT);
-  digitalWrite(power_pin1, LOW); // turn off GPS
-  digitalWrite(power_pin2, LOW); // turn off GPS
+  digitalWrite(power_pin1, LOW); // turn off GPS at start
+  digitalWrite(power_pin2, LOW); // turn off GPS at start
 };
 
 GbFix GbGps::GetFix() {
-  bool fix_done;
+  uint32_t startTime = millis();
+  const uint16_t GPS_TIMEOUT = 600;
+  bool fix_done = false;
   NMEAGPS nmea_gps;
   gps_fix nmea_gps_fix;
   GbFix fix;
@@ -21,8 +23,7 @@ GbFix GbGps::GetFix() {
   delay(2005); // to trigger staleFix because millis stop during sleep
   GpsOn();
 
-  fix_done = false;
-  while (!fix_done) {
+  while (!fix_done && ((millis() - startTime) / 1000) < GPS_TIMEOUT) {
     while (nmea_gps.available(*_gps_port)) {
       nmea_gps_fix = nmea_gps.read();
       DEBUG_PRINT("Fix: ");
@@ -45,6 +46,7 @@ GbFix GbGps::GetFix() {
       DEBUG_PRINTLN();
     }
 
+    // Blink once per second
     if (millis() / 50 % 20 == 0) {
       ledOn = true;
     } else {
