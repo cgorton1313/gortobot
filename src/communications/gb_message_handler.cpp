@@ -17,14 +17,16 @@ bool GbMessageHandler::IsValidInboundMessage(String inboundMessage) {
     return false;
   }
 
-  return true;
+  return true; // everything seem to be okay with the inbound message
 }
 
 GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
   GbSailingOrders newSailingOrders;
 
   // [message_type],[positionA],[timeA],[positionB],[timeB],[interval]
-  // standard message = 1,120,20,60,20,30,z
+  // standard message = 1,90,15,270,45,120,z (see .h file)
+
+  // Find the commas
   uint8_t firstCommaIndex = inboundMessage.indexOf(',');
   uint8_t secondCommaIndex = inboundMessage.indexOf(',', firstCommaIndex + 1);
   uint8_t thirdCommaIndex = inboundMessage.indexOf(',', secondCommaIndex + 1);
@@ -32,6 +34,7 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
   uint8_t fifthCommaIndex = inboundMessage.indexOf(',', fourthCommaIndex + 1);
   uint8_t sixthCommaIndex = inboundMessage.indexOf(',', fifthCommaIndex + 1);
 
+  // Extract the strings
   String firstValue = inboundMessage.substring(0, firstCommaIndex);
   String secondValue =
       inboundMessage.substring(firstCommaIndex + 1, secondCommaIndex);
@@ -44,7 +47,8 @@ GbSailingOrders GbMessageHandler::ParseMessage(String inboundMessage) {
   String sixthValue =
       inboundMessage.substring(fifthCommaIndex + 1, sixthCommaIndex);
 
-  // transmission will be converted from minutes to seconds
+  // Convert and assign values
+  // Transmission will be converted from minutes to seconds here
   newSailingOrders.orderedSailPositionA = secondValue.toInt();
   newSailingOrders.orderedTackTimeA = thirdValue.toInt() * 60;
   newSailingOrders.orderedSailPositionB = fourthValue.toInt();
@@ -66,6 +70,7 @@ uint8_t GbMessageHandler::GetDiagnosticMessage(GbTrimResult trimResult,
          rxMessageInvalid << 3 | trimResult.sailBatteryTooLow << 4;
 }
 
+// This is an older form of the function. The overload (below) is used in GBv3
 String GbMessageHandler::BuildOutboundMessage(
     uint8_t message_version, uint16_t run_num, uint32_t loop_count,
     GbFix &a_fix, float battery_voltage, float battery2_voltage,
@@ -94,7 +99,7 @@ String GbMessageHandler::BuildOutboundMessage(
 String GbMessageHandler::BuildOutboundMessage(
     uint8_t message_version, uint16_t run_num, uint32_t loop_count,
     GbFix &a_fix, float battery_voltage, float battery2_voltage,
-    int sail_position, uint8_t diagnostic_message, float temperature,
+    int16_t sail_position, uint8_t diagnostic_message, float temperature,
     float humidity) {
 
   String log_sentence = "";
@@ -116,9 +121,9 @@ String GbMessageHandler::BuildOutboundMessage(
         ShortFormBase(run_num, loop_count, a_fix, battery_voltage,
                       battery2_voltage, sail_position, diagnostic_message);
     log_sentence += ",";
-    log_sentence += ConvertToBase62((int)round(temperature * 10));
+    log_sentence += ConvertToBase62((int16_t)round(temperature * 10));
     log_sentence += ",";
-    log_sentence += ConvertToBase62((int)round(humidity * 10));
+    log_sentence += ConvertToBase62((int16_t)round(humidity * 10));
     break;
   }
 
@@ -143,7 +148,7 @@ String GbMessageHandler::ConvertToBase62(int32_t input) {
   bool isNegative = false;
   if (input < 0) {
     isNegative = true;
-    input = input * -1;
+    input = input * -1; // make input positive, temporarily
   }
   while ((input / 62) != 0) {
     base62String = BASE_62_CHARACTERS[(input % 62)] + base62String;
@@ -210,7 +215,7 @@ String GbMessageHandler::LongFormBase(uint16_t run_num, uint32_t loop_count,
 String GbMessageHandler::ShortFormBase(uint16_t run_num, uint32_t loop_count,
                                        GbFix &a_fix, float battery_voltage,
                                        float battery2_voltage,
-                                       int sail_position,
+                                       int16_t sail_position,
                                        uint8_t diagnostic_message) {
   String shortFormBase;
   shortFormBase += ",";
@@ -225,14 +230,14 @@ String GbMessageHandler::ShortFormBase(uint16_t run_num, uint32_t loop_count,
   shortFormBase += ConvertToBase62(a_fix.minute);
   shortFormBase += ConvertToBase62(a_fix.second);
   shortFormBase += ",";
-  shortFormBase += ConvertToBase62((long)round((90 + a_fix.latitude) * 10000));
+  shortFormBase += ConvertToBase62((int32_t)round((90 + a_fix.latitude) * 10000));
   shortFormBase += ",";
   shortFormBase +=
-      ConvertToBase62((long)round((180 + a_fix.longitude) * 10000));
+      ConvertToBase62((int32_t)round((180 + a_fix.longitude) * 10000));
   shortFormBase += ",";
-  shortFormBase += ConvertToBase62((int)round(battery_voltage * 100));
+  shortFormBase += ConvertToBase62((int16_t)round(battery_voltage * 100));
   shortFormBase += ",";
-  shortFormBase += ConvertToBase62((int)round(battery2_voltage * 100));
+  shortFormBase += ConvertToBase62((int16_t)round(battery2_voltage * 100));
   shortFormBase += ",";
   shortFormBase += ConvertToBase62(sail_position);
   shortFormBase += ",";

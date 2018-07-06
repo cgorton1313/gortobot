@@ -10,7 +10,8 @@ static const uint32_t CONSOLE_BAUD = 115200, WIFI_BAUD = 115200,
 static const uint32_t SAT_BAUD = 19200;
 static const uint16_t SAT_CHARGE_TIME =
     10; // seconds to wait at start-up for super-capacitor
-static const uint16_t ISBD_TIMEOUT = 300; // seconds to try getting isbd success
+static const uint16_t ISBD_TIMEOUT =
+    300; // seconds to try getting isbd success each time, 5 min default
 static const uint16_t FAILURE_RETRY = 600; // seconds to wait after tx failure
 static const uint8_t WIFI_ATTEMPT_LIMIT =
     3; // number of times to try connecting to wifi

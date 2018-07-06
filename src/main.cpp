@@ -11,6 +11,7 @@ There are some global housekeeping functions here as well.
 */
 
 // TODO: store orders in EEPROM?
+// TODO: figure out negative sail position
 
 // Includes
 #include "configs/includes.h"

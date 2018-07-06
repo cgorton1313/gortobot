@@ -9,11 +9,11 @@ tell the Gortobot what to do during each watch cycle.
 #define GB_SAILING_ORDERS_H
 
 struct GbSailingOrders {
-  uint32_t loggingInterval;      // in seconds
+  uint32_t loggingInterval; // in seconds, max valid will be  86400 (24 hours)
   int16_t orderedSailPositionA; // degrees b/w 0-359
-  uint16_t orderedTackTimeA;     // in seconds
+  uint16_t orderedTackTimeA; // in seconds, max valid will be 43200 (12 hours)
   int16_t orderedSailPositionB; // degrees b/w 0-359
-  uint16_t orderedTackTimeB;     // in seconds
+  uint16_t orderedTackTimeB; // in seconds, max valid will be 43200 (12 hours)
 };
 
 #endif
