@@ -1,5 +1,16 @@
 #include "gb_gps.h"
 
+GbGps::GbGps(uint8_t power_pin1, uint8_t power_pin2, HardwareSerial &port,
+             uint32_t baud)
+    : GbAbstractGps(), _gps_power_pin1(power_pin1), _gps_power_pin2(power_pin2),
+      _gps_port(&port) {
+  port.begin(baud);
+  pinMode(power_pin1, OUTPUT);
+  pinMode(power_pin2, OUTPUT);
+  digitalWrite(power_pin1, LOW); // turn off GPS
+  digitalWrite(power_pin2, LOW); // turn off GPS
+};
+
 GbFix GbGps::GetFix() {
   bool fix_done;
   NMEAGPS nmea_gps;
@@ -34,7 +45,7 @@ GbFix GbGps::GetFix() {
       DEBUG_PRINTLN();
     }
 
-    if (millis()/50 % 20 == 0) {
+    if (millis() / 50 % 20 == 0) {
       ledOn = true;
     } else {
       ledOn = false;

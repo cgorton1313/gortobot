@@ -14,16 +14,12 @@ and handles power methods (on, off, etc.)
 class GbAirSensor {
 
 private:
-  uint8_t _air_sensor_power_pin;
+  const uint8_t _air_sensor_power_pin;
   void AirSensorOn();
   void AirSensorOff();
 
 public:
-  // TODO: consts
-  GbAirSensor(uint8_t power_pin) : _air_sensor_power_pin(power_pin) {
-    pinMode(power_pin, OUTPUT);
-    digitalWrite(power_pin, LOW); // turn off sensor
-  };
+  GbAirSensor(uint8_t power_pin);
 
   GbAirStats GetAirStats();
 };

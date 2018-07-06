@@ -1,5 +1,10 @@
 #include "gb_air_sensor.h"
 
+GbAirSensor::GbAirSensor(uint8_t power_pin) : _air_sensor_power_pin(power_pin) {
+  pinMode(power_pin, OUTPUT);
+  digitalWrite(power_pin, LOW); // turn off sensor
+};
+
 GbAirStats GbAirSensor::GetAirStats() {
   Adafruit_HTU21DF htu = Adafruit_HTU21DF();
   GbAirStats airStats;

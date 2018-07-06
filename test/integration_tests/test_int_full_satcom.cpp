@@ -1,27 +1,15 @@
-/* Gortobot v3c
-
-The main.cpp program handles the necessary includes, pin assignments, global
-consts & variables, etc.
-Then, after setup, it runs the loop. The loop simply collects data,
-sends data and receives instructions, then executes the received orders.
-Rinse and repeat.
-
-There are some global housekeeping functions here as well.
-
-*/
-
-// TODO: store orders in EEPROM?
+/* This test exercises the SatCom */
 
 // Includes
-#include "configs/includes.h"
+#include "../../src/configs/includes.h"
 
 // Constants
-#include "configs/consts.h"
+#include "../../src/configs/consts.h"
 
 // Global variables
 static uint16_t runNum;        // increments each time the device starts
 static uint16_t loopCount = 0; // increments at each loop
-static GbFix fix;              // last known position and time of the vessel
+static GbFix fix;
 bool rxMessageInvalid = false;
 bool tackIsA = true; // keeps track of which tack we're on
 uint32_t currentTackTime = 0;
@@ -56,7 +44,7 @@ static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
                    MAST_POSITION_CALIBRATION);
 static GbMessageHandler messageHandler = GbMessageHandler();
 
-void waitForBatteries() {
+void wait() {
   char battery1Status = battery1.Status();
   char battery2Status = battery2.Status();
   bool batteriesCritical = (battery1Status == 'r' && battery2Status == 'r');
@@ -146,16 +134,10 @@ void setup() {
   DEBUG_PRINT(F("Starting runNum "));
   DEBUG_PRINTLN(runNum);
 
-  if (RESET_EEPROM) {
-    GbUtility::ClearEEPROM();
-  }
+  // uncomment for real program
+  // gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
 
-  runNum = GbUtility::IncrementRunNum();
-  DEBUG_PRINT(F("Starting runNum "));
-  DEBUG_PRINTLN(runNum);
-
-  gb_satcom.SetUpSat(SAT_CHARGE_TIME, ISBD_TIMEOUT);
-
+  delay(500);
   sleeper.sleepDelay(1000); // so the subsequent sleep works
   delay(500);
 }
@@ -166,7 +148,6 @@ void loop() {
   DEBUG_PRINTLN(loopCount);
 
   // Get GPS fix and air stats
-  waitForBatteries();
   fix = gb_gps.GetFix();
   GbAirStats airStats = airSensor.GetAirStats();
 
@@ -180,7 +161,7 @@ void loop() {
   DEBUG_PRINTLN(logSentence);
 
   // Send/receive message via satcom
-  waitForBatteries();
+  wait();
   String inboundMessage = "";
   bool txSuccess = false;
   uint8_t numSatTries = 0;
@@ -211,6 +192,6 @@ void loop() {
     }
   }
 
-  // Execute sailing orders for one logging interval (watch)
+  wait();
   standWatch();
 }

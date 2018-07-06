@@ -5,9 +5,9 @@ It also converts a received message into a sailing order object to be
 used to tell Gorotbot what to do.
 */
 
-#include "communications/gb_sailing_orders.h"
-#include "navigation/gb_fix.h"
-#include "sailing/gb_sail.h"
+#include "gb_sailing_orders.h"
+#include "../navigation/gb_fix.h"
+#include "../sailing/gb_sail.h"
 #include <Arduino.h>
 
 /*
@@ -24,8 +24,8 @@ class GbMessageHandler {
 
 private:
   String FormatDateNumber(uint8_t number);
-  String ConvertToBase62(uint32_t input);
-  bool CheckSailingOrders(GbSailingOrders ordersToCheck);
+  String ConvertToBase62(int32_t input);
+  bool ValidSailingOrders(GbSailingOrders ordersToCheck);
   String LongFormBase(uint16_t run_num, uint32_t loop_count, GbFix &a_fix,
                       float battery_voltage, float battery2_voltage,
                       int sail_position, uint8_t diagnostic_message);
@@ -44,12 +44,9 @@ public:
                               int sail_position, uint8_t diagnostic_message,
                               float temperature, float humidity);
 
-  GbSailingOrders ParseMessage(String inboundMessage,
-                               GbSailingOrders existingOrders);
-  // TODO: why is this here?
-  GbSailingOrders ParseMessage2(String inboundMessage,
-                                GbSailingOrders existingOrders);
+  GbSailingOrders ParseMessage(String inboundMessage);
   uint8_t GetDiagnosticMessage(GbTrimResult trimResult, bool rxMessageInvalid);
+  bool IsValidInboundMessage(String inboundMessage);
 };
 
 #endif
