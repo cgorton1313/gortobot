@@ -20,7 +20,6 @@ private:
 
 public:
   GbAirSensor(uint8_t power_pin);
-
   GbAirStats GetAirStats();
 };
 

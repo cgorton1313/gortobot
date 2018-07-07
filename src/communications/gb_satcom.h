@@ -3,7 +3,7 @@ The SatCom class is a wrapper for the IridiumSBD modem and the power methods
 (on, off, charge)
 */
 
-#include "../../src/configs/config.h"
+#include "../../src/configs/config.h" // for DEBUG_PRINTLN
 #include <IridiumSBD.h>
 
 #ifndef GB_SATCOM_H

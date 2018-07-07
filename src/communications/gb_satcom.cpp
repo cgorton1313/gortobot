@@ -1,14 +1,12 @@
 #include "gb_satcom.h"
-#include "../../src/utilities/gb_utility.h"
 
-String _inboundMessage;
-#define _diagnostics false // get serial diagnostics
+#define _diagnostics false // get serial diagnostics for isbd
 
 GbSatcom::GbSatcom(uint8_t sleepPin, HardwareSerial &port, uint32_t baud)
     : _satcom_baud(baud), _satcom_port(port), _isbd(port, sleepPin) {
-      pinMode(sleepPin, OUTPUT);
-      digitalWrite(sleepPin, LOW);
-    }
+  pinMode(sleepPin, OUTPUT);
+  digitalWrite(sleepPin, LOW);
+}
 
 void GbSatcom::SetUpSat(uint16_t chargeTime, uint16_t timeOut) {
 
@@ -19,20 +17,20 @@ void GbSatcom::SetUpSat(uint16_t chargeTime, uint16_t timeOut) {
 
   _isbd.adjustSendReceiveTimeout(timeOut);
 
-  _isbd.useMSSTMWorkaround(false);
+  _isbd.useMSSTMWorkaround(false); // since we have a newer RockBLOCK
 }
 
 bool GbSatcom::UseSatcom(String txString) {
-  // Clear out the last inbound message`
+  // Clear out the last inbound message
   _inboundMessage = "";
 
   SatOn();
   do {
-    // Set up tx (transmit) buffer
+    // Set up TX (transmit) buffer
     char txBuffer[50];
     txString.toCharArray(txBuffer, txString.length() + 1);
 
-    // Set up rx (receive) buffer
+    // Set up RX (receive) buffer
     char rxBuffer[27]; // max size of rx buffer
     // expects type(max 1 char),tackAsailPosition(max 3 chars),
     // tackAtime(max 4 chars),tackBsailPosition(max 3 chars),
@@ -82,7 +80,7 @@ void GbSatcom::SatOn() {
 void GbSatcom::SatOff() {
   _isbd.sleep();
   _satcom_port.end();
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(LED_BUILTIN, LOW); // to insure blinker didn't stay on
   DEBUG_PRINTLN(F("Sat off."));
 }
 
@@ -90,14 +88,15 @@ void GbSatcom::ChargeSuperCapacitor(uint16_t chargeTime) {
   DEBUG_PRINT(F("Charging super-capacitor. Waiting "));
   DEBUG_PRINT(chargeTime);
   DEBUG_PRINTLN(F(" seconds..."));
-  delay(chargeTime * 1000); // allow capacitor to charge
+  uint16_t delayTime = chargeTime * 1000;
+  delay(delayTime);
 }
 
 bool ISBDCallback() {
-  // unsigned ledOn = (millis() / 500) % 2;
-  // digitalWrite(13, ledOn ? HIGH : LOW);
-bool ledOn;
-  if ((millis()/50 % 20 == 0) || (millis()/50 % 20 == 5)) {
+  // This runs while ISBD is trying send/receive
+  // Two quick flashes every second
+  bool ledOn;
+  if ((millis() / 50 % 20 == 0) || (millis() / 50 % 20 == 5)) {
     ledOn = true;
   } else {
     ledOn = false;

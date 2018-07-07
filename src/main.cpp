@@ -11,6 +11,8 @@ There are some global housekeeping functions here as well.
 */
 
 // TODO: store orders in EEPROM?
+// TODO: figure out negative sail position
+// TODO: test GPS timeout
 
 // Includes
 #include "configs/includes.h"
@@ -32,11 +34,11 @@ static GbTrimResult trimResult = {.success = true,
                                   .trimRoutineExceededMax = false,
                                   .sailBatteryTooLow = false};
 
-static GbSailingOrders sailingOrders = {.loggingInterval = 12 * 60,
-                                        .orderedSailPositionA = 10,
-                                        .orderedTackTimeA = 24 * 60,
+static GbSailingOrders sailingOrders = {.loggingInterval = 30 * 60,
+                                        .orderedSailPositionA = 0,
+                                        .orderedTackTimeA = 30 * 60,
                                         .orderedSailPositionB = 90,
-                                        .orderedTackTimeB = 12 * 60};
+                                        .orderedTackTimeB = 30 * 60};
 
 // Objects
 static Sleep sleeper;

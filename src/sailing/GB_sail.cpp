@@ -128,13 +128,13 @@ int16_t GbSail::GetPositionAnalogReading() {
 void GbSail::TurnCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, LOW);
-  analogWrite(_motorSpeedPin, 255);
+  digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::TurnCCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, HIGH);
-  analogWrite(_motorSpeedPin, 255);
+  digitalWrite(_motorSpeedPin, HIGH);
 }
 
 void GbSail::Stop() {

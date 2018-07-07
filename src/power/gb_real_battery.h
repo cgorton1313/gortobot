@@ -12,7 +12,7 @@ when we switched from 1 bank to 2.
 class GbRealBattery : public GbAbstractBattery {
 
 private:
-  uint8_t _pin;
+  const uint8_t _pin;
 
 public:
   GbRealBattery(uint8_t battery_number, float min_voltage, float retry_voltage,
