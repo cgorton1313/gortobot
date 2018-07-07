@@ -8,7 +8,7 @@
 #define USING_WIFI false
 #endif
 
-#define DEBUG // comment to disable
+//#define DEBUG // comment to disable
 #ifdef DEBUG
   #define DEBUG_BEGIN(x) Serial.begin(x)
   #define DEBUG_PRINT(x) Serial.print(x)
