@@ -34,10 +34,10 @@ static GbTrimResult trimResult = {.success = true,
                                   .trimRoutineExceededMax = false,
                                   .sailBatteryTooLow = false};
 
-static GbSailingOrders sailingOrders = {.loggingInterval = 30 * 60,
-                                        .orderedSailPositionA = 0,
+static GbSailingOrders sailingOrders = {.loggingInterval = 60 * 60,
+                                        .orderedSailPositionA = 225,
                                         .orderedTackTimeA = 30 * 60,
-                                        .orderedSailPositionB = 90,
+                                        .orderedSailPositionB = 225,
                                         .orderedTackTimeB = 30 * 60};
 
 // Objects

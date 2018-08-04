@@ -4,10 +4,6 @@
 #define RESET_EEPROM false // sets runNum back to 0
 #endif
 
-#ifndef USING_WIFI
-#define USING_WIFI false
-#endif
-
 //#define DEBUG // comment to disable
 #ifdef DEBUG
   #define DEBUG_BEGIN(x) Serial.begin(x)
