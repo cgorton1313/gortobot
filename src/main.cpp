@@ -144,15 +144,11 @@ void setup() {
   DEBUG_BEGIN(CONSOLE_BAUD);
   DEBUG_PRINTLN(F("Satcom test starting..."));
 
-  runNum = GbUtility::IncrementRunNum();
-  DEBUG_PRINT(F("Starting runNum "));
-  DEBUG_PRINTLN(runNum);
-
   if (RESET_EEPROM) {
     GbUtility::ClearEEPROM();
   }
 
-  runNum = GbUtility::IncrementRunNum();
+  runNum = GbUtility::IncrementRunNum() + 4000; // add 1000*version to give some database space
   DEBUG_PRINT(F("Starting runNum "));
   DEBUG_PRINTLN(runNum);
 
