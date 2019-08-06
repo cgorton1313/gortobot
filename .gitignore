@@ -1,7 +1,9 @@
+.pio
 .pioenvs
 .piolibdeps
 .clang_complete
 .gcc-flags.json
 .scannerwork/
+.vscode
 bw-output/
 program.exe.stackdump
