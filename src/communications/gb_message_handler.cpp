@@ -1,6 +1,11 @@
 #include "gb_message_handler.h"
 
 bool GbMessageHandler::IsValidInboundMessage(String inboundMessage) {
+// check and execute reset instruction
+  if (inboundMessage.indexOf("x") != -1) {
+    asm volatile ("  jmp 0");
+  }
+
   if (inboundMessage.indexOf("z") == -1) {
     DEBUG_PRINTLN(F("No z found in inbound message."));
     return false;

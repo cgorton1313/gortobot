@@ -8,7 +8,7 @@
 static GbSail sail(SAIL_POSITION_SENSOR_PIN, SAIL_POSITION_ENABLE_PIN,
                    MOTOR_POWER_ENABLE_PIN, MOTOR_DIRECTION_PIN, MOTOR_SPEED_PIN,
                    MIN_SAIL_ANGLE, MAX_SAIL_ANGLE,
-                   TRIM_ROUTINE_MAXIMUM_SECONDS);
+                   TRIM_ROUTINE_MAXIMUM_SECONDS, MAST_POSITION_CALIBRATION);
 
 int16_t GetSerialMessage() {
   DEBUG_PRINTLN("Ready for orders:");
@@ -21,7 +21,7 @@ int16_t GetSerialMessage() {
 }
 
 void setup() {
-  DEBUG_BEGIN(115200);
+  DEBUG_BEGIN(CONSOLE_BAUD);
   DEBUG_PRINTLN(F("Sail integration test starting..."));
 }
 

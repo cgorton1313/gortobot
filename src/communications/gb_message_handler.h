@@ -19,6 +19,7 @@ Mobile terminated (MT) message string:
   Example: 1,90,15,270,45,120,z
   -- this would read "set sail to 90 degrees for 15 minutes then 270 for 45
 minutes. Report back every 120 minutes."
+Also, if the MT string includes an 'x' then the program will restart!
 */
 
 #ifndef GB_MESSAGE_HANDLER_H
