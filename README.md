@@ -2,10 +2,10 @@
 Gortobot is a semi-autonomous sailing drone. This is its code repository.
 
 ## Overview
-The purpose of the project is to control a small, unmanned sailing drone on a long oceanic voyage. So far, two trans-Atlantic attempts have been made (in 2015 and 2016), both launching from Gloucester, Massachusetts, USA. The first attempt lasted more than 11 days and 450 nautical miles. The second attempt had a rough start and contact was lost after 8 days, but the vessel drifted and was recovered 265 days later in the Azores, 1800 nautical miles away!
+The purpose of the project is to control a small, unmanned sailing drone on a long oceanic voyage. So far, three trans-Atlantic attempts have been made (in 2015, 2016 and 2018), all launching from Gloucester, Massachusetts, USA. The first attempt lasted more than 11 days and 450 nautical miles. The second attempt had a rough start and contact was lost after 8 days, but the vessel drifted and was recovered 265 days later in the Azores, 1800 nautical miles away! The third attempt also had a rough start but was recovered after landing on Nantucket after a week of chaos. :)
 
 This repository is for software artifacts. More information on the physical design and past attempts can be found here:
-https://sites.google.com/site/gortobot/
+https://sites.google.com/view/gortobot/home
 
 ## Framework/Platform
 Arduino was chosen as the framework on which to develop Gortobot for several reasons:
@@ -13,10 +13,13 @@ Arduino was chosen as the framework on which to develop Gortobot for several rea
 - Abundance of libraries to choose from, especially for the IridiumSBD modem
 - Excellent ecosystem of devices, documentation, and online resources
 
-Atmel AVR is the obvious platform. Gortobot #1 and #2 used a 5V Arduino Pro Mini with ATmega328 (16MHz). Gortobot #3 is being developed on an Arduino Mini Mega2560, especially for the four hardware serial ports.
+But then I went for OOP in C++ anyways, to get some better testing and proper separation.
+
+Atmel AVR is the obvious platform. Gortobot #1 and #2 used a 5V Arduino Pro Mini with ATmega328 (16MHz). Gortobot #3 was developed on an Arduino Mini Mega2560, especially for the four hardware serial ports.
 
 ## Tooling
 Platformio on the Atom IDE was chosen for the more advanced features (compared to the Arduino IDE) and for unit testing.
+In 2019 I switched to MS Visual Studio Code + Platformio. I like it!
 
 ## Code Structure
 There are no typical `.ino` Arduino sketch files. In order to have more control and a "proper" C++ program, the entry point is main.cpp. Arduino.h is included, though.
