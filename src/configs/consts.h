@@ -5,7 +5,7 @@
 
 static const uint8_t DELAY_FOR_SERIAL =
     10; // ms to delay so serial ouput is clean
-static const uint32_t CONSOLE_BAUD = 115200, WIFI_BAUD = 115200,
+static const uint32_t CONSOLE_BAUD = 9600, WIFI_BAUD = 115200,
                       GPS_BAUD = 38400, SAT_BAUD = 19200;
 static const uint16_t SAT_CHARGE_TIME =
     10; // seconds to wait at start-up for super-capacitor
@@ -33,6 +33,6 @@ static const int16_t MAST_POSITION_CALIBRATION = 0; // Use this if the mast is m
 static const uint16_t MIN_SAIL_ANGLE = 0,
                       MAX_SAIL_ANGLE = 359; // limits for sail
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =
-    180; // max number of trim seconds allowed to get to ordered position
+    120; // max number of trim seconds allowed to get to ordered position
 
 #endif

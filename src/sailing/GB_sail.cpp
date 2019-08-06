@@ -6,7 +6,7 @@ GbSail::GbSail(uint8_t sensorPin, uint8_t sensorEnablePin,
                int16_t max_sail_angle, uint16_t trimRoutineMaxSeconds,
                int16_t mastPositionCalibration)
     : _sensorPin(sensorPin), _sensorEnablePin(sensorEnablePin),
-      _mastGearSize(74), _sensorGearSize(36),
+      _mastGearSize(48), _sensorGearSize(16),
       _motorPowerEnablePin(motorPowerEnablePin),
       _motorDirectionPin(motorDirectionPin), _motorSpeedPin(motorSpeedPin),
       _min_sail_angle(min_sail_angle), _max_sail_angle(max_sail_angle),
