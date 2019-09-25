@@ -4,7 +4,7 @@
 #define RESET_EEPROM false // sets runNum back to 0
 #endif
 
-#define DEBUG // comment to disable
+#define DEBUG // comment this line out to disable serial
 #ifdef DEBUG
   #define DEBUG_BEGIN(x) Serial.begin(x)
   #define DEBUG_PRINT(x) Serial.print(x)

@@ -29,10 +29,10 @@ static const uint16_t BATTERY_WAIT_TIME =
 //    7 = 5 + temp/humidity
 static const uint8_t MESSAGE_VERSION = 7;
 
-static const int16_t MAST_POSITION_CALIBRATION = 0; // Use this if the mast is mounted slightly askew.
+static const int16_t MAST_POSITION_CALIBRATION = 140; // Use this if the mast is mounted slightly askew.
 static const uint16_t MIN_SAIL_ANGLE = 0,
                       MAX_SAIL_ANGLE = 359; // limits for sail
 static const uint16_t TRIM_ROUTINE_MAXIMUM_SECONDS =
-    120; // max number of trim seconds allowed to get to ordered position
+    240; // max number of trim seconds allowed to get to ordered position
 
 #endif

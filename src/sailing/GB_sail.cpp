@@ -47,7 +47,7 @@ GbTrimResult GbSail::Trim(int16_t orderedSailPosition) {
       }
     }
 
-    sailPosition = GetSailPosition() + 5; // correction for motor
+    sailPosition = GetSailPosition() + 10; // correction for motor dropping voltage
   }
 
   Stop(); // sail is either in position or stuck
@@ -128,13 +128,13 @@ int16_t GbSail::GetPositionAnalogReading() {
 void GbSail::TurnCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, LOW);
-  digitalWrite(_motorSpeedPin, HIGH);
+  analogWrite(_motorSpeedPin, 100);
 }
 
 void GbSail::TurnCCW(uint16_t outOfTrim) {
   digitalWrite(_motorPowerEnablePin, HIGH);
   digitalWrite(_motorDirectionPin, HIGH);
-  digitalWrite(_motorSpeedPin, HIGH);
+  analogWrite(_motorSpeedPin, 100);
 }
 
 void GbSail::Stop() {

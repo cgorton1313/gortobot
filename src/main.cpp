@@ -1,4 +1,4 @@
-/* Gortobot v3c
+/* Gortobot v4
 
 The main.cpp program handles the necessary includes, pin assignments, global
 consts & variables, etc.
@@ -9,10 +9,6 @@ Rinse and repeat.
 There are some global housekeeping functions here as well.
 
 */
-
-// TODO: store orders in EEPROM?
-// TODO: figure out negative sail position
-// TODO: test GPS timeout
 
 // Includes
 #include "configs/includes.h"
@@ -115,7 +111,7 @@ void standWatch() {
     }
 
     if (trimResult.success) {
-      if (abs(sail.GetSailPosition() - currentOrderedSailPosition) > 5) {
+      if (abs(sail.GetSailPosition() - currentOrderedSailPosition) > 6) {
         trimResult = sail.Trim(currentOrderedSailPosition);
       } else {
         DEBUG_PRINTLN(F("Close enough, no need to trim."));
